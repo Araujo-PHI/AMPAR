@@ -1,0 +1,1688 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+  <title>AMRAP 20 MIN — Circuito Móvil y Progreso</title>
+  <!-- Fuente Arimo (400, 600, 700) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Arimo:wght@400;600;700&display=swap" rel="stylesheet" />
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Arimo', 'sans-serif'],
+          },
+          colors: {
+            pureblack: '#000000',
+            offblack: '#0A0A0A',
+            darkborder: '#222222',
+            lightborder: '#E5E5E5',
+            purewhite: '#FFFFFF',
+          }
+        }
+      }
+    };
+  </script>
+  <style>
+    /* Configuración base estrictamente monocromática y ergonómica móvil */
+    * {
+      box-sizing: border-box;
+      font-family: 'Arimo', sans-serif;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    html, body {
+      background-color: #FFFFFF;
+      color: #000000;
+      margin: 0;
+      padding: 0;
+      overflow-x: hidden;
+      width: 100%;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* Eliminar retraso de 300ms en dispositivos táctiles */
+    button, a, label, [role="button"] {
+      touch-action: manipulation;
+    }
+
+    /* Scrollbars personalizados minimalistas */
+    ::-webkit-scrollbar {
+      width: 5px;
+      height: 5px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #FFFFFF;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #000000;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #222222;
+    }
+
+    /* Bordes y utilidades táctiles */
+    .brutal-border {
+      border: 2px solid #000000;
+    }
+    .thin-border {
+      border: 1px solid #000000;
+    }
+    .subtle-border {
+      border: 1px solid #E5E5E5;
+    }
+    .btn-press {
+      transition: transform 0.08s ease, background-color 0.12s ease, color 0.12s ease;
+    }
+    .btn-press:active {
+      transform: scale(0.985);
+    }
+
+    /* Números tabulares para evitar saltos en el reloj */
+    .tabular-nums {
+      font-variant-numeric: tabular-nums;
+    }
+
+    /* Barra inferior fija con soporte para notch/gestos inferiores */
+    .bottom-nav-safe {
+      padding-bottom: env(safe-area-inset-bottom, 0px);
+    }
+    .main-bottom-clearance {
+      padding-bottom: calc(88px + env(safe-area-inset-bottom, 0px));
+    }
+
+    /* Animación suave para acordeones */
+    details > summary {
+      list-style: none;
+    }
+    details > summary::-webkit-details-marker {
+      display: none;
+    }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col bg-purewhite text-pureblack selection:bg-pureblack selection:text-purewhite">
+
+  <!-- Toast / Notificación flotante superior para no tapar los botones del pulgar -->
+  <div id="toast-banner" class="fixed top-3 left-3 right-3 z-50 hidden max-w-md mx-auto bg-pureblack text-purewhite border-2 border-pureblack px-4 py-3">
+    <div class="flex items-center justify-between gap-3">
+      <div class="flex items-center gap-2.5">
+        <svg class="w-4 h-4 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+          <polyline points="20 6 9 17 4 12"></polyline>
+        </svg>
+        <p id="toast-message" class="text-xs font-bold tracking-wide uppercase leading-snug"></p>
+      </div>
+      <button onclick="hideToast()" aria-label="Cerrar aviso" class="text-purewhite p-1.5 -mr-1">
+        <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+          <line x1="18" y1="6" x2="6" y2="18"></line>
+          <line x1="6" y1="6" x2="18" y2="18"></line>
+        </svg>
+      </button>
+    </div>
+  </div>
+
+  <!-- Modal de Confirmación Personalizado -->
+  <div id="confirm-modal" class="fixed inset-0 z-50 hidden items-end sm:items-center justify-center bg-black/75 p-3 sm:p-4">
+    <div class="bg-purewhite border-2 border-pureblack max-w-md w-full p-5 sm:p-6">
+      <div class="flex items-center justify-between border-b-2 border-pureblack pb-3 mb-4">
+        <h3 id="confirm-title" class="text-sm font-bold uppercase tracking-wider">Confirmar Acción</h3>
+        <button onclick="closeConfirmModal()" class="p-2 -mr-2" aria-label="Cerrar">
+          <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </button>
+      </div>
+      <p id="confirm-text" class="text-base text-pureblack mb-6 leading-relaxed"></p>
+      <div class="grid grid-cols-2 gap-3">
+        <button onclick="closeConfirmModal()" class="min-h-[52px] px-4 text-xs font-bold uppercase tracking-wider border-2 border-pureblack bg-purewhite text-pureblack btn-press">
+          Cancelar
+        </button>
+        <button id="confirm-accept-btn" class="min-h-[52px] px-4 text-xs font-bold uppercase tracking-wider border-2 border-pureblack bg-pureblack text-purewhite btn-press">
+          Confirmar
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal para Registrar o Editar Sesión Manualmente -->
+  <div id="session-modal" class="fixed inset-0 z-50 hidden items-end sm:items-center justify-center bg-black/75 p-3 sm:p-4">
+    <div class="bg-purewhite border-2 border-pureblack max-w-md w-full p-5 sm:p-6 max-h-[90vh] overflow-y-auto">
+      <div class="flex items-center justify-between border-b-2 border-pureblack pb-3 mb-4">
+        <h3 id="session-modal-title" class="text-sm font-bold uppercase tracking-wider">Registrar / Editar Día</h3>
+        <button onclick="closeSessionModal()" class="p-2 -mr-2" aria-label="Cerrar">
+          <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </button>
+      </div>
+      <form id="manual-session-form" class="space-y-4">
+        <div>
+          <label for="modal-date" class="block text-xs font-bold uppercase tracking-wider mb-1.5">Fecha de Entrenamiento</label>
+          <input type="date" id="modal-date" required class="w-full min-h-[48px] border-2 border-pureblack px-3 py-2 text-base bg-purewhite text-pureblack focus:outline-none" />
+        </div>
+        <div>
+          <label for="modal-rounds" class="block text-xs font-bold uppercase tracking-wider mb-1.5">Vueltas Completadas (20 min)</label>
+          <div class="flex items-center gap-2">
+            <button type="button" onclick="adjustModalRounds(-1)" class="w-14 h-12 border-2 border-pureblack bg-purewhite text-pureblack font-bold text-xl btn-press">-1</button>
+            <input type="number" id="modal-rounds" min="0" max="40" step="1" value="3" required class="w-full min-h-[48px] border-2 border-pureblack px-3 py-2 text-center text-lg font-bold tabular-nums bg-purewhite text-pureblack focus:outline-none" />
+            <button type="button" onclick="adjustModalRounds(1)" class="w-14 h-12 border-2 border-pureblack bg-pureblack text-purewhite font-bold text-xl btn-press">+1</button>
+          </div>
+        </div>
+        <div>
+          <label for="modal-effort" class="block text-xs font-bold uppercase tracking-wider mb-1.5">Sensación de Esfuerzo</label>
+          <select id="modal-effort" class="w-full min-h-[48px] border-2 border-pureblack px-3 py-2 text-base bg-purewhite text-pureblack focus:outline-none">
+            <option value="Suave">1 • Suave (Ritmo cómodo)</option>
+            <option value="Bien" selected>2 • Bien (Técnica limpia)</option>
+            <option value="Intenso">3 • Intenso (Esfuerzo alto)</option>
+          </select>
+        </div>
+        <div>
+          <label for="modal-notes" class="block text-xs font-bold uppercase tracking-wider mb-1.5">Nota Corta (Opcional)</label>
+          <input type="text" id="modal-notes" maxlength="80" placeholder="Ej. Buen control en conos con izquierda" class="w-full min-h-[48px] border-2 border-pureblack px-3 py-2 text-base bg-purewhite text-pureblack focus:outline-none" />
+        </div>
+        <div class="grid grid-cols-2 gap-3 pt-2">
+          <button type="button" onclick="closeSessionModal()" class="min-h-[52px] px-4 text-xs font-bold uppercase tracking-wider border-2 border-pureblack bg-purewhite text-pureblack btn-press">
+            Cancelar
+          </button>
+          <button type="submit" class="min-h-[52px] px-4 text-xs font-bold uppercase tracking-wider border-2 border-pureblack bg-pureblack text-purewhite btn-press">
+            Guardar
+          </button>
+        </div>
+        <div id="modal-delete-wrapper" class="hidden pt-1">
+          <button type="button" id="modal-delete-btn" class="w-full min-h-[46px] text-xs font-bold uppercase tracking-wider border border-pureblack text-pureblack hover:bg-neutral-100 btn-press">
+            Eliminar Registro de Este Día
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Encabezado Compacto Superior -->
+  <header class="border-b-2 border-pureblack bg-purewhite sticky top-0 z-30">
+    <div class="max-w-3xl mx-auto px-4 py-3 flex items-center justify-between gap-2">
+      <div>
+        <div class="flex items-center gap-2">
+          <span class="inline-block w-2.5 h-2.5 bg-pureblack"></span>
+          <span class="text-[11px] font-bold uppercase tracking-widest text-neutral-600">13 Años • Casa • 20 Min</span>
+        </div>
+        <h1 class="text-lg sm:text-xl font-bold tracking-tight uppercase leading-tight">Circuito AMRAP</h1>
+      </div>
+
+      <!-- Resumen compacto de material disponible -->
+      <div class="flex items-center gap-2 text-[11px] font-bold uppercase border border-pureblack px-2.5 py-1.5 bg-purewhite">
+        <span title="2 Pelotas">2 Pelotas</span>
+        <span>•</span>
+        <span title="2 Conos">2 Conos</span>
+        <span>•</span>
+        <span title="2 Mancuernas de 1 kg">2x1kg</span>
+      </div>
+    </div>
+  </header>
+
+  <!-- Contenedor Principal (con espacio inferior para la barra fija móvil) -->
+  <main class="flex-1 max-w-3xl w-full mx-auto px-4 pt-4 main-bottom-clearance">
+
+    <!-- ========================================================= -->
+    <!-- VISTA 1: ENTRENAR (DISEÑADA PARA UNA SOLA MANO EN MÓVIL)  -->
+    <!-- ========================================================= -->
+    <section id="view-timer" class="space-y-4">
+
+      <!-- Tarjeta Principal del Cronómetro 20:00 -->
+      <div class="brutal-border bg-purewhite p-4 sm:p-6">
+        <div class="flex items-center justify-between gap-2 mb-3">
+          <span id="timer-status-badge" class="px-2.5 py-1 text-xs font-bold uppercase tracking-wider border border-pureblack bg-purewhite text-pureblack">
+            Listo • 20 Min
+          </span>
+
+          <!-- Botón Screen Wake Lock (Mantener pantalla activa) -->
+          <button id="btn-wakelock" onclick="toggleWakeLock()" class="min-h-[38px] px-3 py-1.5 border border-pureblack bg-purewhite text-pureblack text-xs font-bold uppercase tracking-wider flex items-center gap-1.5 btn-press" aria-pressed="false">
+            <svg id="wakelock-icon" class="w-4 h-4 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+              <rect x="5" y="2" width="14" height="20" rx="2" ry="2"></rect>
+              <line x1="12" y1="18" x2="12.01" y2="18"></line>
+            </svg>
+            <span id="wakelock-label">Pantalla Activa: Off</span>
+          </button>
+        </div>
+
+        <!-- Reloj Regresivo Gigante -->
+        <div class="my-4 text-center">
+          <div id="timer-display" class="text-[76px] sm:text-8xl font-bold tracking-tight tabular-nums leading-none select-none">
+            20:00
+          </div>
+          <p id="timer-subtext" class="text-xs font-semibold uppercase tracking-wider text-neutral-600 mt-2">
+            Técnica limpia antes que velocidad
+          </p>
+        </div>
+
+        <!-- Barra de Progreso Lineal de Alto Contraste -->
+        <div class="w-full h-3.5 border-2 border-pureblack bg-purewhite mb-4 overflow-hidden">
+          <div id="timer-progress-bar" class="h-full bg-pureblack transition-all duration-300" style="width: 100%;"></div>
+        </div>
+
+        <!-- Controles Principales del Cronómetro (Mínimo 54px alto) -->
+        <div class="grid grid-cols-12 gap-3">
+          <button id="btn-toggle-timer" onclick="toggleTimer()" class="col-span-8 min-h-[56px] px-4 bg-pureblack text-purewhite border-2 border-pureblack text-sm sm:text-base font-bold uppercase tracking-wider flex items-center justify-center gap-2.5 btn-press">
+            <svg id="toggle-timer-icon" class="w-5 h-5 shrink-0" viewBox="0 0 24 24" fill="currentColor">
+              <polygon points="5 3 19 12 5 21 5 3"></polygon>
+            </svg>
+            <span id="toggle-timer-text">Iniciar</span>
+          </button>
+
+          <button id="btn-reset-timer" onclick="handleResetTimerTap()" class="col-span-4 min-h-[56px] px-3 bg-purewhite text-pureblack border-2 border-pureblack text-xs sm:text-sm font-bold uppercase tracking-wider flex items-center justify-center gap-1.5 btn-press">
+            <svg class="w-4 h-4 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4">
+              <polyline points="1 4 1 10 7 10"></polyline>
+              <path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"></path>
+            </svg>
+            <span id="reset-timer-text">Reiniciar</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Contador de Vueltas Ergonómico para el Pulgar -->
+      <div class="brutal-border bg-purewhite p-4 sm:p-6">
+        <div class="flex items-center justify-between mb-3">
+          <span class="text-xs font-bold uppercase tracking-wider">Contador de Vueltas</span>
+          <span class="text-xs font-semibold text-neutral-600">6 ejercicios = 1 vuelta</span>
+        </div>
+
+        <!-- Display de número gigante + botón discreto -1 -->
+        <div class="flex items-center justify-between border-2 border-pureblack px-4 py-3 mb-3 bg-purewhite">
+          <button onclick="changeRounds(-1)" aria-label="Restar 1 vuelta" class="w-14 h-14 border-2 border-pureblack bg-purewhite text-pureblack text-lg font-bold flex items-center justify-center btn-press">
+            -1
+          </button>
+
+          <div class="text-center">
+            <div id="rounds-display" class="text-5xl sm:text-6xl font-bold tabular-nums leading-none">0</div>
+            <div class="text-[11px] font-bold uppercase tracking-widest text-neutral-600 mt-1">Vueltas Logradas</div>
+          </div>
+
+          <div class="w-14 text-right">
+            <span id="round-status-hint" class="text-[11px] font-bold uppercase leading-tight block text-neutral-600">En curso</span>
+          </div>
+        </div>
+
+        <!-- Botón Principal Gigante (+1 VUELTA COMPLETA, mínimo 74px alto) -->
+        <button id="btn-add-round" onclick="changeRounds(1)" class="w-full min-h-[76px] px-5 bg-pureblack text-purewhite border-2 border-pureblack text-base sm:text-lg font-bold uppercase tracking-wider flex items-center justify-center gap-3 btn-press">
+          <svg class="w-6 h-6 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
+            <line x1="12" y1="5" x2="12" y2="19"></line>
+            <line x1="5" y1="12" x2="19" y2="12"></line>
+          </svg>
+          <span>+1 Vuelta Completa</span>
+        </button>
+      </div>
+
+      <!-- Checklist Táctil de la Ronda Actual -->
+      <div class="brutal-border bg-purewhite p-4 sm:p-6">
+        <div class="flex items-center justify-between border-b-2 border-pureblack pb-2.5 mb-3">
+          <div>
+            <h2 class="text-xs font-bold uppercase tracking-wider">Estaciones de la Ronda Actual</h2>
+            <p class="text-xs text-neutral-600 mt-0.5">Toca cada ejercicio al terminarlo</p>
+          </div>
+          <button onclick="resetChecklist()" class="min-h-[38px] px-3 text-xs font-bold uppercase border border-pureblack bg-purewhite text-pureblack btn-press">
+            Limpiar
+          </button>
+        </div>
+
+        <div id="quick-circuit-list" class="space-y-2.5">
+          <!-- Renderizado dinámicamente por JS -->
+        </div>
+      </div>
+
+      <!-- Sensación de Esfuerzo y Guardado de Sesión -->
+      <div class="brutal-border bg-purewhite p-4 sm:p-6 space-y-4">
+        <div>
+          <label class="block text-xs font-bold uppercase tracking-wider mb-2">Sensación de Esfuerzo Hoy</label>
+          <div class="grid grid-cols-3 gap-2.5" id="effort-selector">
+            <button type="button" data-effort="Suave" onclick="selectEffort('Suave')" class="effort-btn min-h-[50px] px-2 text-xs sm:text-sm font-bold uppercase border-2 border-pureblack bg-purewhite text-pureblack btn-press">
+              1. Suave
+            </button>
+            <button type="button" data-effort="Bien" onclick="selectEffort('Bien')" class="effort-btn min-h-[50px] px-2 text-xs sm:text-sm font-bold uppercase border-2 border-pureblack bg-pureblack text-purewhite btn-press">
+              2. Bien
+            </button>
+            <button type="button" data-effort="Intenso" onclick="selectEffort('Intenso')" class="effort-btn min-h-[50px] px-2 text-xs sm:text-sm font-bold uppercase border-2 border-pureblack bg-purewhite text-pureblack btn-press">
+              3. Intenso
+            </button>
+          </div>
+        </div>
+
+        <button onclick="saveTodaySession()" class="w-full min-h-[58px] px-4 bg-pureblack text-purewhite border-2 border-pureblack text-sm sm:text-base font-bold uppercase tracking-wider flex items-center justify-center gap-2.5 btn-press">
+          <svg class="w-5 h-5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4">
+            <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path>
+            <polyline points="17 21 17 13 7 13 7 21"></polyline>
+            <polyline points="7 3 7 8 15 8"></polyline>
+          </svg>
+          <span>Guardar Sesión de Hoy</span>
+        </button>
+      </div>
+    </section>
+
+    <!-- ========================================================= -->
+    <!-- VISTA 2: EJERCICIOS (LECTURA RÁPIDA Y GRÁFICOS SVG)       -->
+    <!-- ========================================================= -->
+    <section id="view-exercises" class="hidden space-y-4">
+      <div class="border-b-2 border-pureblack pb-3">
+        <span class="text-xs font-bold uppercase tracking-widest text-neutral-600">Guía Visual Técnica</span>
+        <h2 class="text-xl font-bold uppercase tracking-tight mt-0.5">Los 6 Ejercicios del Circuito</h2>
+      </div>
+
+      <!-- Filtro horizontal táctil sin desbordar pantalla -->
+      <div id="exercise-filter-tabs" class="grid grid-cols-4 sm:grid-cols-7 gap-1.5">
+        <!-- Renderizado por JS -->
+      </div>
+
+      <!-- Tarjetas de ejercicios -->
+      <div id="exercises-grid" class="space-y-4">
+        <!-- Renderizado por JS -->
+      </div>
+    </section>
+
+    <!-- ========================================================= -->
+    <!-- VISTA 3: PROGRESO SEMANAL Y GRÁFICO ADAPTABLE             -->
+    <!-- ========================================================= -->
+    <section id="view-progress" class="hidden space-y-4">
+      <div class="flex items-center justify-between border-b-2 border-pureblack pb-3">
+        <div>
+          <span class="text-xs font-bold uppercase tracking-widest text-neutral-600">Seguimiento</span>
+          <h2 class="text-xl font-bold uppercase tracking-tight mt-0.5">Progreso Semanal</h2>
+        </div>
+        <button onclick="openSessionModal()" class="min-h-[44px] px-3.5 bg-pureblack text-purewhite border-2 border-pureblack text-xs font-bold uppercase tracking-wider flex items-center gap-1.5 btn-press">
+          <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <line x1="12" y1="5" x2="12" y2="19"></line>
+            <line x1="5" y1="12" x2="19" y2="12"></line>
+          </svg>
+          <span>Anotar Día</span>
+        </button>
+      </div>
+
+      <!-- 3 Tarjetas Resumen Compactas -->
+      <div class="grid grid-cols-3 gap-2.5">
+        <div class="brutal-border p-3 bg-purewhite text-center">
+          <div class="text-[11px] font-bold uppercase tracking-wider text-neutral-600">Vueltas Sem.</div>
+          <div id="stat-week-rounds" class="text-2xl sm:text-3xl font-bold tabular-nums mt-1">0</div>
+        </div>
+        <div class="brutal-border p-3 bg-purewhite text-center">
+          <div class="text-[11px] font-bold uppercase tracking-wider text-neutral-600">Días Entren.</div>
+          <div id="stat-week-days" class="text-2xl sm:text-3xl font-bold tabular-nums mt-1">0/7</div>
+        </div>
+        <div class="brutal-border p-3 bg-purewhite text-center">
+          <div class="text-[11px] font-bold uppercase tracking-wider text-neutral-600">Récord 20m</div>
+          <div id="stat-best-rounds" class="text-2xl sm:text-3xl font-bold tabular-nums mt-1">0</div>
+        </div>
+      </div>
+
+      <!-- Selector de Semana (Actual / Anterior) y Calendario 7 Días -->
+      <div class="brutal-border bg-purewhite p-4">
+        <div class="flex items-center justify-between gap-2 border-b-2 border-pureblack pb-3 mb-3">
+          <button onclick="changeWeekOffset(-1)" aria-label="Semana anterior" class="min-h-[42px] px-3 border border-pureblack bg-purewhite text-pureblack text-xs font-bold uppercase flex items-center gap-1 btn-press">
+            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+              <polyline points="15 18 9 12 15 6"></polyline>
+            </svg>
+            <span>Ant.</span>
+          </button>
+
+          <div class="text-center">
+            <div id="week-selector-title" class="text-xs font-bold uppercase tracking-wider">Semana Actual</div>
+            <div id="current-week-range" class="text-[11px] text-neutral-600 font-semibold mt-0.5"></div>
+          </div>
+
+          <button id="btn-next-week" onclick="changeWeekOffset(1)" aria-label="Semana siguiente" class="min-h-[42px] px-3 border border-pureblack bg-purewhite text-pureblack text-xs font-bold uppercase flex items-center gap-1 btn-press disabled:opacity-30">
+            <span>Sig.</span>
+            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+              <polyline points="9 18 15 12 9 6"></polyline>
+            </svg>
+          </button>
+        </div>
+
+        <!-- Celdas táctiles de Lun a Dom -->
+        <div id="weekly-days-grid" class="grid grid-cols-7 gap-1.5 sm:gap-2">
+          <!-- Renderizado dinámicamente por JS -->
+        </div>
+        <p class="text-[11px] text-neutral-600 text-center mt-2.5">
+          Toca cualquier día para anotar o corregir sus vueltas
+        </p>
+      </div>
+
+      <!-- Gráfico SVG Responsivo de la Semana Seleccionada -->
+      <div class="brutal-border bg-purewhite p-4">
+        <div class="flex items-center justify-between border-b-2 border-pureblack pb-2.5 mb-3">
+          <h3 class="text-xs font-bold uppercase tracking-wider">Vueltas por Día (Lun - Dom)</h3>
+          <div class="flex items-center gap-3 text-[11px] font-bold">
+            <span class="flex items-center gap-1">
+              <span class="inline-block w-2.5 h-2.5 bg-pureblack"></span> Vueltas
+            </span>
+            <span class="flex items-center gap-1">
+              <span class="inline-block w-3 border-t-2 border-dashed border-pureblack"></span> Promedio
+            </span>
+          </div>
+        </div>
+
+        <div id="chart-container" class="w-full">
+          <!-- Gráfico SVG dinámico -->
+        </div>
+      </div>
+
+      <!-- Historial Reciente Compacto -->
+      <div class="brutal-border bg-purewhite p-4">
+        <div class="flex items-center justify-between border-b-2 border-pureblack pb-2.5 mb-3">
+          <h3 class="text-xs font-bold uppercase tracking-wider">Últimas Sesiones Guardadas</h3>
+          <span id="history-count-label" class="text-xs font-semibold text-neutral-600">0</span>
+        </div>
+        <div id="history-list-mobile" class="divide-y divide-lightborder">
+          <!-- Renderizado por JS -->
+        </div>
+      </div>
+
+      <!-- Respaldo JSON Compacto -->
+      <div class="brutal-border bg-purewhite p-4 space-y-3">
+        <div class="text-xs font-bold uppercase tracking-wider">Respaldo de Datos en el Celular</div>
+        <div class="grid grid-cols-2 gap-2.5">
+          <button onclick="exportProgressJSON()" class="min-h-[48px] px-3 bg-purewhite text-pureblack border-2 border-pureblack text-xs font-bold uppercase tracking-wider flex items-center justify-center gap-1.5 btn-press">
+            <svg class="w-4 h-4 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+              <polyline points="7 10 12 15 17 10"></polyline>
+              <line x1="12" y1="15" x2="12" y2="3"></line>
+            </svg>
+            <span>Exportar JSON</span>
+          </button>
+
+          <label class="min-h-[48px] px-3 bg-purewhite text-pureblack border-2 border-pureblack text-xs font-bold uppercase tracking-wider flex items-center justify-center gap-1.5 cursor-pointer btn-press">
+            <svg class="w-4 h-4 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+              <polyline points="17 8 12 3 7 8"></polyline>
+              <line x1="12" y1="3" x2="12" y2="15"></line>
+            </svg>
+            <span>Importar JSON</span>
+            <input type="file" id="import-json-input" accept=".json" class="hidden" onchange="importProgressJSON(event)" />
+          </label>
+        </div>
+      </div>
+
+    </section>
+
+  </main>
+
+  <!-- Barra de Navegación Fija Inferior Mobile-First (Mínimo 62px + safe area) -->
+  <nav aria-label="Navegación principal inferior" class="fixed bottom-0 left-0 right-0 z-40 bg-purewhite border-t-2 border-pureblack bottom-nav-safe">
+    <div class="max-w-3xl mx-auto grid grid-cols-3">
+      <button id="nav-timer" onclick="switchView('timer')" class="min-h-[62px] py-2 px-2 bg-pureblack text-purewhite border-r border-pureblack flex flex-col items-center justify-center gap-1 btn-press">
+        <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+          <circle cx="12" cy="13" r="8"></circle>
+          <polyline points="12 9 12 13 15 15"></polyline>
+          <line x1="9" y1="2" x2="15" y2="2"></line>
+        </svg>
+        <span class="text-xs font-bold uppercase tracking-wider">Entrenar</span>
+      </button>
+
+      <button id="nav-exercises" onclick="switchView('exercises')" class="min-h-[62px] py-2 px-2 bg-purewhite text-pureblack border-r border-pureblack flex flex-col items-center justify-center gap-1 btn-press">
+        <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+          <rect x="3" y="3" width="7" height="7"></rect>
+          <rect x="14" y="3" width="7" height="7"></rect>
+          <rect x="14" y="14" width="7" height="7"></rect>
+          <rect x="3" y="14" width="7" height="7"></rect>
+        </svg>
+        <span class="text-xs font-bold uppercase tracking-wider">Ejercicios</span>
+      </button>
+
+      <button id="nav-progress" onclick="switchView('progress')" class="min-h-[62px] py-2 px-2 bg-purewhite text-pureblack flex flex-col items-center justify-center gap-1 btn-press">
+        <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+          <line x1="18" y1="20" x2="18" y2="10"></line>
+          <line x1="12" y1="20" x2="12" y2="4"></line>
+          <line x1="6" y1="20" x2="6" y2="14"></line>
+        </svg>
+        <span class="text-xs font-bold uppercase tracking-wider">Progreso</span>
+      </button>
+    </div>
+  </nav>
+
+  <script>
+    // =========================================================================
+    // DATOS DE LOS 6 EJERCICIOS CON GRÁFICOS VECTORIALES NÍTIDOS EN B/N
+    // =========================================================================
+    const EXERCISES = [
+      {
+        id: 'squat',
+        number: '01',
+        shortName: 'Sentadilla',
+        name: 'Sentadilla con Peso Corporal',
+        reps: '10 reps',
+        rhythm: 'Ritmo controlado • Pecho alto',
+        equipment: 'Peso corporal (opcional: 1 mancuerna de 1 kg al pecho)',
+        steps: [
+          'Separa los pies al ancho de hombros con las puntas levemente hacia afuera.',
+          'Lleva la cadera hacia atrás y abajo como sentándote en una silla baja.',
+          'Sube empujando el suelo con toda la planta del pie sin despegar talones.'
+        ],
+        avoid: 'Que las rodillas se junten hacia adentro o levantar los talones.',
+        modification: 'Toca suavemente el borde de una silla con los glúteos antes de subir.',
+        svg: `
+          <svg viewBox="0 0 340 175" class="w-full h-auto bg-purewhite" role="img" aria-label="Gráfico de sentadilla">
+            <line x1="16" y1="154" x2="324" y2="154" stroke="#000000" stroke-width="2" />
+            <text x="80" y="18" font-size="10" font-weight="700" text-anchor="middle" fill="#000000">1. INICIO</text>
+            <circle cx="80" cy="40" r="9" fill="none" stroke="#000000" stroke-width="2.2" />
+            <line x1="80" y1="49" x2="80" y2="94" stroke="#000000" stroke-width="2.5" stroke-linecap="round" />
+            <polyline points="80,58 106,64 115,64" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" />
+            <polyline points="80,94 78,124 78,154" fill="none" stroke="#000000" stroke-width="2.5" stroke-linecap="round" />
+            <line x1="78" y1="154" x2="91" y2="154" stroke="#000000" stroke-width="2.5" stroke-linecap="round" />
+
+            <line x1="142" y1="86" x2="178" y2="86" stroke="#000000" stroke-width="2" stroke-dasharray="4 3" />
+            <polygon points="178,82 186,86 178,90" fill="#000000" />
+
+            <text x="248" y="18" font-size="10" font-weight="700" text-anchor="middle" fill="#000000">2. ABAJO</text>
+            <line x1="205" y1="116" x2="290" y2="116" stroke="#000000" stroke-width="1" stroke-dasharray="3 3" />
+            <circle cx="250" cy="66" r="9" fill="none" stroke="#000000" stroke-width="2.2" />
+            <line x1="246" y1="75" x2="228" y2="115" stroke="#000000" stroke-width="2.5" stroke-linecap="round" />
+            <polyline points="242,83 272,83 282,81" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" />
+            <polyline points="228,115 262,116 256,154" fill="none" stroke="#000000" stroke-width="2.5" stroke-linecap="round" />
+            <line x1="256" y1="154" x2="270" y2="154" stroke="#000000" stroke-width="2.5" stroke-linecap="round" />
+            <line x1="212" y1="82" x2="212" y2="110" stroke="#000000" stroke-width="1.8" />
+            <polygon points="208,108 212,116 216,108" fill="#000000" />
+            <text x="170" y="169" font-size="9" font-weight="700" text-anchor="middle" fill="#000000">Talones apoyados • Espalda neutra</text>
+          </svg>
+        `
+      },
+      {
+        id: 'pushup',
+        number: '02',
+        shortName: 'Flexiones',
+        name: 'Flexiones de Brazos',
+        reps: '6-8 reps',
+        rhythm: 'Postura firme • Cuerpo recto',
+        equipment: 'Peso corporal',
+        steps: [
+          'Apoya las manos un poco más abiertas que el ancho de los hombros.',
+          'Aprieta el abdomen para formar una línea recta de cabeza a talones.',
+          'Baja el pecho controlando los codos y empuja el suelo hasta extender.'
+        ],
+        avoid: 'Que la cintura se hunda hacia el suelo o abrir demasiado los codos.',
+        modification: 'Apoya las rodillas en el piso manteniendo el tronco completamente recto.',
+        svg: `
+          <svg viewBox="0 0 340 175" class="w-full h-auto bg-purewhite" role="img" aria-label="Gráfico de flexiones de brazos">
+            <line x1="16" y1="148" x2="324" y2="148" stroke="#000000" stroke-width="2" />
+            <text x="88" y="18" font-size="10" font-weight="700" text-anchor="middle" fill="#000000">1. PLANCHA ALTA</text>
+            <circle cx="136" cy="74" r="8.5" fill="none" stroke="#000000" stroke-width="2.2" />
+            <line x1="127" y1="80" x2="36" y2="142" stroke="#000000" stroke-width="2.5" stroke-linecap="round" />
+            <line x1="120" y1="86" x2="120" y2="148" stroke="#000000" stroke-width="2.5" stroke-linecap="round" />
+            <line x1="120" y1="148" x2="130" y2="148" stroke="#000000" stroke-width="2.5" />
+            <line x1="36" y1="142" x2="36" y2="148" stroke="#000000" stroke-width="2.5" />
+
+            <line x1="156" y1="104" x2="182" y2="104" stroke="#000000" stroke-width="2" stroke-dasharray="4 3" />
+            <polygon points="182,100 190,104 182,108" fill="#000000" />
+
+            <text x="256" y="18" font-size="10" font-weight="700" text-anchor="middle" fill="#000000">2. BAJADA RECTA</text>
+            <circle cx="304" cy="114" r="8.5" fill="none" stroke="#000000" stroke-width="2.2" />
+            <line x1="295" y1="118" x2="202" y2="143" stroke="#000000" stroke-width="2.5" stroke-linecap="round" />
+            <polyline points="286,120 274,133 286,148" fill="none" stroke="#000000" stroke-width="2.5" stroke-linecap="round" />
+            <line x1="286" y1="148" x2="296" y2="148" stroke="#000000" stroke-width="2.5" />
+            <line x1="202" y1="143" x2="202" y2="148" stroke="#000000" stroke-width="2.5" />
+            <line x1="258" y1="90" x2="258" y2="115" stroke="#000000" stroke-width="1.8" />
+            <polygon points="254,113 258,121 262,113" fill="#000000" />
+            <text x="170" y="167" font-size="9" font-weight="700" text-anchor="middle" fill="#000000">Abdomen firme • Opción con rodillas apoyadas</text>
+          </svg>
+        `
+      },
+      {
+        id: 'glute_bridge',
+        number: '03',
+        shortName: 'Puente',
+        name: 'Puente de Glúteos',
+        reps: '12 reps',
+        rhythm: 'Pausa de 1 seg arriba',
+        equipment: 'Peso corporal (opcional: mancuernas de 1 kg sobre cadera)',
+        steps: [
+          'Acuéstate boca arriba con rodillas flexionadas y pies apoyados al ancho de caderas.',
+          'Empuja con los talones y eleva la cadera apretando los glúteos.',
+          'Sostén 1 segundo formando una línea recta y baja despacio.'
+        ],
+        avoid: 'Arquear la espalda baja subiendo la cadera más allá de la línea recta.',
+        modification: 'Apoya ambas mancuernas de 1 kg sobre la pelvis para sumar control.',
+        svg: `
+          <svg viewBox="0 0 340 175" class="w-full h-auto bg-purewhite" role="img" aria-label="Gráfico de puente de glúteos">
+            <line x1="16" y1="146" x2="324" y2="146" stroke="#000000" stroke-width="2" />
+            <text x="88" y="18" font-size="10" font-weight="700" text-anchor="middle" fill="#000000">1. BASE</text>
+            <circle cx="38" cy="134" r="8.5" fill="none" stroke="#000000" stroke-width="2.2" />
+            <line x1="47" y1="140" x2="98" y2="140" stroke="#000000" stroke-width="2.5" stroke-linecap="round" />
+            <polyline points="98,140 124,104 142,146" fill="none" stroke="#000000" stroke-width="2.5" stroke-linecap="round" />
+            <line x1="142" y1="146" x2="154" y2="146" stroke="#000000" stroke-width="2.5" />
+
+            <line x1="162" y1="115" x2="184" y2="115" stroke="#000000" stroke-width="2" stroke-dasharray="4 3" />
+            <polygon points="184,111 192,115 184,119" fill="#000000" />
+
+            <text x="260" y="18" font-size="10" font-weight="700" text-anchor="middle" fill="#000000">2. ARRIBA (1 SEG)</text>
+            <circle cx="206" cy="134" r="8.5" fill="none" stroke="#000000" stroke-width="2.2" />
+            <line x1="220" y1="140" x2="290" y2="95" stroke="#000000" stroke-width="2.5" stroke-linecap="round" />
+            <line x1="290" y1="95" x2="302" y2="146" stroke="#000000" stroke-width="2.5" stroke-linecap="round" />
+            <line x1="302" y1="146" x2="314" y2="146" stroke="#000000" stroke-width="2.5" />
+            <line x1="226" y1="142" x2="268" y2="142" stroke="#000000" stroke-width="2" />
+            <line x1="260" y1="138" x2="260" y2="116" stroke="#000000" stroke-width="1.8" />
+            <polygon points="256,118 260,110 264,118" fill="#000000" />
+            <text x="170" y="167" font-size="9" font-weight="700" text-anchor="middle" fill="#000000">Empuja con talones • Aprieta glúteos arriba</text>
+          </svg>
+        `
+      },
+      {
+        id: 'shoulder_press',
+        number: '04',
+        shortName: 'Hombros',
+        name: 'Press de Hombros con Mancuernas',
+        reps: '10 reps',
+        rhythm: 'Costillas adentro • Sin apuro',
+        equipment: '2 mancuernas de 1 kg',
+        steps: [
+          'Párate firme con pies al ancho de hombros y una mancuerna de 1 kg en cada mano.',
+          'Coloca las manos a la altura de los hombros con codos apuntando al frente.',
+          'Empuja hacia arriba hasta extender los brazos y baja con control.'
+        ],
+        avoid: 'Inclinar el torso hacia atrás o arquear la zona lumbar al subir.',
+        modification: 'Sube primero un brazo y luego el otro para mantener mejor el equilibrio.',
+        svg: `
+          <svg viewBox="0 0 340 175" class="w-full h-auto bg-purewhite" role="img" aria-label="Gráfico de press de hombros con mancuernas de 1 kg">
+            <line x1="16" y1="156" x2="324" y2="156" stroke="#000000" stroke-width="2" />
+            <text x="88" y="18" font-size="10" font-weight="700" text-anchor="middle" fill="#000000">1. HOMBROS (1 KG)</text>
+            <circle cx="88" cy="48" r="9.5" fill="none" stroke="#000000" stroke-width="2.2" />
+            <line x1="88" y1="58" x2="88" y2="104" stroke="#000000" stroke-width="2.5" />
+            <polyline points="88,104 80,156" fill="none" stroke="#000000" stroke-width="2.5" />
+            <polyline points="88,104 96,156" fill="none" stroke="#000000" stroke-width="2.5" />
+            <polyline points="88,66 66,76 66,56" fill="none" stroke="#000000" stroke-width="2.2" />
+            <polyline points="88,66 110,76 110,56" fill="none" stroke="#000000" stroke-width="2.2" />
+            <rect x="58" y="52" width="16" height="5" fill="#000000" />
+            <rect x="102" y="52" width="16" height="5" fill="#000000" />
+
+            <line x1="148" y1="88" x2="184" y2="88" stroke="#000000" stroke-width="2" stroke-dasharray="4 3" />
+            <polygon points="184,84 192,88 184,92" fill="#000000" />
+
+            <text x="252" y="18" font-size="10" font-weight="700" text-anchor="middle" fill="#000000">2. EMPUJE ARRIBA</text>
+            <circle cx="252" cy="48" r="9.5" fill="none" stroke="#000000" stroke-width="2.2" />
+            <line x1="252" y1="58" x2="252" y2="104" stroke="#000000" stroke-width="2.5" />
+            <polyline points="252,104 244,156" fill="none" stroke="#000000" stroke-width="2.5" />
+            <polyline points="252,104 260,156" fill="none" stroke="#000000" stroke-width="2.5" />
+            <polyline points="252,66 236,48 236,28" fill="none" stroke="#000000" stroke-width="2.2" />
+            <polyline points="252,66 268,48 268,28" fill="none" stroke="#000000" stroke-width="2.2" />
+            <rect x="228" y="24" width="16" height="5" fill="#000000" />
+            <rect x="260" y="24" width="16" height="5" fill="#000000" />
+            <line x1="220" y1="54" x2="220" y2="30" stroke="#000000" stroke-width="1.6" />
+            <polygon points="217,32 220,26 223,32" fill="#000000" />
+            <text x="170" y="170" font-size="9" font-weight="700" text-anchor="middle" fill="#000000">Abdomen activo • Brazos alineados con orejas</text>
+          </svg>
+        `
+      },
+      {
+        id: 'bird_dog',
+        number: '05',
+        shortName: 'Equilibrio',
+        name: 'Perro Pájaro',
+        reps: '5 por lado',
+        rhythm: 'Movimiento lento y estable',
+        equipment: 'Peso corporal',
+        steps: [
+          'Apóyate en cuatro patas: manos bajo hombros y rodillas bajo caderas.',
+          'Extiende al mismo tiempo un brazo al frente y la pierna contraria atrás.',
+          'Vuelve despacio al centro sin rotar la cadera y cambia de lado.'
+        ],
+        avoid: 'Girar la cadera hacia un costado o levantar la pierna demasiado alto.',
+        modification: 'Desliza la punta del pie y la mano rozando el piso hasta ganar equilibrio.',
+        svg: `
+          <svg viewBox="0 0 340 175" class="w-full h-auto bg-purewhite" role="img" aria-label="Gráfico de perro pájaro">
+            <line x1="16" y1="148" x2="324" y2="148" stroke="#000000" stroke-width="2" />
+            <text x="80" y="18" font-size="10" font-weight="700" text-anchor="middle" fill="#000000">1. CUATRO APOYOS</text>
+            <circle cx="118" cy="86" r="8" fill="none" stroke="#000000" stroke-width="2.2" />
+            <line x1="50" y1="92" x2="108" y2="92" stroke="#000000" stroke-width="2.5" stroke-linecap="round" />
+            <line x1="104" y1="92" x2="104" y2="148" stroke="#000000" stroke-width="2.5" />
+            <polyline points="50,92 50,146 30,146" fill="none" stroke="#000000" stroke-width="2.5" stroke-linecap="round" />
+
+            <line x1="138" y1="104" x2="164" y2="104" stroke="#000000" stroke-width="2" stroke-dasharray="4 3" />
+            <polygon points="164,100 172,104 164,108" fill="#000000" />
+
+            <text x="252" y="18" font-size="10" font-weight="700" text-anchor="middle" fill="#000000">2. EXTENSIÓN OPUESTA</text>
+            <circle cx="280" cy="86" r="8" fill="none" stroke="#000000" stroke-width="2.2" />
+            <line x1="178" y1="92" x2="318" y2="92" stroke="#000000" stroke-width="2.5" stroke-linecap="round" />
+            <line x1="266" y1="92" x2="266" y2="148" stroke="#000000" stroke-width="2.5" />
+            <polyline points="222,92 222,146 202,146" fill="none" stroke="#000000" stroke-width="2.5" stroke-linecap="round" />
+            <line x1="296" y1="78" x2="318" y2="78" stroke="#000000" stroke-width="1.6" />
+            <polygon points="316,75 322,78 316,81" fill="#000000" />
+            <line x1="202" y1="78" x2="180" y2="78" stroke="#000000" stroke-width="1.6" />
+            <polygon points="182,75 176,78 182,81" fill="#000000" />
+            <text x="170" y="167" font-size="9" font-weight="700" text-anchor="middle" fill="#000000">Brazo derecho + pierna izquierda (y viceversa)</text>
+          </svg>
+        `
+      },
+      {
+        id: 'soccer_zigzag',
+        number: '06',
+        shortName: 'Fútbol',
+        name: 'Conducción en Zigzag y Toque',
+        reps: '2 pasadas',
+        rhythm: 'Paso ágil • Control con ambos pies',
+        equipment: '2 conos + 2 pelotas de fútbol',
+        steps: [
+          'Separa los 2 conos entre 2 y 3 metros, dejando una pelota en cada extremo.',
+          'Lleva la primera pelota en zigzag rodeando los conos con toques suaves de ambos pies.',
+          'Frena esa pelota al llegar y vuelve conduciendo la segunda pelota hacia el inicio.'
+        ],
+        avoid: 'Patear la pelota lejos o mirar solo el suelo todo el recorrido.',
+        modification: 'Haz el zigzag caminando rápido hasta dominar el toque corto con borde interno.',
+        svg: `
+          <svg viewBox="0 0 340 175" class="w-full h-auto bg-purewhite" role="img" aria-label="Gráfico de recorrido en zigzag con 2 conos y 2 pelotas">
+            <text x="170" y="18" font-size="10" font-weight="700" text-anchor="middle" fill="#000000">RECORRIDO CON 2 CONOS Y 2 PELOTAS</text>
+
+            <polygon points="114,68 102,94 126,94" fill="#000000" />
+            <line x1="98" y1="94" x2="130" y2="94" stroke="#000000" stroke-width="2" />
+            <text x="114" y="108" font-size="9" font-weight="700" text-anchor="middle" fill="#000000">CONO 1</text>
+
+            <polygon points="226,68 214,94 238,94" fill="#000000" />
+            <line x1="210" y1="94" x2="242" y2="94" stroke="#000000" stroke-width="2" />
+            <text x="226" y="108" font-size="9" font-weight="700" text-anchor="middle" fill="#000000">CONO 2</text>
+
+            <circle cx="44" cy="82" r="11" fill="#FFFFFF" stroke="#000000" stroke-width="2.2" />
+            <polygon points="44,76 49,80 47,86 41,86 39,80" fill="#000000" />
+            <text x="44" y="108" font-size="9" font-weight="700" text-anchor="middle" fill="#000000">PELOTA 1</text>
+
+            <circle cx="296" cy="82" r="11" fill="#FFFFFF" stroke="#000000" stroke-width="2.2" />
+            <polygon points="296,76 301,80 299,86 293,86 291,80" fill="#000000" />
+            <text x="296" y="108" font-size="9" font-weight="700" text-anchor="middle" fill="#000000">PELOTA 2</text>
+
+            <path d="M 58,76 Q 114,36 170,82 T 280,76" fill="none" stroke="#000000" stroke-width="2.2" />
+            <polygon points="277,72 285,76 278,80" fill="#000000" />
+            <text x="170" y="42" font-size="9" font-weight="700" text-anchor="middle" fill="#000000">1. IDA CON PELOTA 1</text>
+
+            <path d="M 282,90 Q 226,134 170,88 T 60,90" fill="none" stroke="#000000" stroke-width="2" stroke-dasharray="5 3" />
+            <polygon points="63,86 55,90 62,94" fill="#000000" />
+            <text x="170" y="144" font-size="9" font-weight="700" text-anchor="middle" fill="#000000">2. VUELTA CON PELOTA 2</text>
+
+            <text x="170" y="166" font-size="9" font-weight="700" text-anchor="middle" fill="#000000">Distancia entre conos: 2 a 3 metros</text>
+          </svg>
+        `
+      }
+    ];
+
+    // =========================================================================
+    // ESTADO GLOBAL Y STORAGE
+    // =========================================================================
+    const STORAGE_KEY = 'amrap_13yo_mobile_v2';
+    const TOTAL_SECONDS = 20 * 60; // 20:00
+
+    let timerSecondsLeft = TOTAL_SECONDS;
+    let timerInterval = null;
+    let isTimerRunning = false;
+    let resetConfirmPending = false;
+    let resetConfirmTimeout = null;
+
+    let currentRounds = 0;
+    let selectedEffort = 'Bien';
+    let checklistState = {};
+    let selectedExerciseFilter = 'all';
+    let weekOffset = 0; // 0 = semana actual, -1 = semana anterior, etc.
+    let wakeLockSentinel = null;
+
+    // Estructura de sesión: { date: 'YYYY-MM-DD', rounds: number, effort: string, notes: string }
+    let sessions = [];
+
+    // =========================================================================
+    // INICIALIZACIÓN
+    // =========================================================================
+    document.addEventListener('DOMContentLoaded', () => {
+      loadSessions();
+      renderQuickChecklist();
+      renderExerciseTabs();
+      renderExercisesGrid();
+      updateTimerUI();
+      updateRoundsUI();
+      refreshProgressView();
+
+      // Re-adquirir Wake Lock si el usuario vuelve a la pestaña mientras el reloj corre
+      document.addEventListener('visibilitychange', async () => {
+        if (document.visibilityState === 'visible' && wakeLockSentinel !== null) {
+          await requestWakeLock(true);
+        }
+      });
+    });
+
+    function getTodayISO() {
+      const now = new Date();
+      const offset = now.getTimezoneOffset();
+      return new Date(now.getTime() - offset * 60 * 1000).toISOString().split('T')[0];
+    }
+
+    function formatDisplayDate(iso) {
+      if (!iso) return '';
+      const [y, m, d] = iso.split('-');
+      return `${d}/${m}/${y}`;
+    }
+
+    function loadSessions() {
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY) || localStorage.getItem('amrap_13yo_progress_v1');
+        if (raw) {
+          const parsed = JSON.parse(raw);
+          if (Array.isArray(parsed)) {
+            sessions = parsed.map(item => ({
+              date: item.date,
+              rounds: Number(item.rounds) || 0,
+              effort: item.effort || item.quality || 'Bien',
+              notes: item.notes || ''
+            }));
+          }
+        }
+      } catch (e) {
+        sessions = [];
+      }
+    }
+
+    function saveSessions() {
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(sessions));
+      } catch (e) {
+        showToast('No se pudo guardar en este navegador.');
+      }
+    }
+
+    // =========================================================================
+    // NAVEGACIÓN INFERIOR FIJA
+    // =========================================================================
+    function switchView(viewName) {
+      const views = ['timer', 'exercises', 'progress'];
+      views.forEach(v => {
+        const section = document.getElementById(`view-${v}`);
+        const btn = document.getElementById(`nav-${v}`);
+        if (v === viewName) {
+          section.classList.remove('hidden');
+          btn.classList.remove('bg-purewhite', 'text-pureblack');
+          btn.classList.add('bg-pureblack', 'text-purewhite');
+        } else {
+          section.classList.add('hidden');
+          btn.classList.remove('bg-pureblack', 'text-purewhite');
+          btn.classList.add('bg-purewhite', 'text-pureblack');
+        }
+      });
+
+      window.scrollTo({ top: 0, behavior: 'instant' });
+      if (viewName === 'progress') {
+        refreshProgressView();
+      }
+    }
+
+    // =========================================================================
+    // SCREEN WAKE LOCK API (MANTENER PANTALLA ACTIVA)
+    // =========================================================================
+    async function toggleWakeLock() {
+      if (wakeLockSentinel) {
+        try {
+          await wakeLockSentinel.release();
+        } catch (e) {}
+        wakeLockSentinel = null;
+        updateWakeLockButton(false);
+        showToast('Modo pantalla activa desactivado');
+      } else {
+        await requestWakeLock(false);
+      }
+    }
+
+    async function requestWakeLock(silent) {
+      if (!('wakeLock' in navigator)) {
+        if (!silent) {
+          showToast('Tu navegador no soporta bloqueo automático de pantalla.');
+        }
+        return;
+      }
+      try {
+        wakeLockSentinel = await navigator.wakeLock.request('screen');
+        updateWakeLockButton(true);
+        if (!silent) {
+          showToast('Pantalla activa: no se apagará mientras entrenas');
+        }
+        wakeLockSentinel.addEventListener('release', () => {
+          updateWakeLockButton(false);
+        });
+      } catch (err) {
+        wakeLockSentinel = null;
+        updateWakeLockButton(false);
+        if (!silent) {
+          showToast('No se pudo activar pantalla fija en este momento.');
+        }
+      }
+    }
+
+    function updateWakeLockButton(active) {
+      const btn = document.getElementById('btn-wakelock');
+      const label = document.getElementById('wakelock-label');
+      btn.setAttribute('aria-pressed', active ? 'true' : 'false');
+      if (active) {
+        btn.classList.remove('bg-purewhite', 'text-pureblack');
+        btn.classList.add('bg-pureblack', 'text-purewhite');
+        label.textContent = 'Pantalla Activa: On';
+      } else {
+        btn.classList.remove('bg-pureblack', 'text-purewhite');
+        btn.classList.add('bg-purewhite', 'text-pureblack');
+        label.textContent = 'Pantalla Activa: Off';
+      }
+    }
+
+    // =========================================================================
+    // CRONÓMETRO AMRAP 20 MINUTOS + SONIDO SUAVE WEB AUDIO + VIBRACIÓN
+    // =========================================================================
+    function playSoftFinishAlert() {
+      // Vibración suave si el celular lo soporta
+      if ('vibrate' in navigator) {
+        try {
+          navigator.vibrate([250, 120, 250, 120, 400]);
+        } catch (e) {}
+      }
+
+      // Acorde suave con Web Audio API
+      try {
+        const AudioCtx = window.AudioContext || window.webkitAudioContext;
+        if (!AudioCtx) return;
+        const ctx = new AudioCtx();
+        const freqs = [440, 554.37, 659.25]; // La mayor suave
+        freqs.forEach((f, i) => {
+          const osc = ctx.createOscillator();
+          const gain = ctx.createGain();
+          osc.type = 'sine';
+          osc.frequency.setValueAtTime(f, ctx.currentTime + i * 0.25);
+          gain.gain.setValueAtTime(0.001, ctx.currentTime + i * 0.25);
+          gain.gain.linearRampToValueAtTime(0.14, ctx.currentTime + i * 0.25 + 0.05);
+          gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + i * 0.25 + 0.55);
+          osc.connect(gain);
+          gain.connect(ctx.destination);
+          osc.start(ctx.currentTime + i * 0.25);
+          osc.stop(ctx.currentTime + i * 0.25 + 0.56);
+        });
+      } catch (e) {}
+    }
+
+    function updateTimerUI() {
+      const mins = Math.floor(timerSecondsLeft / 60);
+      const secs = timerSecondsLeft % 60;
+      document.getElementById('timer-display').textContent =
+        `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
+
+      const pct = Math.max(0, Math.min(100, (timerSecondsLeft / TOTAL_SECONDS) * 100));
+      document.getElementById('timer-progress-bar').style.width = `${pct}%`;
+
+      const toggleBtn = document.getElementById('btn-toggle-timer');
+      const toggleText = document.getElementById('toggle-timer-text');
+      const toggleIcon = document.getElementById('toggle-timer-icon');
+      const badge = document.getElementById('timer-status-badge');
+
+      if (isTimerRunning) {
+        toggleBtn.classList.remove('bg-pureblack', 'text-purewhite');
+        toggleBtn.classList.add('bg-purewhite', 'text-pureblack');
+        toggleText.textContent = 'Pausar';
+        toggleIcon.innerHTML = '<rect x="6" y="4" width="4" height="16"></rect><rect x="14" y="4" width="4" height="16"></rect>';
+        badge.textContent = 'En Curso';
+        badge.className = 'px-2.5 py-1 text-xs font-bold uppercase tracking-wider border border-pureblack bg-pureblack text-purewhite';
+      } else {
+        toggleBtn.classList.remove('bg-purewhite', 'text-pureblack');
+        toggleBtn.classList.add('bg-pureblack', 'text-purewhite');
+        toggleText.textContent = timerSecondsLeft === TOTAL_SECONDS ? 'Iniciar' : 'Reanudar';
+        toggleIcon.innerHTML = '<polygon points="5 3 19 12 5 21 5 3"></polygon>';
+        if (timerSecondsLeft === 0) {
+          badge.textContent = 'Completado';
+          badge.className = 'px-2.5 py-1 text-xs font-bold uppercase tracking-wider border border-pureblack bg-pureblack text-purewhite';
+        } else {
+          badge.textContent = timerSecondsLeft === TOTAL_SECONDS ? 'Listo • 20 Min' : 'En Pausa';
+          badge.className = 'px-2.5 py-1 text-xs font-bold uppercase tracking-wider border border-pureblack bg-purewhite text-pureblack';
+        }
+      }
+    }
+
+    function toggleTimer() {
+      if (isTimerRunning) {
+        pauseTimer();
+      } else {
+        startTimer();
+      }
+    }
+
+    function startTimer() {
+      if (isTimerRunning) return;
+      if (timerSecondsLeft <= 0) {
+        timerSecondsLeft = TOTAL_SECONDS;
+      }
+      isTimerRunning = true;
+      updateTimerUI();
+
+      // Activar Wake Lock automáticamente al iniciar si es compatible
+      if (!wakeLockSentinel && 'wakeLock' in navigator) {
+        requestWakeLock(true);
+      }
+
+      timerInterval = setInterval(() => {
+        if (timerSecondsLeft > 0) {
+          timerSecondsLeft--;
+          updateTimerUI();
+        } else {
+          pauseTimer();
+          document.getElementById('timer-subtext').textContent = '¡20 minutos cumplidos! Guarda tu sesión abajo.';
+          playSoftFinishAlert();
+          showToast('¡20 minutos completados! Pulsa Guardar Sesión.');
+        }
+      }, 1000);
+    }
+
+    function pauseTimer() {
+      isTimerRunning = false;
+      if (timerInterval) {
+        clearInterval(timerInterval);
+        timerInterval = null;
+      }
+      updateTimerUI();
+    }
+
+    // Doble toque rápido en "Reiniciar" para evitar borrados accidentales
+    function handleResetTimerTap() {
+      if (timerSecondsLeft === TOTAL_SECONDS && !isTimerRunning) {
+        showToast('El reloj ya está en 20:00');
+        return;
+      }
+
+      const resetBtn = document.getElementById('btn-reset-timer');
+      const resetText = document.getElementById('reset-timer-text');
+
+      if (!resetConfirmPending) {
+        resetConfirmPending = true;
+        resetBtn.classList.remove('bg-purewhite', 'text-pureblack');
+        resetBtn.classList.add('bg-pureblack', 'text-purewhite');
+        resetText.textContent = '¿Seguro?';
+
+        resetConfirmTimeout = setTimeout(() => {
+          resetConfirmPending = false;
+          resetBtn.classList.remove('bg-pureblack', 'text-purewhite');
+          resetBtn.classList.add('bg-purewhite', 'text-pureblack');
+          resetText.textContent = 'Reiniciar';
+        }, 3000);
+      } else {
+        clearTimeout(resetConfirmTimeout);
+        resetConfirmPending = false;
+        resetBtn.classList.remove('bg-pureblack', 'text-purewhite');
+        resetBtn.classList.add('bg-purewhite', 'text-pureblack');
+        resetText.textContent = 'Reiniciar';
+
+        pauseTimer();
+        timerSecondsLeft = TOTAL_SECONDS;
+        document.getElementById('timer-subtext').textContent = 'Técnica limpia antes que velocidad';
+        updateTimerUI();
+        showToast('Reloj reiniciado a 20:00');
+      }
+    }
+
+    // =========================================================================
+    // CONTADOR DE VUELTAS Y CHECKLIST DE ESTACIONES
+    // =========================================================================
+    function changeRounds(delta) {
+      currentRounds = Math.max(0, currentRounds + delta);
+      updateRoundsUI();
+      if (delta > 0) {
+        if ('vibrate' in navigator) {
+          try { navigator.vibrate(45); } catch (e) {}
+        }
+        resetChecklist();
+        showToast(`Vuelta ${currentRounds} sumada`);
+      }
+    }
+
+    function updateRoundsUI() {
+      document.getElementById('rounds-display').textContent = currentRounds;
+      const doneCount = EXERCISES.filter(ex => checklistState[ex.id]).length;
+      const hint = document.getElementById('round-status-hint');
+      hint.textContent = `${doneCount}/6 est.`;
+    }
+
+    function renderQuickChecklist() {
+      const container = document.getElementById('quick-circuit-list');
+      const allDone = EXERCISES.every(ex => checklistState[ex.id]);
+
+      // Resaltar botón "+1 Vuelta Completa" si completó las 6 estaciones
+      const addRoundBtn = document.getElementById('btn-add-round');
+      if (allDone) {
+        addRoundBtn.classList.add('ring-4', 'ring-black/25');
+      } else {
+        addRoundBtn.classList.remove('ring-4', 'ring-black/25');
+      }
+
+      container.innerHTML = EXERCISES.map(ex => {
+        const checked = !!checklistState[ex.id];
+        return `
+          <button type="button" onclick="toggleChecklistItem('${ex.id}')" class="w-full min-h-[60px] text-left border-2 border-pureblack px-3.5 py-2.5 flex items-center justify-between gap-3 btn-press ${checked ? 'bg-pureblack text-purewhite' : 'bg-purewhite text-pureblack'}">
+            <div class="flex items-center gap-3 min-w-0">
+              <span class="text-xs font-bold tabular-nums px-2 py-1 border ${checked ? 'border-purewhite text-purewhite' : 'border-pureblack text-pureblack'} shrink-0">
+                ${ex.number}
+              </span>
+              <div class="truncate">
+                <div class="text-sm sm:text-base font-bold truncate">${ex.name}</div>
+                <div class="text-xs ${checked ? 'text-neutral-300' : 'text-neutral-600'}">${ex.reps}</div>
+              </div>
+            </div>
+            <div class="w-7 h-7 shrink-0 border-2 ${checked ? 'border-purewhite bg-purewhite text-pureblack' : 'border-pureblack bg-purewhite'} flex items-center justify-center">
+              ${checked ? `
+                <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
+                  <polyline points="20 6 9 17 4 12"></polyline>
+                </svg>
+              ` : ''}
+            </div>
+          </button>
+        `;
+      }).join('');
+
+      updateRoundsUI();
+    }
+
+    function toggleChecklistItem(id) {
+      checklistState[id] = !checklistState[id];
+      renderQuickChecklist();
+
+      if (EXERCISES.every(ex => checklistState[ex.id])) {
+        showToast('¡6 ejercicios listos! Toca "+1 Vuelta Completa"');
+      }
+    }
+
+    function resetChecklist() {
+      checklistState = {};
+      renderQuickChecklist();
+    }
+
+    function selectEffort(effort) {
+      selectedEffort = effort;
+      document.querySelectorAll('.effort-btn').forEach(btn => {
+        if (btn.dataset.effort === effort) {
+          btn.classList.remove('bg-purewhite', 'text-pureblack');
+          btn.classList.add('bg-pureblack', 'text-purewhite');
+        } else {
+          btn.classList.remove('bg-pureblack', 'text-purewhite');
+          btn.classList.add('bg-purewhite', 'text-pureblack');
+        }
+      });
+    }
+
+    function saveTodaySession() {
+      const today = getTodayISO();
+      const idx = sessions.findIndex(s => s.date === today);
+      const record = {
+        date: today,
+        rounds: currentRounds,
+        effort: selectedEffort,
+        notes: idx >= 0 ? sessions[idx].notes : 'Circuito 20 min'
+      };
+
+      if (idx >= 0) {
+        openConfirmModal(
+          'Actualizar Registro de Hoy',
+          `Hoy (${formatDisplayDate(today)}) ya tienes ${sessions[idx].rounds} vueltas guardadas. ¿Quieres actualizarlo a ${currentRounds} vueltas (${selectedEffort})?`,
+          () => {
+            sessions[idx] = record;
+            saveSessions();
+            refreshProgressView();
+            showToast('Sesión de hoy actualizada');
+          }
+        );
+      } else {
+        sessions.push(record);
+        saveSessions();
+        refreshProgressView();
+        showToast(`Guardado: ${currentRounds} vueltas (${selectedEffort})`);
+      }
+    }
+
+    // =========================================================================
+    // VISTA 2: GUÍA VISUAL DE EJERCICIOS CON ACORDEÓN COLAPSABLE
+    // =========================================================================
+    function renderExerciseTabs() {
+      const container = document.getElementById('exercise-filter-tabs');
+      const items = [
+        { id: 'all', label: 'Todos' },
+        ...EXERCISES.map(ex => ({ id: ex.id, label: ex.number }))
+      ];
+
+      container.innerHTML = items.map(item => {
+        const active = selectedExerciseFilter === item.id;
+        return `
+          <button onclick="filterExercises('${item.id}')" class="min-h-[44px] px-2 text-xs font-bold uppercase border-2 border-pureblack btn-press ${active ? 'bg-pureblack text-purewhite' : 'bg-purewhite text-pureblack'}">
+            ${item.label}
+          </button>
+        `;
+      }).join('');
+    }
+
+    function filterExercises(id) {
+      selectedExerciseFilter = id;
+      renderExerciseTabs();
+      renderExercisesGrid();
+    }
+
+    function renderExercisesGrid() {
+      const grid = document.getElementById('exercises-grid');
+      const filtered = selectedExerciseFilter === 'all'
+        ? EXERCISES
+        : EXERCISES.filter(ex => ex.id === selectedExerciseFilter);
+
+      grid.innerHTML = filtered.map(ex => `
+        <article class="brutal-border bg-purewhite overflow-hidden">
+          <!-- Cabecera de tarjeta -->
+          <div class="p-4 border-b-2 border-pureblack flex items-center justify-between gap-2">
+            <div class="flex items-center gap-2.5 min-w-0">
+              <span class="px-2.5 py-1 bg-pureblack text-purewhite text-xs font-bold tabular-nums shrink-0">${ex.number}</span>
+              <h3 class="text-base sm:text-lg font-bold uppercase tracking-tight leading-tight">${ex.name}</h3>
+            </div>
+            <span class="px-2.5 py-1 border-2 border-pureblack text-xs font-bold uppercase whitespace-nowrap shrink-0">
+              ${ex.reps}
+            </span>
+          </div>
+
+          <!-- Diagrama SVG vectorial limpio -->
+          <div class="p-3 bg-purewhite border-b border-lightborder">
+            ${ex.svg}
+          </div>
+
+          <!-- 3 Pasos cortos en letra grande y legible (16px+) -->
+          <div class="p-4 space-y-3">
+            <div class="flex flex-wrap items-center justify-between gap-2 text-xs font-bold uppercase text-neutral-600">
+              <span>${ex.rhythm}</span>
+              <span>${ex.equipment}</span>
+            </div>
+
+            <ol class="space-y-2.5 text-base text-pureblack list-decimal list-inside">
+              ${ex.steps.map(step => `<li class="leading-snug">${step}</li>`).join('')}
+            </ol>
+
+            <!-- Acordeón desplegable para no saturar pantalla móvil -->
+            <details class="border-2 border-pureblack mt-3">
+              <summary class="min-h-[46px] px-3.5 py-2.5 bg-neutral-50 font-bold text-xs uppercase tracking-wider flex items-center justify-between cursor-pointer select-none">
+                <span>Ver error común y adaptación</span>
+                <svg class="w-4 h-4 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                  <polyline points="6 9 12 15 18 9"></polyline>
+                </svg>
+              </summary>
+              <div class="p-3.5 border-t border-pureblack bg-purewhite space-y-2.5 text-sm leading-relaxed">
+                <p><strong class="uppercase text-xs">Error común:</strong> ${ex.avoid}</p>
+                <p><strong class="uppercase text-xs">Adaptación:</strong> ${ex.modification}</p>
+              </div>
+            </details>
+          </div>
+        </article>
+      `).join('');
+    }
+
+    // =========================================================================
+    // VISTA 3: PROGRESO SEMANAL Y GRÁFICO SVG ADAPTABLE
+    // =========================================================================
+    function getWeekDaysByOffset(offsetWeeks) {
+      const now = new Date();
+      now.setDate(now.getDate() + offsetWeeks * 7);
+
+      const dayOfWeek = now.getDay(); // 0=Dom, 1=Lun...
+      const diffToMonday = dayOfWeek === 0 ? -6 : 1 - dayOfWeek;
+      const monday = new Date(now);
+      monday.setDate(now.getDate() + diffToMonday);
+
+      const shortNames = ['Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb', 'Dom'];
+      const result = [];
+
+      for (let i = 0; i < 7; i++) {
+        const d = new Date(monday);
+        d.setDate(monday.getDate() + i);
+        const tzOffset = d.getTimezoneOffset();
+        const iso = new Date(d.getTime() - tzOffset * 60 * 1000).toISOString().split('T')[0];
+
+        result.push({
+          shortName: shortNames[i],
+          dayNum: String(d.getDate()).padStart(2, '0'),
+          monthNum: String(d.getMonth() + 1).padStart(2, '0'),
+          iso
+        });
+      }
+      return result;
+    }
+
+    function changeWeekOffset(delta) {
+      if (weekOffset + delta > 0) return;
+      weekOffset += delta;
+      refreshProgressView();
+    }
+
+    function refreshProgressView() {
+      const weekDays = getWeekDaysByOffset(weekOffset);
+      const todayISO = getTodayISO();
+
+      // Actualizar encabezado de selector de semana
+      const titleEl = document.getElementById('week-selector-title');
+      if (weekOffset === 0) titleEl.textContent = 'Semana Actual';
+      else if (weekOffset === -1) titleEl.textContent = 'Semana Anterior';
+      else titleEl.textContent = `Hace ${Math.abs(weekOffset)} Semanas`;
+
+      document.getElementById('current-week-range').textContent =
+        `${weekDays[0].dayNum}/${weekDays[0].monthNum} al ${weekDays[6].dayNum}/${weekDays[6].monthNum}`;
+
+      const nextBtn = document.getElementById('btn-next-week');
+      nextBtn.disabled = weekOffset >= 0;
+
+      // Calcular totales de la semana seleccionada
+      let weekRounds = 0;
+      let weekTrainedDays = 0;
+
+      const weekGrid = document.getElementById('weekly-days-grid');
+      weekGrid.innerHTML = weekDays.map(day => {
+        const entry = sessions.find(s => s.date === day.iso);
+        const isToday = day.iso === todayISO;
+
+        if (entry) {
+          weekTrainedDays++;
+          weekRounds += Number(entry.rounds) || 0;
+        }
+
+        return `
+          <button type="button" onclick="openSessionModal('${day.iso}')" class="min-h-[78px] p-1.5 border-2 border-pureblack flex flex-col items-center justify-between btn-press ${entry ? 'bg-pureblack text-purewhite' : 'bg-purewhite text-pureblack'} ${isToday && !entry ? 'ring-2 ring-pureblack ring-offset-1' : ''}">
+            <span class="text-[11px] font-bold uppercase">${day.shortName}</span>
+            <span class="text-base sm:text-lg font-bold tabular-nums leading-none my-1">
+              ${entry ? entry.rounds : '—'}
+            </span>
+            <span class="text-[10px] font-semibold ${entry ? 'text-neutral-300' : 'text-neutral-500'}">
+              ${day.dayNum}/${day.monthNum}
+            </span>
+          </button>
+        `;
+      }).join('');
+
+      // Récord histórico en 20 min
+      const bestRounds = sessions.reduce((max, s) => Math.max(max, Number(s.rounds) || 0), 0);
+
+      document.getElementById('stat-week-rounds').textContent = weekRounds;
+      document.getElementById('stat-week-days').textContent = `${weekTrainedDays}/7`;
+      document.getElementById('stat-best-rounds').textContent = bestRounds;
+
+      // Gráfico SVG adaptable a ancho móvil sin solapamientos
+      renderWeeklyBarChart(weekDays);
+
+      // Historial reciente compacto
+      renderMobileHistoryList();
+    }
+
+    function renderWeeklyBarChart(weekDays) {
+      const container = document.getElementById('chart-container');
+
+      const dataPoints = weekDays.map(d => {
+        const found = sessions.find(s => s.date === d.iso);
+        return {
+          label: d.shortName,
+          rounds: found ? Number(found.rounds) || 0 : 0,
+          hasData: !!found
+        };
+      });
+
+      const activeValues = dataPoints.filter(d => d.hasData).map(d => d.rounds);
+      const avgRounds = activeValues.length > 0
+        ? (activeValues.reduce((a, b) => a + b, 0) / activeValues.length)
+        : 0;
+
+      // ViewBox compacto proporcional para que en móviles (340px-420px) se vea nítido y grande
+      const svgW = 360;
+      const svgH = 200;
+      const padL = 26;
+      const padR = 12;
+      const padT = 24;
+      const padB = 30;
+      const chartW = svgW - padL - padR;
+      const chartH = svgH - padT - padB;
+
+      const maxVal = Math.max(6, ...dataPoints.map(d => d.rounds));
+      const slotW = chartW / 7;
+      const barW = 26;
+
+      // Guías horizontales (0, mitad, máximo)
+      const midVal = Math.round(maxVal / 2);
+      const yMax = padT;
+      const yMid = padT + chartH - (chartH * (midVal / maxVal));
+      const yZero = padT + chartH;
+
+      let gridSVG = `
+        <line x1="${padL}" y1="${yMax}" x2="${svgW - padR}" y2="${yMax}" stroke="#E5E5E5" stroke-width="1" />
+        <text x="${padL - 5}" y="${yMax + 4}" font-size="10" font-weight="700" text-anchor="end" fill="#666666">${maxVal}</text>
+
+        <line x1="${padL}" y1="${yMid}" x2="${svgW - padR}" y2="${yMid}" stroke="#E5E5E5" stroke-width="1" />
+        <text x="${padL - 5}" y="${yMid + 4}" font-size="10" font-weight="700" text-anchor="end" fill="#666666">${midVal}</text>
+
+        <line x1="${padL}" y1="${yZero}" x2="${svgW - padR}" y2="${yZero}" stroke="#000000" stroke-width="2" />
+        <text x="${padL - 5}" y="${yZero + 4}" font-size="10" font-weight="700" text-anchor="end" fill="#000000">0</text>
+      `;
+
+      // Barras
+      let barsSVG = dataPoints.map((pt, idx) => {
+        const cx = padL + slotW * idx + slotW / 2;
+        const x = cx - barW / 2;
+        const barH = pt.hasData ? Math.max(4, (pt.rounds / maxVal) * chartH) : 0;
+        const y = yZero - barH;
+
+        return `
+          <g>
+            ${pt.hasData ? `
+              <rect x="${x}" y="${y}" width="${barW}" height="${barH}" fill="#000000" />
+              <text x="${cx}" y="${y - 6}" font-size="12" font-weight="700" text-anchor="middle" fill="#000000">${pt.rounds}</text>
+            ` : `
+              <line x1="${x + 4}" y1="${yZero - 1}" x2="${x + barW - 4}" y2="${yZero - 1}" stroke="#CCCCCC" stroke-width="2" />
+            `}
+            <text x="${cx}" y="${yZero + 18}" font-size="11" font-weight="700" text-anchor="middle" fill="#000000">${pt.label}</text>
+          </g>
+        `;
+      }).join('');
+
+      // Línea punteada del promedio semanal
+      let avgLineSVG = '';
+      if (avgRounds > 0) {
+        const yAvg = yZero - (avgRounds / maxVal) * chartH;
+        avgLineSVG = `
+          <line x1="${padL}" y1="${yAvg}" x2="${svgW - padR}" y2="${yAvg}" stroke="#000000" stroke-width="1.5" stroke-dasharray="4 3" />
+          <rect x="${svgW - padR - 54}" y="${Math.max(2, yAvg - 14)}" width="54" height="13" fill="#FFFFFF" />
+          <text x="${svgW - padR - 2}" y="${Math.max(11, yAvg - 4)}" font-size="9" font-weight="700" text-anchor="end" fill="#000000">Prom: ${avgRounds.toFixed(1)}</text>
+        `;
+      }
+
+      container.innerHTML = `
+        <svg viewBox="0 0 ${svgW} ${svgH}" class="w-full h-auto block" role="img" aria-label="Gráfico semanal de vueltas">
+          ${gridSVG}
+          ${barsSVG}
+          ${avgLineSVG}
+        </svg>
+      `;
+    }
+
+    function renderMobileHistoryList() {
+      const container = document.getElementById('history-list-mobile');
+      const sorted = [...sessions].sort((a, b) => b.date.localeCompare(a.date)).slice(0, 8);
+      document.getElementById('history-count-label').textContent = `${sessions.length} total`;
+
+      if (sorted.length === 0) {
+        container.innerHTML = `
+          <div class="py-5 text-center text-xs text-neutral-600 uppercase font-semibold">
+            Aún no hay sesiones registradas.
+          </div>
+        `;
+        return;
+      }
+
+      container.innerHTML = sorted.map(s => `
+        <div class="py-3 flex items-center justify-between gap-2">
+          <div>
+            <div class="text-sm font-bold tabular-nums">${formatDisplayDate(s.date)} • ${s.rounds} vueltas</div>
+            <div class="text-xs text-neutral-600 mt-0.5">Esfuerzo: ${s.effort}${s.notes ? ` • ${s.notes}` : ''}</div>
+          </div>
+          <button onclick="openSessionModal('${s.date}')" class="min-h-[40px] px-3 border border-pureblack text-xs font-bold uppercase btn-press shrink-0">
+            Editar
+          </button>
+        </div>
+      `).join('');
+    }
+
+    // =========================================================================
+    // MODAL DE EDICIÓN / REGISTRO MANUAL Y EXPORTACIÓN JSON
+    // =========================================================================
+    function openSessionModal(prefillDate) {
+      const modal = document.getElementById('session-modal');
+      const dateInput = document.getElementById('modal-date');
+      const roundsInput = document.getElementById('modal-rounds');
+      const effortInput = document.getElementById('modal-effort');
+      const notesInput = document.getElementById('modal-notes');
+      const deleteWrap = document.getElementById('modal-delete-wrapper');
+      const deleteBtn = document.getElementById('modal-delete-btn');
+
+      const targetDate = prefillDate || getTodayISO();
+      const existing = sessions.find(s => s.date === targetDate);
+
+      dateInput.value = targetDate;
+
+      if (existing) {
+        document.getElementById('session-modal-title').textContent = `Editar Día (${formatDisplayDate(targetDate)})`;
+        roundsInput.value = existing.rounds;
+        effortInput.value = existing.effort || 'Bien';
+        notesInput.value = existing.notes || '';
+        deleteWrap.classList.remove('hidden');
+        deleteBtn.onclick = () => {
+          closeSessionModal();
+          confirmDeleteSession(targetDate);
+        };
+      } else {
+        document.getElementById('session-modal-title').textContent = `Anotar Día (${formatDisplayDate(targetDate)})`;
+        roundsInput.value = currentRounds > 0 ? currentRounds : 3;
+        effortInput.value = 'Bien';
+        notesInput.value = '';
+        deleteWrap.classList.add('hidden');
+      }
+
+      modal.classList.remove('hidden');
+      modal.classList.add('flex');
+    }
+
+    function closeSessionModal() {
+      const modal = document.getElementById('session-modal');
+      modal.classList.add('hidden');
+      modal.classList.remove('flex');
+    }
+
+    function adjustModalRounds(delta) {
+      const input = document.getElementById('modal-rounds');
+      const val = Math.max(0, (parseInt(input.value, 10) || 0) + delta);
+      input.value = val;
+    }
+
+    document.getElementById('manual-session-form').addEventListener('submit', (e) => {
+      e.preventDefault();
+      const date = document.getElementById('modal-date').value;
+      const rounds = Math.max(0, parseInt(document.getElementById('modal-rounds').value, 10) || 0);
+      const effort = document.getElementById('modal-effort').value;
+      const notes = document.getElementById('modal-notes').value.trim();
+
+      if (!date) return;
+
+      const idx = sessions.findIndex(s => s.date === date);
+      const record = { date, rounds, effort, notes };
+
+      if (idx >= 0) {
+        sessions[idx] = record;
+      } else {
+        sessions.push(record);
+      }
+
+      saveSessions();
+      closeSessionModal();
+      refreshProgressView();
+      showToast(`Guardado: ${formatDisplayDate(date)}`);
+    });
+
+    function confirmDeleteSession(date) {
+      openConfirmModal(
+        'Eliminar Día',
+        `¿Borrar el registro del ${formatDisplayDate(date)}?`,
+        () => {
+          sessions = sessions.filter(s => s.date !== date);
+          saveSessions();
+          refreshProgressView();
+          showToast('Registro eliminado');
+        }
+      );
+    }
+
+    function exportProgressJSON() {
+      const blob = new Blob([JSON.stringify(sessions, null, 2)], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `progreso-amrap-${getTodayISO()}.json`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+      showToast('Respaldo JSON descargado');
+    }
+
+    function importProgressJSON(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        try {
+          const imported = JSON.parse(e.target.result);
+          if (!Array.isArray(imported)) throw new Error('Inválido');
+          sessions = imported
+            .filter(item => item && typeof item.date === 'string')
+            .map(item => ({
+              date: item.date,
+              rounds: Number(item.rounds) || 0,
+              effort: item.effort || item.quality || 'Bien',
+              notes: item.notes || ''
+            }));
+          saveSessions();
+          refreshProgressView();
+          showToast(`Importadas ${sessions.length} sesiones`);
+        } catch (err) {
+          showToast('Archivo JSON inválido');
+        }
+        event.target.value = '';
+      };
+      reader.readAsText(file);
+    }
+
+    // =========================================================================
+    // UTILIDADES DE NOTIFICACIÓN Y MODAL DE CONFIRMACIÓN
+    // =========================================================================
+    let toastTimeout = null;
+    function showToast(msg) {
+      const banner = document.getElementById('toast-banner');
+      document.getElementById('toast-message').textContent = msg;
+      banner.classList.remove('hidden');
+      if (toastTimeout) clearTimeout(toastTimeout);
+      toastTimeout = setTimeout(hideToast, 3200);
+    }
+
+    function hideToast() {
+      document.getElementById('toast-banner').classList.add('hidden');
+    }
+
+    function openConfirmModal(title, text, onConfirm) {
+      const modal = document.getElementById('confirm-modal');
+      document.getElementById('confirm-title').textContent = title;
+      document.getElementById('confirm-text').textContent = text;
+
+      const acceptBtn = document.getElementById('confirm-accept-btn');
+      const newBtn = acceptBtn.cloneNode(true);
+      acceptBtn.parentNode.replaceChild(newBtn, acceptBtn);
+
+      newBtn.addEventListener('click', () => {
+        closeConfirmModal();
+        onConfirm();
+      });
+
+      modal.classList.remove('hidden');
+      modal.classList.add('flex');
+    }
+
+    function closeConfirmModal() {
+      const modal = document.getElementById('confirm-modal');
+      modal.classList.add('hidden');
+      modal.classList.remove('flex');
+    }
+  </script>
+</body>
+</html>
