@@ -565,10 +565,10 @@
         shortName: 'Giros Rusos',
         name: 'Giros Rusos con Pelota',
         reps: '12 giros (6 por lado)',
-        rhythm: 'Giro horizontal • Abdomen firme',
+        rhythm: 'Giro controlado • Abdomen firme',
         equipment: '1 pelota de fútbol',
-        animHeader: 'GIROS RUSOS HORIZONTALES • CON PELOTA',
-        animFooter: 'Pies apoyados en el suelo • Pelota al frente sin cruzar piernas',
+        animHeader: 'PASO 1 Y PASO 2 • GIROS RUSOS CON PELOTA',
+        animFooter: 'Izquierda: Paso 1 (lado delantero) • Derecha: Paso 2 (lado trasero)',
         steps: [
           'Siéntate en el suelo con las rodillas flexionadas, talones apoyados y el torso levemente inclinado hacia atrás.',
           'Sostén la pelota con ambas manos frente al pecho manteniendo la espalda recta y el abdomen firme.',
@@ -800,19 +800,17 @@
     // CRONÓMETRO AMRAP 20 MINUTOS + SONIDO SUAVE WEB AUDIO + VIBRACIÓN
     // =========================================================================
     function playSoftFinishAlert() {
-      // Vibración suave si el celular lo soporta
       if ('vibrate' in navigator) {
         try {
           navigator.vibrate([250, 120, 250, 120, 400]);
         } catch (e) {}
       }
 
-      // Acorde suave con Web Audio API
       try {
         const AudioCtx = window.AudioContext || window.webkitAudioContext;
         if (!AudioCtx) return;
         const ctx = new AudioCtx();
-        const freqs = [440, 554.37, 659.25]; // La mayor suave
+        const freqs = [440, 554.37, 659.25];
         freqs.forEach((f, i) => {
           const osc = ctx.createOscillator();
           const gain = ctx.createGain();
@@ -871,7 +869,6 @@
       isTimerRunning = true;
       updateTimerUI();
 
-      // Activar Wake Lock automáticamente al iniciar si es compatible
       if (!wakeLockSentinel && 'wakeLock' in navigator) {
         requestWakeLock(true);
       }
@@ -898,7 +895,6 @@
       updateTimerUI();
     }
 
-    // Doble toque rápido en "Reiniciar" para evitar borrados accidentales
     function handleResetTimerTap() {
       if (timerSecondsLeft === TOTAL_SECONDS && !isTimerRunning) {
         showToast('El reloj ya está en 20:00');
@@ -961,7 +957,6 @@
       const container = document.getElementById('quick-circuit-list');
       const allDone = EXERCISES.every(ex => checklistState[ex.id]);
 
-      // Resaltar botón "1 Vuelta Completa" si completó las 6 estaciones
       const addRoundBtn = document.getElementById('btn-add-round');
       if (allDone) {
         addRoundBtn.classList.add('ring-4', 'ring-black/25');
@@ -1099,7 +1094,7 @@
 
           <!-- Lienzo SVG Articulado (11 partes conectadas por cinemática directa) -->
           <div class="p-3 bg-purewhite border-b border-lightborder">
-            <svg id="skel-svg-${ex.id}" viewBox="0 0 340 185" class="w-full h-auto bg-purewhite block" role="img" aria-label="Animación articulada de ${ex.name}"></svg>
+            <svg id="skel-svg-${ex.id}" viewBox="0 0 340 185" class="w-full h-auto bg-purewhite block" role="img" aria-label="Guía visual de ${ex.name}"></svg>
           </div>
 
           <!-- 3 Pasos cortos en letra grande y legible (16px+) -->
@@ -1129,6 +1124,9 @@
           </div>
         </article>
       `).join('');
+
+      // Dibujar estáticos de inmediato al cambiar filtro
+      drawStaticExerciseSVGs();
     }
 
     // =========================================================================
@@ -1167,65 +1165,51 @@
       const joint = (p, color, r = 2.1) =>
         `<circle cx="${p.x.toFixed(1)}" cy="${p.y.toFixed(1)}" r="${r}" fill="${color}" />`;
 
-      // Pie opcional unido al tobillo para apoyo firme en el suelo
       const foot = (ankle, footTip, color) =>
         footTip ? seg(ankle, footTip, color, 3) : '';
 
       return `
         ${extrasBottom}
         <!-- LADO DERECHO (EN SEGUNDO PLANO, GRIS #777777) -->
-        <!-- 10. Pierna derecha: muslo -->
         ${seg(sk.hipR, sk.kneeR, RIGHT_COLOR, 3.2)}
-        <!-- 11. Pierna derecha: pantorrilla/pie -->
         ${seg(sk.kneeR, sk.ankleR, RIGHT_COLOR, 3.2)}
         ${foot(sk.ankleR, sk.footR, RIGHT_COLOR)}
         ${joint(sk.kneeR, RIGHT_COLOR, 2)}
 
-        <!-- 6. Brazo derecho: parte superior -->
         ${seg(sk.shoulderR, sk.elbowR, RIGHT_COLOR, 3)}
-        <!-- 7. Brazo derecho: antebrazo -->
         ${seg(sk.elbowR, sk.handR, RIGHT_COLOR, 3)}
         ${joint(sk.elbowR, RIGHT_COLOR, 1.9)}
 
         <!-- EJE CENTRAL: TORSO INFERIOR, TORSO SUPERIOR Y CABEZA -->
-        <!-- 3. Torso inferior (cadera a cintura) -->
         ${seg(sk.pelvis, sk.waist, LEFT_COLOR, 3.8)}
-        <!-- 2. Torso superior (cintura a cuello) -->
         ${seg(sk.waist, sk.neck, LEFT_COLOR, 3.8)}
         ${joint(sk.waist, LEFT_COLOR, 2.2)}
-        <!-- 1. Cabeza sola unida al cuello -->
         ${seg(sk.neck, sk.headCenter, LEFT_COLOR, 2.6)}
         <circle cx="${sk.headCenter.x.toFixed(1)}" cy="${sk.headCenter.y.toFixed(1)}" r="${sk.headR || 9.5}" fill="#FFFFFF" stroke="${LEFT_COLOR}" stroke-width="2.5" />
 
         <!-- LADO IZQUIERDO (EN PRIMER PLANO, NEGRO #000000) -->
-        <!-- 8. Pierna izquierda: muslo -->
         ${seg(sk.hipL, sk.kneeL, LEFT_COLOR, 3.4)}
-        <!-- 9. Pierna izquierda: pantorrilla/pie -->
         ${seg(sk.kneeL, sk.ankleL, LEFT_COLOR, 3.4)}
         ${foot(sk.ankleL, sk.footL, LEFT_COLOR)}
         ${joint(sk.kneeL, LEFT_COLOR, 2.1)}
 
-        <!-- 4. Brazo izquierdo: parte superior -->
         ${seg(sk.shoulderL, sk.elbowL, LEFT_COLOR, 3.2)}
-        <!-- 5. Brazo izquierdo: antebrazo -->
         ${seg(sk.elbowL, sk.handL, LEFT_COLOR, 3.2)}
         ${joint(sk.elbowL, LEFT_COLOR, 2)}
         ${extrasTop}
       `;
     }
 
-    // 1. SENTADILLA CON PESO CORPORAL (FK desde pies fijos en el suelo hacia arriba)
+    // 1. SENTADILLA CON PESO CORPORAL
     function buildSquatFrame(tSec) {
       const p = smoothWave(tSec, 2.8);
       const floorY = 148;
 
-      // Base de apoyo unida y alineada en el suelo con talones firmes
       const ankleL = { x: 165, y: floorY };
       const footL = { x: 180, y: floorY };
       const ankleR = { x: 167, y: floorY - 1 };
       const footR = { x: 182, y: floorY - 1 };
 
-      // Pantorrillas y muslos unidos en la rodilla y sincronizados entre sí
       const shinLen = 36;
       const thighLen = 38;
       const shinAngle = lerp(-92, -62, p);
@@ -1238,14 +1222,12 @@
       const hipR = polarPoint(kneeR, thighLen, thighAngle);
       const pelvis = { x: (hipL.x + hipR.x) / 2, y: (hipL.y + hipR.y) / 2 };
 
-      // Torso inferior y torso superior inclinándose de forma natural y conectada
       const lowerTorsoAngle = lerp(-90, -64, p);
       const upperTorsoAngle = lerp(-90, -62, p);
       const waist = polarPoint(pelvis, 20, lowerTorsoAngle);
       const neck = polarPoint(waist, 22, upperTorsoAngle);
       const headCenter = polarPoint(neck, 12.5, upperTorsoAngle);
 
-      // Hombros y brazos alineados al frente sin despegarse
       const shoulderL = { x: neck.x, y: neck.y + 3 };
       const shoulderR = { x: neck.x + 2, y: neck.y + 2 };
 
@@ -1268,18 +1250,16 @@
       }, '', floorLine);
     }
 
-    // 2. FLEXIONES DE BRAZOS (FK desde punteras de pies fijos + codos flexionándose sin tocar el suelo)
+    // 2. FLEXIONES DE BRAZOS
     function buildPushupFrame(tSec) {
       const p = smoothWave(tSec, 2.6);
       const floorY = 144;
 
-      // Pies fijos apoyados en el piso
       const footL = { x: 82, y: floorY };
       const ankleL = { x: 82, y: floorY - 5 };
       const footR = { x: 88, y: floorY - 2 };
       const ankleR = { x: 88, y: floorY - 7 };
 
-      // Cuerpo en plancha recta: ángulo respecto al piso baja de -24° (arriba) a -8° (pecho cerca del suelo)
       const plankAngle = lerp(-24, -8.5, p);
 
       const kneeL = polarPoint(ankleL, 38, plankAngle);
@@ -1293,7 +1273,6 @@
       const neck = polarPoint(waist, 23, plankAngle);
       const headCenter = polarPoint(neck, 13, plankAngle);
 
-      // Hombros y brazos hacia las manos fijas en el suelo
       const shoulderL = { x: neck.x - 3, y: neck.y + 3 };
       const shoulderR = { x: neck.x + 2, y: neck.y + 1 };
 
@@ -1333,75 +1312,120 @@
       return bendUp ? (opt1.y < opt2.y ? opt1 : opt2) : (opt1.y > opt2.y ? opt1 : opt2);
     }
 
-    // 3. GIROS RUSOS CON PELOTA (Giro horizontal claro, piernas apoyadas en el suelo, brazo derecho bien formado y pelota al frente sin quedar atrás)
-    function buildRussianTwistFrame(tSec) {
-      const cycle = 3.4;
-      const h = Math.sin((2 * Math.PI * tSec) / cycle); // -1 a +1 horizontal
+    // 3. GIROS RUSOS CON PELOTA — ESTÁTICO CON 2 HOMBRES PALITOS (PASO 1 Y PASO 2)
+    function buildRussianTwistFrame() {
       const floorY = 148;
+      const LEFT_COLOR = '#000000';
+      const RIGHT_COLOR = '#777777';
 
-      // Apoyo firme de los pies y talones en el suelo
-      const ankleL = { x: 256, y: floorY };
-      const footL = { x: 274, y: floorY };
-      const ankleR = { x: 262, y: floorY - 1 };
-      const footR = { x: 280, y: floorY - 1 };
+      const seg = (p1, p2, color, width = 2.8) =>
+        `<line x1="${p1.x.toFixed(1)}" y1="${p1.y.toFixed(1)}" x2="${p2.x.toFixed(1)}" y2="${p2.y.toFixed(1)}" stroke="${color}" stroke-width="${width}" stroke-linecap="round" />`;
+      const joint = (p, color, r = 1.8) =>
+        `<circle cx="${p.x.toFixed(1)}" cy="${p.y.toFixed(1)}" r="${r}" fill="${color}" />`;
 
-      // Rodillas flexionadas y muslos conectados hasta la pelvis en el suelo
-      const kneeL = { x: 214, y: floorY - 36 };
-      const kneeR = { x: 220, y: floorY - 35 };
+      // Dibuja un hombre palito sentado en giro ruso en la posición X dada
+      // mode = 'front' (Paso 1: pelota adelante) | 'back' (Paso 2: pelota atrás del torso)
+      const renderStickPerson = (ox, mode) => {
+        const pelvis = { x: ox, y: floorY - 5 };
+        const hipL = { x: ox, y: floorY - 5 };
+        const hipR = { x: ox + 2.5, y: floorY - 5 };
 
-      const pelvis = { x: 158, y: floorY - 4 };
-      const hipL = { x: 156, y: floorY - 4 };
-      const hipR = { x: 162, y: floorY - 5 };
+        const waist = { x: ox - 18, y: floorY - 23 };
+        const neck = { x: ox - 36, y: floorY - 41 };
+        const headCenter = { x: ox - 45, y: floorY - 51 };
 
-      // Torso inclinado hacia atrás y girando en horizontal
-      const waist = { x: 132, y: floorY - 26 };
-      const neck = { x: 108, y: floorY - 48 };
-      const headCenter = { x: 96, y: floorY - 62 };
+        const kneeL = { x: ox + 42, y: floorY - 33 };
+        const kneeR = { x: ox + 44, y: floorY - 31.5 };
 
-      // Hombros izquierdo (negro) y derecho (gris)
-      const shoulderL = { x: neck.x - 1, y: neck.y + 3 };
-      const shoulderR = { x: neck.x + 6, y: neck.y + 3 };
+        const ankleL = { x: ox + 80, y: floorY - 4 };
+        const footL = { x: ox + 93, y: floorY - 4 };
+        const ankleR = { x: ox + 77, y: floorY - 5.5 };
+        const footR = { x: ox + 90, y: floorY - 5.5 };
 
-      // Pelota desplazándose horizontalmente frente al torso/cadera, siempre delante de la línea de piernas y sin quedar oculta atrás
-      const ballX = 142 + h * 20;
-      const ballY = floorY - 22;
+        const shoulderL = { x: neck.x - 1, y: neck.y + 2.5 };
+        const shoulderR = { x: neck.x + 3, y: neck.y + 2.5 };
 
-      const handL = { x: ballX - 4, y: ballY + 1 };
-      const handR = { x: ballX + 3, y: ballY - 2 };
+        const isFront = mode === 'front';
+        const ballX = isFront ? (ox - 10) : (ox - 24);
+        const ballY = isFront ? (floorY - 17) : (floorY - 22);
 
-      // Brazo izquierdo (negro) y brazo derecho (gris) flexionados con forma clara hacia la pelota
-      const elbowL = solveTwoBoneIK(shoulderL, handL, 18, 18, false);
-      const elbowR = {
-        x: shoulderR.x + 14 + h * 6,
-        y: shoulderR.y + 14
+        const handL = { x: ballX - 5.5, y: ballY + 1 };
+        const handR = { x: ballX + 5.5, y: ballY - 1 };
+
+        const elbowL = isFront
+          ? { x: shoulderL.x - 6, y: shoulderL.y + 15 }
+          : { x: shoulderL.x - 12, y: shoulderL.y + 11 };
+        const elbowR = isFront
+          ? { x: shoulderR.x + 8, y: shoulderR.y + 13 }
+          : { x: shoulderR.x + 2, y: shoulderR.y + 14 };
+
+        const ballSVG = `
+          <g>
+            <circle cx="${ballX.toFixed(1)}" cy="${ballY.toFixed(1)}" r="6.8" fill="#FFFFFF" stroke="#000000" stroke-width="2.1" />
+            <circle cx="${ballX.toFixed(1)}" cy="${ballY.toFixed(1)}" r="2.2" fill="#000000" />
+          </g>
+        `;
+
+        const legsAndBody = `
+          <!-- Pierna derecha (atrás, gris) -->
+          ${seg(hipR, kneeR, RIGHT_COLOR, 2.7)}
+          ${seg(kneeR, ankleR, RIGHT_COLOR, 2.7)}
+          ${seg(ankleR, footR, RIGHT_COLOR, 2.5)}
+          ${joint(kneeR, RIGHT_COLOR, 1.7)}
+
+          <!-- Torso y cabeza -->
+          ${seg(pelvis, waist, LEFT_COLOR, 3.2)}
+          ${seg(waist, neck, LEFT_COLOR, 3.2)}
+          ${joint(waist, LEFT_COLOR, 1.8)}
+          ${seg(neck, headCenter, LEFT_COLOR, 2.2)}
+          <circle cx="${headCenter.x.toFixed(1)}" cy="${headCenter.y.toFixed(1)}" r="7.5" fill="#FFFFFF" stroke="${LEFT_COLOR}" stroke-width="2.1" />
+
+          <!-- Pierna izquierda (adelante, negro) -->
+          ${seg(hipL, kneeL, LEFT_COLOR, 2.9)}
+          ${seg(kneeL, ankleL, LEFT_COLOR, 2.9)}
+          ${seg(ankleL, footL, LEFT_COLOR, 2.5)}
+          ${joint(kneeL, LEFT_COLOR, 1.8)}
+        `;
+
+        const armsSVG = `
+          <!-- Brazo derecho (gris) -->
+          ${seg(shoulderR, elbowR, RIGHT_COLOR, 2.6)}
+          ${seg(elbowR, handR, RIGHT_COLOR, 2.6)}
+          ${joint(elbowR, RIGHT_COLOR, 1.6)}
+
+          <!-- Brazo izquierdo (negro) -->
+          ${seg(shoulderL, elbowL, LEFT_COLOR, 2.8)}
+          ${seg(elbowL, handL, LEFT_COLOR, 2.8)}
+          ${joint(elbowL, LEFT_COLOR, 1.7)}
+        `;
+
+        const badgeX = ox + 12;
+        const stepLabel = isFront ? 'PASO 1' : 'PASO 2';
+
+        return `
+          <rect x="${(badgeX - 24).toFixed(1)}" y="24" width="48" height="14" fill="#000000" />
+          <text x="${badgeX.toFixed(1)}" y="34" font-size="8.5" font-weight="700" text-anchor="middle" fill="#FFFFFF">${stepLabel}</text>
+          ${isFront ? `${legsAndBody}${armsSVG}${ballSVG}` : `${ballSVG}${legsAndBody}${armsSVG}`}
+        `;
       };
 
-      const ballAndGuides = `
-        <g>
-          <line x1="118" y1="${ballY.toFixed(1)}" x2="166" y2="${ballY.toFixed(1)}" stroke="#D4D4D4" stroke-width="1.6" stroke-dasharray="4 3" />
-          <circle cx="${ballX.toFixed(1)}" cy="${ballY.toFixed(1)}" r="8.5" fill="#FFFFFF" stroke="#000000" stroke-width="2.4" />
-          <circle cx="${ballX.toFixed(1)}" cy="${ballY.toFixed(1)}" r="3" fill="#000000" />
-        </g>
+      const floorLine = `<line x1="14" y1="${floorY}" x2="326" y2="${floorY}" stroke="#000000" stroke-width="2" />`;
+      const divider = `<line x1="170" y1="22" x2="170" y2="${floorY - 2}" stroke="#D4D4D4" stroke-width="1.2" stroke-dasharray="3 3" />`;
+
+      return `
+        ${floorLine}
+        ${divider}
+        ${renderStickPerson(72, 'front')}
+        ${renderStickPerson(236, 'back')}
       `;
-
-      const floorLine = `<line x1="16" y1="${floorY}" x2="324" y2="${floorY}" stroke="#000000" stroke-width="2" />`;
-
-      return renderArticulatedFigure({
-        pelvis, waist, neck, headCenter, headR: 9.5,
-        hipL, kneeL, ankleL, footL,
-        hipR, kneeR, ankleR, footR,
-        shoulderL, elbowL, handL,
-        shoulderR, elbowR, handR
-      }, ballAndGuides, floorLine);
     }
 
-    // 4. PRESS DE HOMBROS CON 2 MANCUERNAS DE 1 KG (Vista de frente idéntica a la referencia)
+    // 4. PRESS DE HOMBROS CON 2 MANCUERNAS DE 1 KG
     function buildShoulderPressFrame(tSec) {
       const p = smoothWave(tSec, 2.4);
       const floorY = 152;
       const centerX = 170;
 
-      // Piernas en V invertida saliendo desde el punto central de la pelvis
       const pelvis = { x: centerX, y: 100 };
       const hipL = { x: centerX, y: 100 };
       const hipR = { x: centerX, y: 100 };
@@ -1416,27 +1440,21 @@
       const ankleR = polarPoint(kneeR, 27, thighAngleR);
       const footR = { x: ankleR.x + 8, y: floorY };
 
-      // Torso vertical y cabeza centrada
       const waist = { x: centerX, y: 82 };
       const neck = { x: centerX, y: 60 };
       const headCenter = { x: centerX, y: 46 };
 
-      // Ambos brazos nacen en el punto central superior del torso
       const shoulderL = { x: centerX, y: 65 };
       const shoulderR = { x: centerX, y: 65 };
 
-      // Brazo izquierdo (negro): sube directo por el lado izquierdo (150° -> 228°, equivalente a -132°)
-      // Antebrazo siempre vertical (-90°) sosteniendo la mancuerna horizontal
       const upperAngleL = lerp(150, 228, p);
       const elbowL = polarPoint(shoulderL, 21, upperAngleL);
       const handL = polarPoint(elbowL, 19, -90);
 
-      // Brazo derecho (gris): espejo exacto por el lado derecho (30° -> -48°) con antebrazo vertical (-90°)
       const upperAngleR = lerp(30, -48, p);
       const elbowR = polarPoint(shoulderR, 21, upperAngleR);
       const handR = polarPoint(elbowR, 19, -90);
 
-      // Mancuernas horizontales rectangulares sobre cada mano
       const dumbbells = `
         <g>
           <rect x="${(handL.x - 9).toFixed(1)}" y="${(handL.y - 4.5).toFixed(1)}" width="18" height="4.8" fill="#000000" />
@@ -1455,13 +1473,13 @@
       }, dumbbells, floorLine);
     }
 
-    // 5. PERRO PÁJARO (Cuadrupedia alternando Brazo Izquierdo + Pierna Derecha y viceversa)
+    // 5. PERRO PÁJARO
     function buildBirdDogFrame(tSec) {
       const cycle = 4.6;
-      const phase = (tSec % cycle) / cycle; // 0..0.5 lado A (Brazo Izq + Pierna Der), 0.5..1 lado B (Brazo Der + Pierna Izq)
+      const phase = (tSec % cycle) / cycle;
 
-      let extA = 0; // Brazo izquierdo (negro) + Pierna derecha (gris)
-      let extB = 0; // Brazo derecho (gris) + Pierna izquierda (negro)
+      let extA = 0;
+      let extB = 0;
 
       if (phase < 0.5) {
         const localT = phase / 0.5;
@@ -1473,36 +1491,30 @@
 
       const floorY = 144;
 
-      // Tronco horizontal estable en cuadrupedia
       const pelvis = { x: 136, y: 92 };
       const waist = { x: 168, y: 92 };
       const neck = { x: 200, y: 92 };
       const headCenter = { x: 213, y: 86 };
 
-      // Hombros y caderas
       const shoulderL = { x: 198, y: 93 };
       const shoulderR = { x: 203, y: 91 };
       const hipL = { x: 135, y: 93 };
       const hipR = { x: 140, y: 91 };
 
-      // BRAZO IZQUIERDO (negro): 90° (vertical al piso) -> 0° (recto horizontal adelante)
       const armAngleL = lerp(90, 0, extA);
       const elbowL = polarPoint(shoulderL, 25, armAngleL);
       const handL = polarPoint(elbowL, 26, armAngleL);
 
-      // BRAZO DERECHO (gris): 90° (vertical al piso) -> 0° (recto horizontal adelante)
       const armAngleR = lerp(90, 0, extB);
       const elbowR = polarPoint(shoulderR, 26, armAngleR);
       const handR = polarPoint(elbowR, 27, armAngleR);
 
-      // PIERNA IZQUIERDA (negro): apoyada (muslo 90° al piso, pantorrilla 180° atrás) -> extendida recta (180°)
       const thighAngleL = lerp(90, 180, extB);
       const shinAngleL = lerp(180, 180, extB);
       const kneeL = polarPoint(hipL, 51, thighAngleL);
       const ankleL = polarPoint(kneeL, 28, shinAngleL);
       const footL = { x: ankleL.x, y: ankleL.y - 4 };
 
-      // PIERNA DERECHA (gris): apoyada -> extendida recta atrás (180°)
       const thighAngleR = lerp(90, 180, extA);
       const shinAngleR = lerp(180, 180, extA);
       const kneeR = polarPoint(hipR, 53, thighAngleR);
@@ -1520,12 +1532,11 @@
       }, '', floorLine);
     }
 
-    // 6. CONDUCCIÓN EN ZIGZAG / 8 FLUIDO (2 conos a 1,5 m, 1 pelota rodando en el suelo sin picar ni pasar encima de conos)
+    // 6. CONDUCCIÓN EN ZIGZAG / 8 FLUIDO
     function buildZigzagFrame(tSec) {
       const cycle = 5.2;
       const tau = ((tSec % cycle) / cycle) * Math.PI * 2;
 
-      // Curva de Lissajous en forma de 8 fluido entre el Cono 1 (x=118) y el Cono 2 (x=222)
       const centerX = 170;
       const centerY = 114;
       const ampX = 88;
@@ -1534,21 +1545,17 @@
       const ballX = centerX + ampX * Math.sin(tau);
       const ballY = centerY + ampY * Math.sin(2 * tau);
 
-      // Derivada tangencial para orientación suave y giro natural al cambiar de dirección
       const vx = ampX * Math.cos(tau);
       const vy = 2 * ampY * Math.cos(2 * tau);
       const speed = Math.hypot(vx, vy) || 1;
       const tx = vx / speed;
       const ty = vy / speed;
-      // Normal lateral para ubicar al jugador conduciendo en el carril exterior de la curva
       const nx = -ty;
       const ny = tx;
 
-      // Posición del jugador desplazada suavemente detrás y al costado de la pelota
       const playerX = ballX - tx * 16 + nx * 7;
       const playerY = ballY - ty * 16 + ny * 7;
 
-      // Ciclo de zancada rítmica para piernas y brazos
       const stride = Math.sin(tSec * 12);
       const strideOpp = -stride;
       const facingSign = tx >= 0 ? 1 : -1;
@@ -1558,7 +1565,6 @@
       const neck = { x: playerX + facingSign * 3, y: playerY - 44 };
       const headCenter = { x: playerX + facingSign * 4, y: playerY - 52 };
 
-      // Pierna izquierda (negra) y derecha (gris)
       const hipL = { x: pelvis.x - 1, y: pelvis.y };
       const thighAngleL = 90 - facingSign * (stride * 24);
       const kneeL = polarPoint(hipL, 12, thighAngleL);
@@ -1573,7 +1579,6 @@
       const ankleR = polarPoint(kneeR, 12, shinAngleR);
       const footR = { x: ankleR.x + facingSign * 4, y: ankleR.y };
 
-      // Brazos izquierdo (negro) y derecho (gris) en braceo equilibrado
       const shoulderL = { x: neck.x - 1, y: neck.y + 2 };
       const armAngleL = 90 - facingSign * (strideOpp * 22);
       const elbowL = polarPoint(shoulderL, 9, armAngleL);
@@ -1584,7 +1589,6 @@
       const elbowR = polarPoint(shoulderR, 9, armAngleR);
       const handR = polarPoint(elbowR, 9, armAngleR - facingSign * 26);
 
-      // Trayectoria en forma de 8 construida con segmentos de línea rectos
       let pathD = '';
       const lineSegments = 24;
       for (let i = 0; i <= lineSegments; i++) {
@@ -1595,32 +1599,26 @@
       }
       pathD += ' Z';
 
-      // Los 2 conos sin etiquetas de texto
       const cone1X = 116;
       const cone2X = 224;
       const coneY = 114;
 
       const backgroundField = `
-        <!-- Cota de distancia 1,5 m entre los 2 conos -->
         <line x1="${cone1X}" y1="28" x2="${cone2X}" y2="28" stroke="#000000" stroke-width="1.4" />
         <line x1="${cone1X}" y1="23" x2="${cone1X}" y2="33" stroke="#000000" stroke-width="1.4" />
         <line x1="${cone2X}" y1="23" x2="${cone2X}" y2="33" stroke="#000000" stroke-width="1.4" />
         <rect x="148" y="20" width="44" height="14" fill="#FFFFFF" />
         <text x="170" y="31" font-size="9.5" font-weight="700" text-anchor="middle" fill="#000000">1,5 m</text>
 
-        <!-- Recorrido en forma de 8 formado por líneas -->
         <path d="${pathD}" fill="none" stroke="#B5B5B5" stroke-width="1.5" />
 
-        <!-- Cono 1 -->
         <polygon points="${cone1X},${coneY - 9} ${cone1X - 8},${coneY + 7} ${cone1X + 8},${coneY + 7}" fill="#000000" />
         <line x1="${cone1X - 10}" y1="${coneY + 7}" x2="${cone1X + 10}" y2="${coneY + 7}" stroke="#000000" stroke-width="1.8" />
 
-        <!-- Cono 2 -->
         <polygon points="${cone2X},${coneY - 9} ${cone2X - 8},${coneY + 7} ${cone2X + 8},${coneY + 7}" fill="#000000" />
         <line x1="${cone2X - 10}" y1="${coneY + 7}" x2="${cone2X + 10}" y2="${coneY + 7}" stroke="#000000" stroke-width="1.8" />
       `;
 
-      // Pelota como círculo simple rodando en el suelo sin picar
       const soccerBall = `
         <g>
           <ellipse cx="${ballX.toFixed(1)}" cy="${(ballY + 6.5).toFixed(1)}" rx="6.5" ry="2" fill="#E5E5E5" />
@@ -1635,6 +1633,25 @@
         shoulderL, elbowL, handL,
         shoulderR, elbowR, handR
       }, soccerBall, backgroundField);
+    }
+
+    function drawStaticExerciseSVGs() {
+      const staticBuilders = {
+        russian_twist: buildRussianTwistFrame
+      };
+
+      EXERCISES.forEach(ex => {
+        if (!staticBuilders[ex.id]) return;
+        const svgEl = document.getElementById(`skel-svg-${ex.id}`);
+        if (!svgEl) return;
+        const bodySVG = staticBuilders[ex.id]();
+        svgEl.innerHTML = `
+          <text x="170" y="14" font-size="9.5" font-weight="700" text-anchor="middle" fill="#000000">${ex.animHeader}</text>
+          ${bodySVG}
+          <text x="170" y="164" font-size="8.5" font-weight="700" text-anchor="middle" fill="#000000">${ex.animFooter}</text>
+          <text x="170" y="178" font-size="8" font-weight="700" text-anchor="middle" fill="#555555">Negro: Izquierda • Gris: Derecha</text>
+        `;
+      });
     }
 
     function updateAllSkeletonCanvases(timestampMs) {
@@ -1653,6 +1670,11 @@
         const svgEl = document.getElementById(`skel-svg-${ex.id}`);
         if (!svgEl) return;
 
+        // El ejercicio 3 (giros rusos) se muestra estático sin animación
+        if (ex.id === 'russian_twist' && svgEl.dataset.staticRendered === 'true') {
+          return;
+        }
+
         const bodySVG = builders[ex.id](tSec);
         svgEl.innerHTML = `
           <text x="170" y="14" font-size="9.5" font-weight="700" text-anchor="middle" fill="#000000">${ex.animHeader}</text>
@@ -1660,6 +1682,10 @@
           <text x="170" y="164" font-size="8.5" font-weight="700" text-anchor="middle" fill="#000000">${ex.animFooter}</text>
           <text x="170" y="178" font-size="8" font-weight="700" text-anchor="middle" fill="#555555">Negro: Izquierda • Gris: Derecha</text>
         `;
+
+        if (ex.id === 'russian_twist') {
+          svgEl.dataset.staticRendered = 'true';
+        }
       });
 
       fkAnimationFrameId = requestAnimationFrame(updateAllSkeletonCanvases);
@@ -1686,7 +1712,6 @@
         return { currentStreak: 0, bestStreak: 0 };
       }
 
-      // Obtener fechas únicas ordenadas ascendentemente
       const uniqueDates = Array.from(new Set(sessions.map(s => s.date))).sort();
 
       const parseISOToUTC = (isoStr) => {
@@ -1695,7 +1720,6 @@
       };
       const MS_PER_DAY = 24 * 60 * 60 * 1000;
 
-      // Calcular mejor racha histórica
       let bestStreak = 1;
       let runningStreak = 1;
 
@@ -1712,7 +1736,6 @@
         }
       }
 
-      // Calcular racha actual (vigente si el último entreno fue hoy o ayer)
       const todayISO = getTodayISO();
       const todayMs = parseISOToUTC(todayISO);
       const lastDateMs = parseISOToUTC(uniqueDates[uniqueDates.length - 1]);
@@ -1739,8 +1762,6 @@
     function buildMonthWeeks(year, monthIndex) {
       const firstDay = new Date(year, monthIndex, 1);
       const daysInMonth = new Date(year, monthIndex + 1, 0).getDate();
-
-      // Convertir getDay() (0=Dom..6=Sáb) a índice Lun=0..Dom=6
       const startWeekday = (firstDay.getDay() + 6) % 7;
 
       const weeks = [];
@@ -1784,7 +1805,6 @@
       const nextBtn = document.getElementById('btn-next-month');
       nextBtn.disabled = monthOffset >= 0;
 
-      // Récord histórico en 20 min y racha actual
       const bestRounds = sessions.reduce((max, s) => Math.max(max, Number(s.rounds) || 0), 0);
       const { currentStreak } = calculateStreaks();
 
@@ -1792,13 +1812,11 @@
         `${currentStreak} ${currentStreak === 1 ? 'día' : 'días'}`;
       document.getElementById('stat-best-rounds').textContent = bestRounds;
 
-      // Construir filas semanales del mes (estilo Duolingo adaptado a la web)
       const weeks = buildMonthWeeks(year, monthIndex);
       let trainedDaysCount = 0;
 
       const rowsContainer = document.getElementById('monthly-calendar-rows');
       rowsContainer.innerHTML = weeks.map(week => {
-        // Detectar segmentos contiguos de días entrenados dentro de la misma semana
         const segments = [];
         let segStart = null;
         for (let c = 0; c < 7; c++) {
@@ -1817,7 +1835,6 @@
           segments.push({ start: segStart, end: 6 });
         }
 
-        // Barras continuas de racha (estilo cápsula/barra brutalista negra detrás de los días seguidos)
         const streakBarsHTML = segments.map(seg => {
           const leftPct = (seg.start / 7) * 100;
           const widthPct = ((seg.end - seg.start + 1) / 7) * 100;
@@ -2001,7 +2018,7 @@
         try {
           const imported = JSON.parse(e.target.result);
           if (!Array.isArray(imported)) throw new Error('Inválido');
-            sessions = imported
+          sessions = imported
             .filter(item => item && typeof item.date === 'string')
             .map(item => ({
               date: item.date,
