@@ -1,1 +1,1 @@
-# Symmetrical
+# AMPAR
