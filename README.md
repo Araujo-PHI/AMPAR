@@ -1,6 +1,6 @@
 # AMRAP
 
-### **AMRAP** (*As Many Rounds As Possible* / *As Many Reps As Possible*) significa **"tantas rondas como sea posible"** o **"tantas repeticiones como sea posible"**.
+#### **AMRAP** (*As Many Rounds As Possible* / *As Many Reps As Possible*) significa **"tantas rondas como sea posible"** o **"tantas repeticiones como sea posible"**.
 
 Es una app web para entrenamientos AMRAP de 20 minutos con cronómetro regresivo, contador de vueltas, guía visual de ejercicios y seguimiento mensual de racha.
 
