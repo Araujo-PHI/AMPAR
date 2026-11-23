@@ -3,6 +3,8 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+  <link rel="manifest" href="./manifest.json" />
+  <meta name="theme-color" content="#000000" />
   <title>AMRAP</title>
   <!-- Fuente Arimo (400, 600, 700) -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -2076,6 +2078,25 @@
       modal.classList.add('hidden');
       modal.classList.remove('flex');
     }
+
+    if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('./sw.js').catch(() => {});
+  });
+  }
+
+  async function requestNotificationPermission() {
+    if (!('Notification' in window)) {
+      showToast('Este navegador no soporta notificaciones');
+      return;
+    }
+    const permission = await Notification.requestPermission();
+    if (permission === 'granted') {
+      showToast('Notificaciones activadas en este celular');
+    } else {
+      showToast('Permiso de notificaciones no concedido');
+    }
+  }
   </script>
 </body>
 </html>
