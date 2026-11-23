@@ -1547,6 +1547,3 @@ function closeConfirmModal() {
   modal.classList.add('hidden');
   modal.classList.remove('flex');
 }
-```[cite: 2]
-
-Si querés volver a juntar todo en un solo archivo después, solo tenés que poner el **CSS** dentro de `<style>`, el **Tailwind CSS** dentro de un `<script>` después de cargar Tailwind, y el **JS** en un `<script>` al final del `<body>`[cite: 2].
