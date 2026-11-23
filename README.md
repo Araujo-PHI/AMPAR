@@ -1,23 +1,63 @@
 # AMRAP
 
-###### **AMRAP** (*As Many Rounds As Possible* / *As Many Reps As Possible*) significa **"tantas rondas como sea posible"**
 
-Es una app web para entrenamientos AMRAP de 20 minutos con cronómetro regresivo, contador de vueltas, guía visual de ejercicios y seguimiento mensual de racha.
 
-## Funciones
-- **Cronómetro de 20:00:** cuenta regresiva, barra de progreso, aviso al terminar y opción de mantener la pantalla activa.
-- **Vueltas y estaciones:** contador de vueltas completadas y checklist interactivo de los 6 ejercicios del circuito.
-- **Guía de ejercicios:** diagrama visual, pasos clave, errores a evitar y adaptaciones para cada movimiento.
-- **Progreso y racha:** calendario mensual con racha de días entrenados, registro/edición manual de días y respaldo en JSON.
+**AMRAP** (*As Many Rounds As Possible* / *As Many Reps As Possible*) significa **"tantas rondas como sea posible"** o **"tantas repeticiones como sea posible"**.
+
+
+
+Es una aplicación web enfocada en el uso móvil para entrenamientos AMRAP de **20 minutos**, con cronómetro regresivo, contador de vueltas, checklist por ronda, guía visual de 6 ejercicios y seguimiento mensual de racha.
+
+
+
+## Funciones principales
+
+- **Cronómetro de 20:00:** cuenta regresiva con barra de progreso, aviso de finalización (sonido y vibración cuando el navegador lo permite) y opción para intentar mantener la pantalla activa (`Pantalla Activa`).
+
+- **Contador de vueltas y estaciones:** suma o resta vueltas completadas, muestra el avance de la ronda actual (`0/6` a `6/6` estaciones) y permite registrar la sensación de esfuerzo del día.
+
+- **Guía de los 6 ejercicios:** tarjetas con repeticiones, ritmo sugerido, equipamiento, pasos numerados, esquemas visuales SVG, errores comunes y adaptaciones.
+
+- **Progreso mensual y racha:** calendario por mes con visualización de racha diaria, cálculo de racha actual y récord de vueltas, carga/edición manual de días y respaldo en formato JSON.
+
+
+
+## Documentación por secciones
+
+Para no cargar demasiado este archivo principal, los detalles de cada parte están organizados en documentos aparte:
+
+- [Guía del circuito y los 6 ejercicios](EJERCICIOS.md)
+
+- [Progreso, racha y respaldo de datos](PROGRESO.md)
+
+- [Uso en el celular y estructura del proyecto](USO_Y_ESTRUCTURA.md)
+
+
 
 ## Cómo usarlo
-1. Descargá o cloná el repositorio.
-2. Abrí el archivo HTML en tu navegador (o entrá al enlace de GitHub Pages si está publicado).
+
+1. Descargá o cloná el repositorio en tu computadora o teléfono.
+
+2. Abrí el archivo HTML principal en tu navegador (o entrá al enlace de GitHub Pages si el repositorio está publicado).
+
+3. En el celular, podés agregar el acceso directo a la pantalla de inicio desde el menú del navegador para tenerlo a mano.
+
+
 
 ## Guardado de datos
-Las sesiones se guardan localmente en el navegador (`localStorage`). Podés usar **Exportar JSON** e **Importar JSON** en la sección de Progreso para guardar una copia o pasar tus datos a otro dispositivo.
 
-## Hecho con
-- HTML, CSS y JavaScript
-- Tailwind CSS
-- Fuente Arimo
+Las sesiones registradas se guardan de forma local en el navegador mediante `localStorage`. Desde la sección **Progreso** podés usar **Exportar JSON** para guardar una copia de seguridad e **Importar JSON** para restaurar o mover tus registros.
+
+
+
+## Tecnologías utilizadas
+
+- **HTML5**
+
+- **Tailwind CSS** (vía CDN y configuración personalizada)
+
+- **CSS3**
+
+- **JavaScript** (cronómetro, estado de la app, renderizado de vistas, gráficos SVG y `localStorage`)
+
+- **Fuente Arimo** (Google Fonts)
