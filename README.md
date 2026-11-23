@@ -1,4 +1,6 @@
 # AMRAP
+| [Ejercicios](EJERCICIOS.md) | [Progreso](PROGRESO.md) | [Uso y Estructura](USO_Y_ESTRUCTURA.md) |
+| :---: | :---: | :---: |
 
 
 
