@@ -1,0 +1,29 @@
+# Progreso, Racha y Respaldo de Datos
+
+
+
+La pestaña **Progreso** reúne el historial de entrenamientos y las métricas básicas de constancia.
+
+
+
+## Métricas y calendario
+
+- **Racha actual:** contabiliza días consecutivos entrenados tomando como referencia el día actual o el día anterior.
+
+- **Récord de vueltas:** muestra la mayor cantidad de vueltas registradas en una sola sesión.
+
+- **Calendario mensual:** permite navegar hacia meses anteriores (`Ant.`) y volver al mes actual (`Sig.`), destacando los días entrenados y las rachas continuas.
+
+- **Registro y edición:** al final de una sesión podés tocar **Guardar Sesión de Hoy**, o bien usar **Anotar Día** / tocar un día actual o pasado en el calendario para crear, editar o eliminar un registro. No se permiten registros en fechas futuras.
+
+
+
+## Respaldo en JSON
+
+Como los datos se almacenan en el `localStorage` del navegador:
+
+- Si limpiás los datos del navegador o cambiás de dispositivo, los registros guardados solo en el almacenamiento local no se transfieren solos.
+
+- **Exportar JSON:** descarga un archivo `progreso-amrap-AAAA-MM-DD.json` con tus sesiones guardadas.
+
+- **Importar JSON:** permite cargar un archivo JSON exportado previamente para restaurar el historial.
