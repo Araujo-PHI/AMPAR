@@ -1,3 +1,44 @@
+# Licencia del Proyecto AMRAP
+
+**Tipo de licencia:** MIT License  
+**Titular de los derechos de autor (Copyright):** Araujo PHI  
+**Año:** 2026  
+**Proyecto:** AMRAP (`https://araujo-phi.github.io/AMRAP/`)
+
+---
+
+## 1. Resumen rápido (qué significa en palabras simples)
+
+Este proyecto se publica bajo la **Licencia MIT**, una de las licencias de código abierto más simples y permisivas que existen:
+
+* **Podés usarlo y modificarlo:** cualquier persona puede ver el código, copiarlo, adaptarlo, mejorarlo o integrarlo en otros proyectos (personales o comerciales).
+* **Tenés que dar crédito:** si reutilizás el código o una parte importante de él, tenés que conservar el aviso de copyright y el texto de esta licencia.
+* **Sin garantía:** el software se entrega tal como está (*"AS IS"*), sin garantías de funcionamiento perfecto ni responsabilidad legal para el autor ante fallos o usos indebidos.
+
+---
+
+## 2. Permisos otorgados vs. condiciones obligatorias
+
+### Lo que SÍ está permitido
+* **Uso:** usar la aplicación web y su código sin costo.
+* **Copia:** duplicar los archivos del proyecto (`index.html`, `styles.css`, `tailwind.config.js`, `app.js`, documentación e imágenes).
+* **Modificación:** cambiar estilos, ejercicios, tiempos, lógica o diseño.
+* **Fusión y distribución:** combinar el código con otro proyecto y compartirlo o publicarlo.
+* **Sublicencia y comercialización:** incluirlo dentro de un proyecto propio o distribuirlo bajo términos compatibles con MIT.
+
+### Lo que es OBLIGATORIO cumplir
+* **Incluir el aviso de copyright:** mantener la referencia a `Copyright (c) 2026 Araujo PHI`.
+* **Incluir este texto de licencia:** adjuntar los términos de la licencia MIT en las copias o partes sustanciales del software distribuidas.
+
+### Lo que NO está cubierto / limitaciones
+* **No hay garantía expresa ni implícita:** no se garantiza que esté libre de errores, que sirva para un fin físico o médico específico, ni que esté disponible sin interrupciones.
+* **No hay responsabilidad por daños:** el autor (`Araujo PHI`) no se hace responsable por pérdidas de datos (por ejemplo, datos guardados en `localStorage` o archivos JSON exportados), lesiones durante entrenamientos o cualquier reclamo derivado del uso del software.
+
+---
+
+## 3. Texto oficial completo — MIT License
+
+```text
 MIT License
 
 Copyright (c) 2026 Araujo PHI
