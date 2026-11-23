@@ -212,15 +212,6 @@
         <span class="inline-block w-3 h-3 bg-pureblack shrink-0"></span>
         <h1 class="text-xl sm:text-2xl font-bold tracking-tight uppercase leading-none">AMRAP</h1>
       </div>
-
-      <!-- Resumen compacto de material disponible -->
-      <div class="flex items-center gap-2 text-[11px] font-bold uppercase border border-pureblack px-2.5 py-1.5 bg-purewhite">
-        <span title="1 Pelota">1 Pelota</span>
-        <span>•</span>
-        <span title="2 Conos">2 Conos</span>
-        <span>•</span>
-        <span title="2 Mancuernas de 1 kg">2x1kg</span>
-      </div>
     </div>
   </header>
 
@@ -234,17 +225,9 @@
 
       <!-- Tarjeta Principal del Cronómetro 20:00 -->
       <div class="brutal-border bg-purewhite p-4 sm:p-6">
-        <div class="flex items-center justify-between gap-2 mb-3">
-          <span id="timer-status-badge" class="px-2.5 py-1 text-xs font-bold uppercase tracking-wider border border-pureblack bg-purewhite text-pureblack">
-            20:00
-          </span>
-
+        <div class="flex items-center justify-center mb-3">
           <!-- Botón Screen Wake Lock (Mantener pantalla activa) -->
-          <button id="btn-wakelock" onclick="toggleWakeLock()" class="min-h-[38px] px-3 py-1.5 border border-pureblack bg-purewhite text-pureblack text-xs font-bold uppercase tracking-wider flex items-center gap-1.5 btn-press" aria-pressed="false">
-            <svg id="wakelock-icon" class="w-4 h-4 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
-              <rect x="5" y="2" width="14" height="20" rx="2" ry="2"></rect>
-              <line x1="12" y1="18" x2="12.01" y2="18"></line>
-            </svg>
+          <button id="btn-wakelock" onclick="toggleWakeLock()" class="min-h-[32px] px-2.5 py-1 border border-pureblack bg-purewhite text-pureblack text-[11px] font-bold uppercase tracking-wider flex items-center justify-center btn-press" aria-pressed="false">
             <span id="wakelock-label">Pantalla Activa: Off</span>
           </button>
         </div>
@@ -306,13 +289,13 @@
           </div>
         </div>
 
-        <!-- Botón Principal Gigante (+1 VUELTA COMPLETA, mínimo 74px alto) -->
+        <!-- Botón Principal Gigante (1 VUELTA COMPLETA, mínimo 74px alto) -->
         <button id="btn-add-round" onclick="changeRounds(1)" class="w-full min-h-[76px] px-5 bg-pureblack text-purewhite border-2 border-pureblack text-base sm:text-lg font-bold uppercase tracking-wider flex items-center justify-center gap-3 btn-press">
           <svg class="w-6 h-6 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
             <line x1="12" y1="5" x2="12" y2="19"></line>
             <line x1="5" y1="12" x2="19" y2="12"></line>
           </svg>
-          <span>+1 Vuelta Completa</span>
+          <span>1 Vuelta Completa</span>
         </button>
       </div>
 
@@ -388,13 +371,13 @@
     </section>
 
     <!-- ========================================================= -->
-    <!-- VISTA 3: PROGRESO SEMANAL Y GRÁFICO ADAPTABLE             -->
+    <!-- VISTA 3: PROGRESO MENSUAL Y RACHA                         -->
     <!-- ========================================================= -->
     <section id="view-progress" class="hidden space-y-4">
       <div class="flex items-center justify-between border-b-2 border-pureblack pb-3">
         <div>
           <span class="text-xs font-bold uppercase tracking-widest text-neutral-600">Seguimiento</span>
-          <h2 class="text-xl font-bold uppercase tracking-tight mt-0.5">Progreso Semanal</h2>
+          <h2 class="text-xl font-bold uppercase tracking-tight mt-0.5">Progreso Mensual</h2>
         </div>
         <button onclick="openSessionModal()" class="min-h-[44px] px-3.5 bg-pureblack text-purewhite border-2 border-pureblack text-xs font-bold uppercase tracking-wider flex items-center gap-1.5 btn-press">
           <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
@@ -405,15 +388,11 @@
         </button>
       </div>
 
-      <!-- 3 Tarjetas de Métricas y Racha -->
-      <div class="grid grid-cols-3 gap-2.5">
+      <!-- 2 Tarjetas de Métricas y Racha -->
+      <div class="grid grid-cols-2 gap-2.5">
         <div class="brutal-border p-3 bg-pureblack text-purewhite text-center">
           <div class="text-[11px] font-bold uppercase tracking-wider text-neutral-300">Racha Actual</div>
           <div id="stat-current-streak" class="text-xl sm:text-3xl font-bold tabular-nums mt-1">0 días</div>
-        </div>
-        <div class="brutal-border p-3 bg-purewhite text-center">
-          <div class="text-[11px] font-bold uppercase tracking-wider text-neutral-600">Días Semana</div>
-          <div id="stat-week-days" class="text-xl sm:text-3xl font-bold tabular-nums mt-1">0/7</div>
         </div>
         <div class="brutal-border p-3 bg-purewhite text-center">
           <div class="text-[11px] font-bold uppercase tracking-wider text-neutral-600">Récord Vueltas</div>
@@ -421,10 +400,10 @@
         </div>
       </div>
 
-      <!-- Selector de Semana (Actual / Anterior) y Calendario 7 Días -->
+      <!-- Calendario Mensual Tipo Duolingo (Estilo Monocromático Brutalista) -->
       <div class="brutal-border bg-purewhite p-4">
         <div class="flex items-center justify-between gap-2 border-b-2 border-pureblack pb-3 mb-3">
-          <button onclick="changeWeekOffset(-1)" aria-label="Semana anterior" class="min-h-[42px] px-3 border border-pureblack bg-purewhite text-pureblack text-xs font-bold uppercase flex items-center gap-1 btn-press">
+          <button onclick="changeMonthOffset(-1)" aria-label="Mes anterior" class="min-h-[42px] px-3 border border-pureblack bg-purewhite text-pureblack text-xs font-bold uppercase flex items-center gap-1 btn-press">
             <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
               <polyline points="15 18 9 12 15 6"></polyline>
             </svg>
@@ -432,11 +411,11 @@
           </button>
 
           <div class="text-center">
-            <div id="week-selector-title" class="text-xs font-bold uppercase tracking-wider">Semana Actual</div>
-            <div id="current-week-range" class="text-[11px] text-neutral-600 font-semibold mt-0.5"></div>
+            <div id="month-selector-title" class="text-xs sm:text-sm font-bold uppercase tracking-wider">Noviembre 2026</div>
+            <div id="month-summary-subtitle" class="text-[11px] text-neutral-600 font-semibold mt-0.5">0 días entrenados</div>
           </div>
 
-          <button id="btn-next-week" onclick="changeWeekOffset(1)" aria-label="Semana siguiente" class="min-h-[42px] px-3 border border-pureblack bg-purewhite text-pureblack text-xs font-bold uppercase flex items-center gap-1 btn-press disabled:opacity-30">
+          <button id="btn-next-month" onclick="changeMonthOffset(1)" aria-label="Mes siguiente" class="min-h-[42px] px-3 border border-pureblack bg-purewhite text-pureblack text-xs font-bold uppercase flex items-center gap-1 btn-press disabled:opacity-30">
             <span>Sig.</span>
             <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
               <polyline points="9 18 15 12 9 6"></polyline>
@@ -444,43 +423,37 @@
           </button>
         </div>
 
-        <!-- Celdas táctiles de Lun a Dom -->
-        <div id="weekly-days-grid" class="grid grid-cols-7 gap-1.5 sm:gap-2">
+        <!-- Cabecera de días L a D -->
+        <div class="grid grid-cols-7 text-center mb-2">
+          <span class="text-[11px] font-bold uppercase text-neutral-600">L</span>
+          <span class="text-[11px] font-bold uppercase text-neutral-600">MA</span>
+          <span class="text-[11px] font-bold uppercase text-neutral-600">MI</span>
+          <span class="text-[11px] font-bold uppercase text-neutral-600">J</span>
+          <span class="text-[11px] font-bold uppercase text-neutral-600">V</span>
+          <span class="text-[11px] font-bold uppercase text-neutral-600">S</span>
+          <span class="text-[11px] font-bold uppercase text-neutral-600">D</span>
+        </div>
+
+        <!-- Filas semanales del mes con racha continua tipo Duolingo -->
+        <div id="monthly-calendar-rows" class="space-y-2">
           <!-- Renderizado dinámicamente por JS -->
         </div>
-        <p class="text-[11px] text-neutral-600 text-center mt-2.5">
-          Toca cualquier día para anotar o corregir sus vueltas
+
+        <div class="flex items-center justify-center gap-4 mt-3 pt-2.5 border-t border-lightborder text-[10px] font-bold uppercase text-neutral-600">
+          <span class="flex items-center gap-1.5">
+            <span class="inline-block w-3 h-3 bg-pureblack border border-pureblack"></span> Entrenado
+          </span>
+          <span class="flex items-center gap-1.5">
+            <span class="inline-block w-3 h-3 bg-purewhite border-2 border-pureblack"></span> Hoy
+          </span>
+          <span class="flex items-center gap-1.5">
+            <span class="inline-block w-3 h-3 bg-neutral-100 border border-lightborder"></span> Sin registro
+          </span>
+        </div>
+
+        <p class="text-[11px] text-neutral-600 text-center mt-2">
+          Toca un día actual o anterior para anotar o corregir sus vueltas
         </p>
-      </div>
-
-      <!-- Gráfico SVG Responsivo de la Semana Seleccionada -->
-      <div class="brutal-border bg-purewhite p-4">
-        <div class="flex items-center justify-between border-b-2 border-pureblack pb-2.5 mb-3">
-          <h3 class="text-xs font-bold uppercase tracking-wider">Vueltas por Día (Lun - Dom)</h3>
-          <div class="flex items-center gap-3 text-[11px] font-bold">
-            <span class="flex items-center gap-1">
-              <span class="inline-block w-2.5 h-2.5 bg-pureblack"></span> Vueltas
-            </span>
-            <span class="flex items-center gap-1">
-              <span class="inline-block w-3 border-t-2 border-dashed border-pureblack"></span> Promedio
-            </span>
-          </div>
-        </div>
-
-        <div id="chart-container" class="w-full">
-          <!-- Gráfico SVG dinámico -->
-        </div>
-      </div>
-
-      <!-- Historial Reciente Compacto -->
-      <div class="brutal-border bg-purewhite p-4">
-        <div class="flex items-center justify-between border-b-2 border-pureblack pb-2.5 mb-3">
-          <h3 class="text-xs font-bold uppercase tracking-wider">Últimas Sesiones Guardadas</h3>
-          <span id="history-count-label" class="text-xs font-semibold text-neutral-600">0</span>
-        </div>
-        <div id="history-list-mobile" class="divide-y divide-lightborder">
-          <!-- Renderizado por JS -->
-        </div>
       </div>
 
       <!-- Respaldo JSON Compacto -->
@@ -587,22 +560,22 @@
         modification: 'Apoya las rodillas en el piso manteniendo el tronco completamente recto.'
       },
       {
-        id: 'glute_bridge',
+        id: 'russian_twist',
         number: '03',
-        shortName: 'Puente',
-        name: 'Puente de Glúteos',
-        reps: '12 reps',
-        rhythm: 'Pausa de 1 seg arriba',
-        equipment: 'Peso corporal (opcional: mancuernas de 1 kg sobre cadera)',
-        animHeader: 'MOVIMIENTO CONTINUO • PUENTE DE GLÚTEOS',
-        animFooter: 'Empuja con talones • Aprieta glúteos 1 seg arriba',
+        shortName: 'Giros Rusos',
+        name: 'Giros Rusos con Pelota',
+        reps: '12 giros (6 por lado)',
+        rhythm: 'Giro horizontal • Abdomen firme',
+        equipment: '1 pelota de fútbol',
+        animHeader: 'GIROS RUSOS HORIZONTALES • CON PELOTA',
+        animFooter: 'Pies apoyados en el suelo • Pelota al frente sin cruzar piernas',
         steps: [
-          'Acuéstate boca arriba con rodillas flexionadas y pies apoyados al ancho de caderas.',
-          'Empuja con los talones y eleva la cadera apretando los glúteos.',
-          'Sostén 1 segundo formando una línea recta y baja despacio.'
+          'Siéntate en el suelo con las rodillas flexionadas, talones apoyados y el torso levemente inclinado hacia atrás.',
+          'Sostén la pelota con ambas manos frente al pecho manteniendo la espalda recta y el abdomen firme.',
+          'Gira el torso hacia un lado para acercar la pelota al suelo y luego gira hacia el lado contrario.'
         ],
-        avoid: 'Arquear la espalda baja subiendo la cadera más allá de la línea recta.',
-        modification: 'Apoya ambas mancuernas de 1 kg sobre la pelvis para sumar control.'
+        avoid: 'Encorvar la espalda o mover solo los brazos sin rotar los hombros y el torso.',
+        modification: 'Mantén los talones bien apoyados en el piso para mayor estabilidad o eleva levemente los pies para más dificultad.'
       },
       {
         id: 'shoulder_press',
@@ -676,7 +649,7 @@
     let selectedEffort = 'Normal';
     let checklistState = {};
     let selectedExerciseFilter = 'all';
-    let weekOffset = 0; // 0 = semana actual, -1 = semana anterior, etc.
+    let monthOffset = 0; // 0 = mes actual, -1 = mes anterior, etc.
     let wakeLockSentinel = null;
 
     // Estructura de sesión: { date: 'YYYY-MM-DD', rounds: number, effort: string, notes: string }
@@ -868,27 +841,17 @@
       const toggleBtn = document.getElementById('btn-toggle-timer');
       const toggleText = document.getElementById('toggle-timer-text');
       const toggleIcon = document.getElementById('toggle-timer-icon');
-      const badge = document.getElementById('timer-status-badge');
 
       if (isTimerRunning) {
         toggleBtn.classList.remove('bg-pureblack', 'text-purewhite');
         toggleBtn.classList.add('bg-purewhite', 'text-pureblack');
         toggleText.textContent = 'Pausar';
         toggleIcon.innerHTML = '<rect x="6" y="4" width="4" height="16"></rect><rect x="14" y="4" width="4" height="16"></rect>';
-        badge.textContent = 'En Curso';
-        badge.className = 'px-2.5 py-1 text-xs font-bold uppercase tracking-wider border border-pureblack bg-pureblack text-purewhite';
       } else {
         toggleBtn.classList.remove('bg-purewhite', 'text-pureblack');
         toggleBtn.classList.add('bg-pureblack', 'text-purewhite');
         toggleText.textContent = timerSecondsLeft === TOTAL_SECONDS ? 'Iniciar' : 'Reanudar';
         toggleIcon.innerHTML = '<polygon points="5 3 19 12 5 21 5 3"></polygon>';
-        if (timerSecondsLeft === 0) {
-          badge.textContent = 'Completado';
-          badge.className = 'px-2.5 py-1 text-xs font-bold uppercase tracking-wider border border-pureblack bg-pureblack text-purewhite';
-        } else {
-          badge.textContent = timerSecondsLeft === TOTAL_SECONDS ? 'Listo • 20 Min' : 'En Pausa';
-          badge.className = 'px-2.5 py-1 text-xs font-bold uppercase tracking-wider border border-pureblack bg-purewhite text-pureblack';
-        }
       }
     }
 
@@ -998,7 +961,7 @@
       const container = document.getElementById('quick-circuit-list');
       const allDone = EXERCISES.every(ex => checklistState[ex.id]);
 
-      // Resaltar botón "+1 Vuelta Completa" si completó las 6 estaciones
+      // Resaltar botón "1 Vuelta Completa" si completó las 6 estaciones
       const addRoundBtn = document.getElementById('btn-add-round');
       if (allDone) {
         addRoundBtn.classList.add('ring-4', 'ring-black/25');
@@ -1038,7 +1001,7 @@
       renderQuickChecklist();
 
       if (EXERCISES.every(ex => checklistState[ex.id])) {
-        showToast('¡6 ejercicios listos! Toca "+1 Vuelta Completa"');
+        showToast('¡6 ejercicios listos! Toca "1 Vuelta Completa"');
       }
     }
 
@@ -1353,7 +1316,6 @@
       }, '', floorLine);
     }
 
-    // 3. PUENTE DE GLÚTEOS (Cabeza, hombros y pies fijos en el suelo; rodilla articulada de largo constante)
     function solveTwoBoneIK(p1, p2, len1, len2, bendUp) {
       const dx = p2.x - p1.x;
       const dy = p2.y - p1.y;
@@ -1371,52 +1333,66 @@
       return bendUp ? (opt1.y < opt2.y ? opt1 : opt2) : (opt1.y > opt2.y ? opt1 : opt2);
     }
 
-    function buildGluteBridgeFrame(tSec) {
-      const p = smoothWave(tSec, 2.8);
-      const floorY = 144;
+    // 3. GIROS RUSOS CON PELOTA (Giro horizontal claro, piernas apoyadas en el suelo, brazo derecho bien formado y pelota al frente sin quedar atrás)
+    function buildRussianTwistFrame(tSec) {
+      const cycle = 3.4;
+      const h = Math.sin((2 * Math.PI * tSec) / cycle); // -1 a +1 horizontal
+      const floorY = 148;
 
-      // Cabeza y hombros apoyados firmes en el suelo
-      const headCenter = { x: 84, y: floorY - 9.5 };
-      const neck = { x: 96, y: floorY - 4 };
+      // Apoyo firme de los pies y talones en el suelo
+      const ankleL = { x: 256, y: floorY };
+      const footL = { x: 274, y: floorY };
+      const ankleR = { x: 262, y: floorY - 1 };
+      const footR = { x: 280, y: floorY - 1 };
 
-      // Torso inferior y superior: desde acostado (-2°) hasta línea recta elevada (-26°)
-      const bridgeAngle = lerp(-2, -26, p);
-      const waist = polarPoint(neck, 26, bridgeAngle);
-      const pelvis = polarPoint(waist, 24, bridgeAngle);
+      // Rodillas flexionadas y muslos conectados hasta la pelvis en el suelo
+      const kneeL = { x: 214, y: floorY - 36 };
+      const kneeR = { x: 220, y: floorY - 35 };
 
-      const hipL = { x: pelvis.x, y: pelvis.y };
-      const hipR = { x: pelvis.x + 5, y: pelvis.y - 2 };
+      const pelvis = { x: 158, y: floorY - 4 };
+      const hipL = { x: 156, y: floorY - 4 };
+      const hipR = { x: 162, y: floorY - 5 };
 
-      // Pies fijos en el suelo y rodilla calculada con largo fijo de muslo (42) y pantorrilla (38)
-      const thighLen = 42;
-      const shinLen = 38;
+      // Torso inclinado hacia atrás y girando en horizontal
+      const waist = { x: 132, y: floorY - 26 };
+      const neck = { x: 108, y: floorY - 48 };
+      const headCenter = { x: 96, y: floorY - 62 };
 
-      const ankleL = { x: 208, y: floorY };
-      const footL = { x: 222, y: floorY };
-      const kneeL = solveTwoBoneIK(hipL, ankleL, thighLen, shinLen, true);
+      // Hombros izquierdo (negro) y derecho (gris)
+      const shoulderL = { x: neck.x - 1, y: neck.y + 3 };
+      const shoulderR = { x: neck.x + 6, y: neck.y + 3 };
 
-      const ankleR = { x: 215, y: floorY - 2 };
-      const footR = { x: 229, y: floorY - 2 };
-      const kneeR = solveTwoBoneIK(hipR, ankleR, thighLen, shinLen, true);
+      // Pelota desplazándose horizontalmente frente al torso/cadera, siempre delante de la línea de piernas y sin quedar oculta atrás
+      const ballX = 142 + h * 20;
+      const ballY = floorY - 22;
 
-      // Brazos apoyados firmes a los costados sobre el suelo
-      const shoulderL = { x: neck.x + 4, y: neck.y };
-      const elbowL = { x: shoulderL.x + 22, y: floorY - 2 };
-      const handL = { x: elbowL.x + 22, y: floorY - 2 };
+      const handL = { x: ballX - 4, y: ballY + 1 };
+      const handR = { x: ballX + 3, y: ballY - 2 };
 
-      const shoulderR = { x: neck.x + 8, y: neck.y - 1 };
-      const elbowR = { x: shoulderR.x + 22, y: floorY - 3 };
-      const handR = { x: elbowR.x + 22, y: floorY - 3 };
+      // Brazo izquierdo (negro) y brazo derecho (gris) flexionados con forma clara hacia la pelota
+      const elbowL = solveTwoBoneIK(shoulderL, handL, 18, 18, false);
+      const elbowR = {
+        x: shoulderR.x + 14 + h * 6,
+        y: shoulderR.y + 14
+      };
+
+      const ballAndGuides = `
+        <g>
+          <line x1="118" y1="${ballY.toFixed(1)}" x2="166" y2="${ballY.toFixed(1)}" stroke="#D4D4D4" stroke-width="1.6" stroke-dasharray="4 3" />
+          <circle cx="${ballX.toFixed(1)}" cy="${ballY.toFixed(1)}" r="8.5" fill="#FFFFFF" stroke="#000000" stroke-width="2.4" />
+          <circle cx="${ballX.toFixed(1)}" cy="${ballY.toFixed(1)}" r="3" fill="#000000" />
+        </g>
+      `;
 
       const floorLine = `<line x1="16" y1="${floorY}" x2="324" y2="${floorY}" stroke="#000000" stroke-width="2" />`;
 
       return renderArticulatedFigure({
-        pelvis, waist, neck, headCenter, headR: 9,
+        pelvis, waist, neck, headCenter, headR: 9.5,
         hipL, kneeL, ankleL, footL,
         hipR, kneeR, ankleR, footR,
         shoulderL, elbowL, handL,
         shoulderR, elbowR, handR
-      }, '', floorLine);
+      }, ballAndGuides, floorLine);
     }
 
     // 4. PRESS DE HOMBROS CON 2 MANCUERNAS DE 1 KG (Vista de frente idéntica a la referencia)
@@ -1667,7 +1643,7 @@
       const builders = {
         squat: buildSquatFrame,
         pushup: buildPushupFrame,
-        glute_bridge: buildGluteBridgeFrame,
+        russian_twist: buildRussianTwistFrame,
         shoulder_press: buildShoulderPressFrame,
         bird_dog: buildBirdDogFrame,
         soccer_zigzag: buildZigzagFrame
@@ -1697,39 +1673,11 @@
     }
 
     // =========================================================================
-    // VISTA 3: PROGRESO SEMANAL Y GRÁFICO SVG ADAPTABLE
+    // VISTA 3: PROGRESO MENSUAL TIPO DUOLINGO (ESTILO MONOCROMÁTICO WEB)
     // =========================================================================
-    function getWeekDaysByOffset(offsetWeeks) {
-      const now = new Date();
-      now.setDate(now.getDate() + offsetWeeks * 7);
-
-      const dayOfWeek = now.getDay(); // 0=Dom, 1=Lun...
-      const diffToMonday = dayOfWeek === 0 ? -6 : 1 - dayOfWeek;
-      const monday = new Date(now);
-      monday.setDate(now.getDate() + diffToMonday);
-
-      const shortNames = ['Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb', 'Dom'];
-      const result = [];
-
-      for (let i = 0; i < 7; i++) {
-        const d = new Date(monday);
-        d.setDate(monday.getDate() + i);
-        const tzOffset = d.getTimezoneOffset();
-        const iso = new Date(d.getTime() - tzOffset * 60 * 1000).toISOString().split('T')[0];
-
-        result.push({
-          shortName: shortNames[i],
-          dayNum: String(d.getDate()).padStart(2, '0'),
-          monthNum: String(d.getMonth() + 1).padStart(2, '0'),
-          iso
-        });
-      }
-      return result;
-    }
-
-    function changeWeekOffset(delta) {
-      if (weekOffset + delta > 0) return;
-      weekOffset += delta;
+    function changeMonthOffset(delta) {
+      if (monthOffset + delta > 0) return;
+      monthOffset += delta;
       refreshProgressView();
     }
 
@@ -1788,182 +1736,160 @@
       return { currentStreak, bestStreak };
     }
 
-    function refreshProgressView() {
-      const weekDays = getWeekDaysByOffset(weekOffset);
-      const todayISO = getTodayISO();
+    function buildMonthWeeks(year, monthIndex) {
+      const firstDay = new Date(year, monthIndex, 1);
+      const daysInMonth = new Date(year, monthIndex + 1, 0).getDate();
 
-      // Actualizar encabezado de selector de semana
-      const titleEl = document.getElementById('week-selector-title');
-      if (weekOffset === 0) titleEl.textContent = 'Semana Actual';
-      else if (weekOffset === -1) titleEl.textContent = 'Semana Anterior';
-      else titleEl.textContent = `Hace ${Math.abs(weekOffset)} Semanas`;
+      // Convertir getDay() (0=Dom..6=Sáb) a índice Lun=0..Dom=6
+      const startWeekday = (firstDay.getDay() + 6) % 7;
 
-      document.getElementById('current-week-range').textContent =
-        `${weekDays[0].dayNum}/${weekDays[0].monthNum} al ${weekDays[6].dayNum}/${weekDays[6].monthNum}`;
+      const weeks = [];
+      let currentWeek = new Array(7).fill(null);
 
-      const nextBtn = document.getElementById('btn-next-week');
-      nextBtn.disabled = weekOffset >= 0;
+      for (let d = 1; d <= daysInMonth; d++) {
+        const col = (startWeekday + d - 1) % 7;
+        const iso = `${year}-${String(monthIndex + 1).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
+        const entry = sessions.find(s => s.date === iso) || null;
 
-      // Calcular totales de la semana seleccionada
-      let weekTrainedDays = 0;
+        currentWeek[col] = {
+          dayNum: d,
+          iso,
+          entry,
+          trained: !!entry
+        };
 
-      const weekGrid = document.getElementById('weekly-days-grid');
-      weekGrid.innerHTML = weekDays.map(day => {
-        const entry = sessions.find(s => s.date === day.iso);
-        const isToday = day.iso === todayISO;
-
-        if (entry) {
-          weekTrainedDays++;
+        if (col === 6 || d === daysInMonth) {
+          weeks.push(currentWeek);
+          currentWeek = new Array(7).fill(null);
         }
+      }
 
-        return `
-          <button type="button" onclick="openSessionModal('${day.iso}')" class="min-h-[78px] p-1.5 border-2 border-pureblack flex flex-col items-center justify-between btn-press ${entry ? 'bg-pureblack text-purewhite' : 'bg-purewhite text-pureblack'} ${isToday && !entry ? 'ring-2 ring-pureblack ring-offset-1' : ''}">
-            <span class="text-[11px] font-bold uppercase">${day.shortName}</span>
-            <span class="text-base sm:text-lg font-bold tabular-nums leading-none my-1">
-              ${entry ? entry.rounds : '—'}
-            </span>
-            <span class="text-[10px] font-semibold ${entry ? 'text-neutral-300' : 'text-neutral-500'}">
-              ${day.dayNum}/${day.monthNum}
-            </span>
-          </button>
-        `;
-      }).join('');
+      return weeks;
+    }
 
-      // Récord histórico en 20 min y rachas
+    function refreshProgressView() {
+      const todayISO = getTodayISO();
+      const now = new Date();
+      const targetDate = new Date(now.getFullYear(), now.getMonth() + monthOffset, 1);
+      const year = targetDate.getFullYear();
+      const monthIndex = targetDate.getMonth();
+
+      const monthNames = [
+        'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio',
+        'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'
+      ];
+
+      document.getElementById('month-selector-title').textContent = `${monthNames[monthIndex]} ${year}`;
+
+      const nextBtn = document.getElementById('btn-next-month');
+      nextBtn.disabled = monthOffset >= 0;
+
+      // Récord histórico en 20 min y racha actual
       const bestRounds = sessions.reduce((max, s) => Math.max(max, Number(s.rounds) || 0), 0);
       const { currentStreak } = calculateStreaks();
 
       document.getElementById('stat-current-streak').textContent =
         `${currentStreak} ${currentStreak === 1 ? 'día' : 'días'}`;
-      document.getElementById('stat-week-days').textContent = `${weekTrainedDays}/7`;
       document.getElementById('stat-best-rounds').textContent = bestRounds;
 
-      // Gráfico SVG adaptable a ancho móvil sin solapamientos
-      renderWeeklyBarChart(weekDays);
+      // Construir filas semanales del mes (estilo Duolingo adaptado a la web)
+      const weeks = buildMonthWeeks(year, monthIndex);
+      let trainedDaysCount = 0;
 
-      // Historial reciente compacto
-      renderMobileHistoryList();
-    }
+      const rowsContainer = document.getElementById('monthly-calendar-rows');
+      rowsContainer.innerHTML = weeks.map(week => {
+        // Detectar segmentos contiguos de días entrenados dentro de la misma semana
+        const segments = [];
+        let segStart = null;
+        for (let c = 0; c < 7; c++) {
+          const cell = week[c];
+          if (cell && cell.trained) {
+            trainedDaysCount++;
+            if (segStart === null) segStart = c;
+          } else {
+            if (segStart !== null) {
+              segments.push({ start: segStart, end: c - 1 });
+              segStart = null;
+            }
+          }
+        }
+        if (segStart !== null) {
+          segments.push({ start: segStart, end: 6 });
+        }
 
-    function renderWeeklyBarChart(weekDays) {
-      const container = document.getElementById('chart-container');
+        // Barras continuas de racha (estilo cápsula/barra brutalista negra detrás de los días seguidos)
+        const streakBarsHTML = segments.map(seg => {
+          const leftPct = (seg.start / 7) * 100;
+          const widthPct = ((seg.end - seg.start + 1) / 7) * 100;
+          return `
+            <div class="absolute top-1 bottom-1 bg-pureblack pointer-events-none"
+                 style="left: calc(${leftPct}% + 2px); width: calc(${widthPct}% - 4px);">
+            </div>
+          `;
+        }).join('');
 
-      const dataPoints = weekDays.map(d => {
-        const found = sessions.find(s => s.date === d.iso);
-        return {
-          label: d.shortName,
-          rounds: found ? Number(found.rounds) || 0 : 0,
-          hasData: !!found
-        };
-      });
+        const cellsHTML = week.map(cell => {
+          if (!cell) {
+            return `<div class="h-11 sm:h-12"></div>`;
+          }
 
-      const activeValues = dataPoints.filter(d => d.hasData).map(d => d.rounds);
-      const avgRounds = activeValues.length > 0
-        ? (activeValues.reduce((a, b) => a + b, 0) / activeValues.length)
-        : 0;
+          const isToday = cell.iso === todayISO;
+          const isFuture = cell.iso > todayISO;
 
-      // ViewBox compacto proporcional para que en móviles (340px-420px) se vea nítido y grande
-      const svgW = 360;
-      const svgH = 200;
-      const padL = 26;
-      const padR = 12;
-      const padT = 24;
-      const padB = 30;
-      const chartW = svgW - padL - padR;
-      const chartH = svgH - padT - padB;
+          if (cell.trained) {
+            return `
+              <button type="button" onclick="openSessionModal('${cell.iso}')"
+                title="${formatDisplayDate(cell.iso)}: ${cell.entry.rounds} vueltas"
+                class="relative z-10 h-11 sm:h-12 w-full flex flex-col items-center justify-center text-purewhite btn-press ${isToday ? 'ring-2 ring-pureblack ring-offset-1' : ''}">
+                <span class="text-sm font-bold tabular-nums leading-none">${cell.dayNum}</span>
+                <span class="text-[9px] font-bold tabular-nums text-neutral-300 mt-0.5">${cell.entry.rounds}v</span>
+              </button>
+            `;
+          }
 
-      const maxVal = Math.max(6, ...dataPoints.map(d => d.rounds));
-      const slotW = chartW / 7;
-      const barW = 26;
+          if (isFuture) {
+            return `
+              <div aria-disabled="true"
+                title="${formatDisplayDate(cell.iso)}: Día futuro"
+                class="relative z-10 h-11 sm:h-12 w-full flex items-center justify-center text-neutral-300 cursor-not-allowed select-none">
+                <span class="text-sm font-bold tabular-nums leading-none">${cell.dayNum}</span>
+              </div>
+            `;
+          }
 
-      // Guías horizontales (0, mitad, máximo)
-      const midVal = Math.round(maxVal / 2);
-      const yMax = padT;
-      const yMid = padT + chartH - (chartH * (midVal / maxVal));
-      const yZero = padT + chartH;
-
-      let gridSVG = `
-        <line x1="${padL}" y1="${yMax}" x2="${svgW - padR}" y2="${yMax}" stroke="#E5E5E5" stroke-width="1" />
-        <text x="${padL - 5}" y="${yMax + 4}" font-size="10" font-weight="700" text-anchor="end" fill="#666666">${maxVal}</text>
-
-        <line x1="${padL}" y1="${yMid}" x2="${svgW - padR}" y2="${yMid}" stroke="#E5E5E5" stroke-width="1" />
-        <text x="${padL - 5}" y="${yMid + 4}" font-size="10" font-weight="700" text-anchor="end" fill="#666666">${midVal}</text>
-
-        <line x1="${padL}" y1="${yZero}" x2="${svgW - padR}" y2="${yZero}" stroke="#000000" stroke-width="2" />
-        <text x="${padL - 5}" y="${yZero + 4}" font-size="10" font-weight="700" text-anchor="end" fill="#000000">0</text>
-      `;
-
-      // Barras
-      let barsSVG = dataPoints.map((pt, idx) => {
-        const cx = padL + slotW * idx + slotW / 2;
-        const x = cx - barW / 2;
-        const barH = pt.hasData ? Math.max(4, (pt.rounds / maxVal) * chartH) : 0;
-        const y = yZero - barH;
+          return `
+            <button type="button" onclick="openSessionModal('${cell.iso}')"
+              title="${formatDisplayDate(cell.iso)}: Sin registro"
+              class="relative z-10 h-11 sm:h-12 w-full flex items-center justify-center btn-press ${isToday ? 'border-2 border-pureblack bg-purewhite text-pureblack font-bold' : 'text-neutral-600 hover:border hover:border-pureblack'}">
+              <span class="text-sm font-bold tabular-nums leading-none">${cell.dayNum}</span>
+            </button>
+          `;
+        }).join('');
 
         return `
-          <g>
-            ${pt.hasData ? `
-              <rect x="${x}" y="${y}" width="${barW}" height="${barH}" fill="#000000" />
-              <text x="${cx}" y="${y - 6}" font-size="12" font-weight="700" text-anchor="middle" fill="#000000">${pt.rounds}</text>
-            ` : `
-              <line x1="${x + 4}" y1="${yZero - 1}" x2="${x + barW - 4}" y2="${yZero - 1}" stroke="#CCCCCC" stroke-width="2" />
-            `}
-            <text x="${cx}" y="${yZero + 18}" font-size="11" font-weight="700" text-anchor="middle" fill="#000000">${pt.label}</text>
-          </g>
+          <div class="relative grid grid-cols-7 items-center bg-neutral-50 border border-lightborder">
+            ${streakBarsHTML}
+            ${cellsHTML}
+          </div>
         `;
       }).join('');
 
-      // Línea punteada del promedio semanal
-      let avgLineSVG = '';
-      if (avgRounds > 0) {
-        const yAvg = yZero - (avgRounds / maxVal) * chartH;
-        avgLineSVG = `
-          <line x1="${padL}" y1="${yAvg}" x2="${svgW - padR}" y2="${yAvg}" stroke="#000000" stroke-width="1.5" stroke-dasharray="4 3" />
-          <rect x="${svgW - padR - 54}" y="${Math.max(2, yAvg - 14)}" width="54" height="13" fill="#FFFFFF" />
-          <text x="${svgW - padR - 2}" y="${Math.max(11, yAvg - 4)}" font-size="9" font-weight="700" text-anchor="end" fill="#000000">Prom: ${avgRounds.toFixed(1)}</text>
-        `;
-      }
-
-      container.innerHTML = `
-        <svg viewBox="0 0 ${svgW} ${svgH}" class="w-full h-auto block" role="img" aria-label="Gráfico semanal de vueltas">
-          ${gridSVG}
-          ${barsSVG}
-          ${avgLineSVG}
-        </svg>
-      `;
-    }
-
-    function renderMobileHistoryList() {
-      const container = document.getElementById('history-list-mobile');
-      const sorted = [...sessions].sort((a, b) => b.date.localeCompare(a.date)).slice(0, 8);
-      document.getElementById('history-count-label').textContent = `${sessions.length} total`;
-
-      if (sorted.length === 0) {
-        container.innerHTML = `
-          <div class="py-5 text-center text-xs text-neutral-600 uppercase font-semibold">
-            Aún no hay sesiones registradas.
-          </div>
-        `;
-        return;
-      }
-
-      container.innerHTML = sorted.map(s => `
-        <div class="py-3 flex items-center justify-between gap-2">
-          <div>
-            <div class="text-sm font-bold tabular-nums">${formatDisplayDate(s.date)} • ${s.rounds} vueltas</div>
-            <div class="text-xs text-neutral-600 mt-0.5">Esfuerzo: ${s.effort}${s.notes ? ` • ${s.notes}` : ''}</div>
-          </div>
-          <button onclick="openSessionModal('${s.date}')" class="min-h-[40px] px-3 border border-pureblack text-xs font-bold uppercase btn-press shrink-0">
-            Editar
-          </button>
-        </div>
-      `).join('');
+      document.getElementById('month-summary-subtitle').textContent =
+        `${trainedDaysCount} ${trainedDaysCount === 1 ? 'día entrenado' : 'días entrenados'}`;
     }
 
     // =========================================================================
     // MODAL DE EDICIÓN / REGISTRO MANUAL Y EXPORTACIÓN JSON
     // =========================================================================
     function openSessionModal(prefillDate) {
+      const todayISO = getTodayISO();
+      let targetDate = prefillDate || todayISO;
+
+      if (targetDate > todayISO) {
+        showToast('No puedes anotar días futuros');
+        return;
+      }
+
       const modal = document.getElementById('session-modal');
       const dateInput = document.getElementById('modal-date');
       const roundsInput = document.getElementById('modal-rounds');
@@ -1972,9 +1898,9 @@
       const deleteWrap = document.getElementById('modal-delete-wrapper');
       const deleteBtn = document.getElementById('modal-delete-btn');
 
-      const targetDate = prefillDate || getTodayISO();
       const existing = sessions.find(s => s.date === targetDate);
 
+      dateInput.max = todayISO;
       dateInput.value = targetDate;
 
       if (existing) {
@@ -2013,12 +1939,18 @@
 
     document.getElementById('manual-session-form').addEventListener('submit', (e) => {
       e.preventDefault();
+      const todayISO = getTodayISO();
       const date = document.getElementById('modal-date').value;
       const rounds = Math.max(0, parseInt(document.getElementById('modal-rounds').value, 10) || 0);
       const effort = document.getElementById('modal-effort').value;
       const notes = document.getElementById('modal-notes').value.trim();
 
       if (!date) return;
+
+      if (date > todayISO) {
+        showToast('No puedes anotar días futuros');
+        return;
+      }
 
       const idx = sessions.findIndex(s => s.date === date);
       const record = { date, rounds, effort, notes };
