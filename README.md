@@ -1,6 +1,6 @@
 # AMRAP
 
-![AMRAP Banner](./banner.svg)
+![AMRAP Banner](./banner.png)
 
 **AMRAP** (*As Many Rounds As Possible* / *As Many Reps As Possible*) significa **"tantas rondas como sea posible"** o **"tantas repeticiones como sea posible"**.
 
