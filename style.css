@@ -1,0 +1,74 @@
+/* Configuración base estrictamente monocromática y ergonómica móvil */
+* {
+  box-sizing: border-box;
+  font-family: 'Arimo', sans-serif;
+  -webkit-tap-highlight-color: transparent;
+}
+
+html, body {
+  background-color: #FFFFFF;
+  color: #000000;
+  margin: 0;
+  padding: 0;
+  overflow-x: hidden;
+  width: 100%;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Eliminar retraso de 300ms en dispositivos táctiles */
+button, a, label, [role="button"] {
+  touch-action: manipulation;
+}
+
+/* Scrollbars personalizados minimalistas */
+::-webkit-scrollbar {
+  width: 5px;
+  height: 5px;
+}
+::-webkit-scrollbar-track {
+  background: #FFFFFF;
+}
+::-webkit-scrollbar-thumb {
+  background: #000000;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #222222;
+}
+
+/* Bordes y utilidades táctiles */
+.brutal-border {
+  border: 2px solid #000000;
+}
+.thin-border {
+  border: 1px solid #000000;
+}
+.subtle-border {
+  border: 1px solid #E5E5E5;
+}
+.btn-press {
+  transition: transform 0.08s ease, background-color 0.12s ease, color 0.12s ease;
+}
+.btn-press:active {
+  transform: scale(0.985);
+}
+
+/* Números tabulares para evitar saltos en el reloj */
+.tabular-nums {
+  font-variant-numeric: tabular-nums;
+}
+
+/* Barra inferior fija con soporte para notch/gestos inferiores */
+.bottom-nav-safe {
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+.main-bottom-clearance {
+  padding-bottom: calc(88px + env(safe-area-inset-bottom, 0px));
+}
+
+/* Animación suave para acordeones */
+details > summary {
+  list-style: none;
+}
+details > summary::-webkit-details-marker {
+  display: none;
+}
