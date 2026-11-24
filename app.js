@@ -117,8 +117,8 @@ const EXERCISES = [
 // =========================================================================
 const STORAGE_KEY = 'amrap_13yo_mobile_v2';
 const TOTAL_SECONDS = 20 * 60; // 20:00
-const COINS_PER_SESSION = 10;
-const FREEZE_COST = 30;
+const DAILY_COINS_REWARD = 10; // Exactamente 10 monedas diarias, máximo 10/día
+const FREEZE_COST = 100; // Protector de racha cuesta 100 monedas diarias
 const MAX_FREEZES = 2;
 
 let timerSecondsLeft = TOTAL_SECONDS;
@@ -132,16 +132,18 @@ let currentRounds = 0;
 let selectedEffort = 'Normal';
 let checklistState = {};
 let selectedExerciseFilter = 'all';
-let monthOffset = 0; // 0 = mes actual, -1 = mes anterior, etc.
+let monthOffset = 0;
 let wakeLockSentinel = null;
 let selectedStreakStyleIndex = 0;
 
 // Estructura de sesión: { date: 'YYYY-MM-DD', rounds: number, effort: string, notes: string }
 let sessions = [];
-let coins = 0;
+let dailyCoins = 0;
+let epicCoins = 0;
 let streakFreezes = 0;
 let frozenDates = [];
 let rewardedDates = [];
+let unlockedEpicPerks = [];
 
 // =========================================================================
 // INICIALIZACIÓN
@@ -156,6 +158,7 @@ document.addEventListener('DOMContentLoaded', () => {
   updateTimerUI();
   updateRoundsUI();
   refreshProgressView();
+  refreshShopView();
 
   const manualForm = document.getElementById('manual-session-form');
   if (manualForm) {
@@ -212,15 +215,13 @@ function loadSessions() {
       const parsed = JSON.parse(raw);
       if (Array.isArray(parsed)) {
         sessions = parsed.filter(i => i && typeof i.date === 'string').map(normalizeSessionItem);
-        coins = 0;
-        streakFreezes = 0;
-        frozenDates = [];
-        rewardedDates = [];
       } else if (parsed && typeof parsed === 'object') {
         sessions = Array.isArray(parsed.sessions)
           ? parsed.sessions.filter(i => i && typeof i.date === 'string').map(normalizeSessionItem)
           : [];
-        coins = Math.max(0, Number(parsed.coins) || 0);
+        const rawDaily = typeof parsed.dailyCoins === 'number' ? parsed.dailyCoins : (Number(parsed.coins) || 0);
+        dailyCoins = Math.max(0, Math.floor(rawDaily / 10) * 10);
+        epicCoins = Math.max(0, Number(parsed.epicCoins) || 0);
         streakFreezes = Math.max(0, Math.min(MAX_FREEZES, Number(parsed.streakFreezes) || 0));
         frozenDates = Array.isArray(parsed.frozenDates)
           ? Array.from(new Set(parsed.frozenDates.filter(d => typeof d === 'string')))
@@ -228,14 +229,19 @@ function loadSessions() {
         rewardedDates = Array.isArray(parsed.rewardedDates)
           ? Array.from(new Set(parsed.rewardedDates.filter(d => typeof d === 'string')))
           : [];
+        unlockedEpicPerks = Array.isArray(parsed.unlockedEpicPerks)
+          ? Array.from(new Set(parsed.unlockedEpicPerks.filter(p => typeof p === 'string')))
+          : [];
       }
     }
   } catch (e) {
     sessions = [];
-    coins = 0;
+    dailyCoins = 0;
+    epicCoins = 0;
     streakFreezes = 0;
     frozenDates = [];
     rewardedDates = [];
+    unlockedEpicPerks = [];
   }
 }
 
@@ -243,10 +249,13 @@ function saveSessions() {
   try {
     const payload = {
       sessions,
-      coins,
+      dailyCoins,
+      coins: dailyCoins,
+      epicCoins,
       streakFreezes,
       frozenDates,
-      rewardedDates
+      rewardedDates,
+      unlockedEpicPerks
     };
     localStorage.setItem(STORAGE_KEY, JSON.stringify(payload));
   } catch (e) {
@@ -302,23 +311,88 @@ function buyStreakFreeze() {
     showToast(`Ya tenés el máximo (${MAX_FREEZES}/${MAX_FREEZES})`);
     return;
   }
-  if (coins < FREEZE_COST) {
-    showToast(`Te faltan ${FREEZE_COST - coins} monedas`);
+  if (dailyCoins < FREEZE_COST) {
+    showToast(`Te faltan ${FREEZE_COST - dailyCoins} monedas diarias`);
     return;
   }
 
-  coins -= FREEZE_COST;
+  dailyCoins -= FREEZE_COST;
   streakFreezes = Math.min(MAX_FREEZES, streakFreezes + 1);
   saveSessions();
   refreshProgressView();
+  refreshShopView();
   showToast(`Protector comprado (${streakFreezes}/${MAX_FREEZES})`);
+}
+
+function buyEpicReward(perkId, cost) {
+  if (unlockedEpicPerks.includes(perkId)) {
+    showToast('Ya desbloqueaste este extra');
+    return;
+  }
+  if (epicCoins < cost) {
+    showToast(`Te faltan ${cost - epicCoins} monedas épicas`);
+    return;
+  }
+
+  epicCoins -= cost;
+  unlockedEpicPerks.push(perkId);
+  saveSessions();
+  refreshShopView();
+  showToast('¡Extra épico desbloqueado!');
+}
+
+function refreshShopView() {
+  const dailyEl = document.getElementById('shop-daily-coins');
+  const epicEl = document.getElementById('shop-epic-coins');
+  const freezeCountEl = document.getElementById('shop-freeze-count');
+  const buyBtn = document.getElementById('btn-buy-freeze');
+  const buyLabel = document.getElementById('buy-freeze-label');
+
+  if (dailyEl) dailyEl.textContent = dailyCoins;
+  if (epicEl) epicEl.textContent = epicCoins;
+  if (freezeCountEl) freezeCountEl.textContent = `${streakFreezes}/${MAX_FREEZES}`;
+
+  if (buyBtn && buyLabel) {
+    if (streakFreezes >= MAX_FREEZES) {
+      buyBtn.disabled = true;
+      buyLabel.textContent = `Máximo Alcanzado (${MAX_FREEZES}/${MAX_FREEZES})`;
+    } else if (dailyCoins < FREEZE_COST) {
+      buyBtn.disabled = true;
+      buyLabel.textContent = `Protector · ${FREEZE_COST} Monedas (Faltan ${FREEZE_COST - dailyCoins})`;
+    } else {
+      buyBtn.disabled = false;
+      buyLabel.textContent = `Comprar Protector · ${FREEZE_COST} Monedas`;
+    }
+  }
+
+  const frameBtn = document.getElementById('btn-buy-epic-frame');
+  if (frameBtn) {
+    if (unlockedEpicPerks.includes('frame')) {
+      frameBtn.disabled = true;
+      frameBtn.textContent = 'Activo';
+    } else {
+      frameBtn.disabled = epicCoins < 25;
+      frameBtn.textContent = '25 Épicas';
+    }
+  }
+
+  const chimeBtn = document.getElementById('btn-buy-epic-chime');
+  if (chimeBtn) {
+    if (unlockedEpicPerks.includes('chime')) {
+      chimeBtn.disabled = true;
+      chimeBtn.textContent = 'Activo';
+    } else {
+      chimeBtn.disabled = epicCoins < 30;
+      chimeBtn.textContent = '30 Épicas';
+    }
+  }
 }
 
 // =========================================================================
 // NAVEGACIÓN INFERIOR FIJA
 // =========================================================================
 function switchView(viewName) {
-  const views = ['timer', 'exercises', 'progress'];
+  const views = ['timer', 'exercises', 'progress', 'shop'];
   views.forEach(v => {
     const section = document.getElementById(`view-${v}`);
     const btn = document.getElementById(`nav-${v}`);
@@ -337,6 +411,8 @@ function switchView(viewName) {
   window.scrollTo({ top: 0, behavior: 'instant' });
   if (viewName === 'progress') {
     refreshProgressView();
+  } else if (viewName === 'shop') {
+    refreshShopView();
   }
 }
 
@@ -411,7 +487,10 @@ function playSoftFinishAlert() {
     const AudioCtx = window.AudioContext || window.webkitAudioContext;
     if (!AudioCtx) return;
     const ctx = new AudioCtx();
-    const freqs = [440, 554.37, 659.25];
+    const hasExtraChime = unlockedEpicPerks.includes('chime');
+    const freqs = hasExtraChime ? [440, 554.37, 659.25, 880] : [440, 554.37, 659.25];
+    const duration = hasExtraChime ? 0.85 : 0.55;
+
     freqs.forEach((f, i) => {
       const osc = ctx.createOscillator();
       const gain = ctx.createGain();
@@ -419,11 +498,11 @@ function playSoftFinishAlert() {
       osc.frequency.setValueAtTime(f, ctx.currentTime + i * 0.25);
       gain.gain.setValueAtTime(0.001, ctx.currentTime + i * 0.25);
       gain.gain.linearRampToValueAtTime(0.14, ctx.currentTime + i * 0.25 + 0.05);
-      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + i * 0.25 + 0.55);
+      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + i * 0.25 + duration);
       osc.connect(gain);
       gain.connect(ctx.destination);
       osc.start(ctx.currentTime + i * 0.25);
-      osc.stop(ctx.currentTime + i * 0.25 + 0.56);
+      osc.stop(ctx.currentTime + i * 0.25 + duration + 0.02);
     });
   } catch (e) {}
 }
@@ -630,7 +709,7 @@ function toggleChecklistItem(id) {
   renderQuickChecklist();
 
   if (EXERCISES.every(ex => checklistState[ex.id])) {
-    showToast('¡6 ejercicios listos! Toca "1 Vuelta Completa"');
+    showToast('¡6 ejercicios listos! Toca "+1 Vuelta"');
   }
 }
 
@@ -652,19 +731,36 @@ function selectEffort(effort) {
   });
 }
 
-function tryAwardTodayCoins(dateISO, rounds) {
+function applySessionRewards(dateISO, rounds, previousBestRounds) {
   const todayISO = getTodayISO();
-  if (dateISO !== todayISO) return '';
-  if (!completed20MinToday || rounds <= 0) return '';
-  if (rewardedDates.includes(todayISO)) return '';
+  const messages = [];
 
-  coins += COINS_PER_SESSION;
-  rewardedDates.push(todayISO);
-  return ` (+${COINS_PER_SESSION} monedas)`;
+  // 1. Moneda Diaria: solo al completar los 20 min del día, exactamente 10 (tope 10/día)
+  if (dateISO === todayISO && completed20MinToday && rounds > 0 && !rewardedDates.includes(todayISO)) {
+    dailyCoins += DAILY_COINS_REWARD;
+    rewardedDates.push(todayISO);
+    messages.push(`+${DAILY_COINS_REWARD} diarias`);
+  }
+
+  // 2. Moneda Épica: por superar marca personal o esfuerzo extra
+  let epicEarned = 0;
+  if (rounds > previousBestRounds && rounds > 0) {
+    epicEarned += 20;
+  }
+  if (selectedEffort === 'Fuerte' && rounds > 0) {
+    epicEarned += 5;
+  }
+  if (epicEarned > 0) {
+    epicCoins += epicEarned;
+    messages.push(`+${epicEarned} épicas`);
+  }
+
+  return messages.length ? ` (${messages.join(', ')})` : '';
 }
 
 function saveTodaySession() {
   const today = getTodayISO();
+  const previousBestRounds = sessions.reduce((max, s) => Math.max(max, Number(s.rounds) || 0), 0);
   const idx = sessions.findIndex(s => s.date === today);
   const record = {
     date: today,
@@ -679,14 +775,15 @@ function saveTodaySession() {
     } else {
       sessions.push(record);
     }
-    const earnedMsg = tryAwardTodayCoins(today, currentRounds);
+    const rewardMsg = applySessionRewards(today, currentRounds, previousBestRounds);
     saveSessions();
     refreshProgressView();
+    refreshShopView();
 
     if (currentRounds > 0 && !completed20MinToday && !rewardedDates.includes(today)) {
-      showToast(`Guardado: ${currentRounds} vueltas (Completa los 20 min para monedas)`);
+      showToast(`Guardado: ${currentRounds} vueltas (20 min dan +10 diarias)${rewardMsg}`);
     } else {
-      showToast(`Guardado: ${currentRounds} vueltas (${selectedEffort})${earnedMsg}`);
+      showToast(`Guardado: ${currentRounds} vueltas (${selectedEffort})${rewardMsg}`);
     }
   };
 
@@ -1332,7 +1429,7 @@ function startSkeletonAnimationLoop() {
 }
 
 // =========================================================================
-// VISTA 3: PROGRESO MENSUAL, TIENDA Y COMPARTIR IMAGEN DE RACHA
+// VISTA 3: PROGRESO MENSUAL Y COMPARTIR IMAGEN DE RACHA
 // =========================================================================
 function changeMonthOffset(delta) {
   if (monthOffset + delta > 0) return;
@@ -1441,23 +1538,8 @@ function refreshProgressView() {
 
   const coinsEl = document.getElementById('stat-coins');
   const freezesEl = document.getElementById('stat-freezes');
-  if (coinsEl) coinsEl.textContent = coins;
+  if (coinsEl) coinsEl.textContent = dailyCoins;
   if (freezesEl) freezesEl.textContent = streakFreezes;
-
-  const buyBtn = document.getElementById('btn-buy-freeze');
-  const buyLabel = document.getElementById('buy-freeze-label');
-  if (buyBtn && buyLabel) {
-    if (streakFreezes >= MAX_FREEZES) {
-      buyBtn.disabled = true;
-      buyLabel.textContent = `Máximo Alcanzado (${MAX_FREEZES}/${MAX_FREEZES})`;
-    } else if (coins < FREEZE_COST) {
-      buyBtn.disabled = true;
-      buyLabel.textContent = `Protector (${FREEZE_COST} Monedas · Faltan ${FREEZE_COST - coins})`;
-    } else {
-      buyBtn.disabled = false;
-      buyLabel.textContent = `Comprar Protector (${FREEZE_COST} Monedas)`;
-    }
-  }
 
   const rowsContainer = document.getElementById('monthly-calendar-rows');
   if (!rowsContainer) return;
@@ -1578,6 +1660,7 @@ function getStreakPalette(streakDays, styleIndex) {
   const baseBg = isSpecial ? '#FFFFFF' : '#000000';
   const baseFg = isSpecial ? '#000000' : '#FFFFFF';
   const baseMuted = isSpecial ? '#666666' : '#A3A3A3';
+  const hasPerkFrame = unlockedEpicPerks.includes('frame');
 
   if (styleIndex === 1) {
     return {
@@ -1585,6 +1668,7 @@ function getStreakPalette(streakDays, styleIndex) {
       fg: baseBg,
       muted: isSpecial ? '#A3A3A3' : '#666666',
       framed: true,
+      doubleFrame: hasPerkFrame,
       fillCalendar: false
     };
   }
@@ -1595,6 +1679,7 @@ function getStreakPalette(streakDays, styleIndex) {
       fg: baseFg,
       muted: baseMuted,
       framed: true,
+      doubleFrame: hasPerkFrame,
       fillCalendar: true
     };
   }
@@ -1603,7 +1688,8 @@ function getStreakPalette(streakDays, styleIndex) {
     bg: baseBg,
     fg: baseFg,
     muted: baseMuted,
-    framed: isSpecial,
+    framed: isSpecial || hasPerkFrame,
+    doubleFrame: hasPerkFrame,
     fillCalendar: false
   };
 }
@@ -1673,6 +1759,10 @@ function renderStreakCanvas(canvas, styleIndex = selectedStreakStyleIndex) {
     ctx.strokeStyle = palette.fg;
     ctx.lineWidth = 8;
     ctx.strokeRect(36, 36, canvas.width - 72, canvas.height - 72);
+    if (palette.doubleFrame) {
+      ctx.lineWidth = 4;
+      ctx.strokeRect(52, 52, canvas.width - 104, canvas.height - 104);
+    }
   }
 
   ctx.textAlign = 'left';
@@ -1861,6 +1951,7 @@ function adjustModalRounds(delta) {
 function handleManualSessionSubmit(e) {
   e.preventDefault();
   const todayISO = getTodayISO();
+  const previousBestRounds = sessions.reduce((max, s) => Math.max(max, Number(s.rounds) || 0), 0);
   const dateEl = document.getElementById('modal-date');
   const roundsEl = document.getElementById('modal-rounds');
   const effortEl = document.getElementById('modal-effort');
@@ -1888,12 +1979,13 @@ function handleManualSessionSubmit(e) {
     sessions.push(record);
   }
 
-  const earnedMsg = tryAwardTodayCoins(date, rounds);
+  const rewardMsg = applySessionRewards(date, rounds, previousBestRounds);
 
   saveSessions();
   closeSessionModal();
   refreshProgressView();
-  showToast(`Guardado: ${formatDisplayDate(date)}${earnedMsg}`);
+  refreshShopView();
+  showToast(`Guardado: ${formatDisplayDate(date)}${rewardMsg}`);
 }
 
 function confirmDeleteSession(date) {
@@ -1904,6 +1996,7 @@ function confirmDeleteSession(date) {
       sessions = sessions.filter(s => s.date !== date);
       saveSessions();
       refreshProgressView();
+      refreshShopView();
       showToast('Registro eliminado');
     }
   );
@@ -1912,10 +2005,13 @@ function confirmDeleteSession(date) {
 function exportProgressJSON() {
   const backupData = {
     sessions,
-    coins,
+    dailyCoins,
+    coins: dailyCoins,
+    epicCoins,
     streakFreezes,
     frozenDates,
-    rewardedDates
+    rewardedDates,
+    unlockedEpicPerks
   };
   const blob = new Blob([JSON.stringify(backupData, null, 2)], { type: 'application/json' });
   const url = URL.createObjectURL(blob);
@@ -1944,7 +2040,9 @@ function importProgressJSON(event) {
         sessions = imported.sessions
           .filter(item => item && typeof item.date === 'string')
           .map(normalizeSessionItem);
-        coins = Math.max(0, Number(imported.coins) || 0);
+        const rawDaily = typeof imported.dailyCoins === 'number' ? imported.dailyCoins : (Number(imported.coins) || 0);
+        dailyCoins = Math.max(0, Math.floor(rawDaily / 10) * 10);
+        epicCoins = Math.max(0, Number(imported.epicCoins) || 0);
         streakFreezes = Math.max(0, Math.min(MAX_FREEZES, Number(imported.streakFreezes) || 0));
         frozenDates = Array.isArray(imported.frozenDates)
           ? Array.from(new Set(imported.frozenDates.filter(d => typeof d === 'string')))
@@ -1952,12 +2050,16 @@ function importProgressJSON(event) {
         rewardedDates = Array.isArray(imported.rewardedDates)
           ? Array.from(new Set(imported.rewardedDates.filter(d => typeof d === 'string')))
           : [];
+        unlockedEpicPerks = Array.isArray(imported.unlockedEpicPerks)
+          ? Array.from(new Set(imported.unlockedEpicPerks.filter(p => typeof p === 'string')))
+          : [];
       } else {
         throw new Error('Inválido');
       }
       applyAutomaticStreakFreezes();
       saveSessions();
       refreshProgressView();
+      refreshShopView();
       showToast(`Importadas ${sessions.length} sesiones`);
     } catch (err) {
       showToast('Archivo JSON inválido');
