@@ -1529,6 +1529,8 @@ function refreshProgressView() {
     `${trainedDaysCount} ${trainedDaysCount === 1 ? 'día entrenado' : 'días entrenados'}`;
 }
 
+let selectedStreakStyleIndex = 0;
+
 function isSpecialStreakMilestone(streakDays) {
   return (
     streakDays >= 365 ||
@@ -1542,58 +1544,236 @@ function isSpecialStreakMilestone(streakDays) {
   );
 }
 
-function drawSimpleStreakIcon(ctx, x, y, size, color) {
+function getStreakPalette(streakDays, styleIndex) {
+  const isSpecial = isSpecialStreakMilestone(streakDays);
+
+  // Colores invertidos respecto a la versión anterior:
+  // Normal: fondo negro (#000000), texto/ícono blanco (#FFFFFF)
+  // Especial: fondo blanco (#FFFFFF), texto/ícono negro (#000000)
+  const baseBg = isSpecial ? '#FFFFFF' : '#000000';
+  const baseFg = isSpecial ? '#000000' : '#FFFFFF';
+  const baseMuted = isSpecial ? '#666666' : '#A3A3A3';
+
+  if (styleIndex === 1) {
+    // Estilo 2: invertido respecto al base
+    return {
+      bg: baseFg,
+      fg: baseBg,
+      muted: isSpecial ? '#A3A3A3' : '#666666',
+      framed: true,
+      fillCalendar: false
+    };
+  }
+
+  if (styleIndex === 2) {
+    // Estilo 3: calendario relleno sólido con número contrastado
+    return {
+      bg: baseBg,
+      fg: baseFg,
+      muted: baseMuted,
+      framed: true,
+      fillCalendar: true
+    };
+  }
+
+  // Estilo 1: limpio clásico
+  return {
+    bg: baseBg,
+    fg: baseFg,
+    muted: baseMuted,
+    framed: isSpecial,
+    fillCalendar: false
+  };
+}
+
+function drawCalendarWithStreakNumber(ctx, cx, cy, size, streakNumber, palette) {
+  const x = cx - size / 2;
+  const y = cy - size / 2;
+  const headerH = size * 0.24;
+
   ctx.save();
-  ctx.strokeStyle = color;
-  ctx.fillStyle = color;
-  ctx.lineWidth = 7;
   ctx.lineCap = 'round';
   ctx.lineJoin = 'round';
 
-  ctx.strokeRect(x, y, size, size);
+  // Cuerpo del calendario
+  if (palette.fillCalendar) {
+    ctx.fillStyle = palette.fg;
+    ctx.fillRect(x, y, size, size);
+  } else {
+    ctx.fillStyle = palette.bg;
+    ctx.fillRect(x, y, size, size);
+    ctx.strokeStyle = palette.fg;
+    ctx.lineWidth = 10;
+    ctx.strokeRect(x, y, size, size);
+  }
 
+  // Franja superior del calendario
+  const stripColor = palette.fillCalendar ? palette.bg : palette.fg;
+  ctx.fillStyle = stripColor;
+  ctx.fillRect(x, y, size, headerH);
+
+  // Dos argollas superiores
+  ctx.strokeStyle = palette.fg;
+  ctx.lineWidth = 9;
   ctx.beginPath();
-  ctx.moveTo(x, y + size * 0.28);
-  ctx.lineTo(x + size, y + size * 0.28);
+  ctx.moveTo(x + size * 0.27, y - 18);
+  ctx.lineTo(x + size * 0.27, y + 6);
+  ctx.moveTo(x + size * 0.73, y - 18);
+  ctx.lineTo(x + size * 0.73, y + 6);
   ctx.stroke();
 
-  ctx.lineWidth = 6;
-  ctx.beginPath();
-  ctx.moveTo(x + size * 0.28, y - 12);
-  ctx.lineTo(x + size * 0.28, y + 6);
-  ctx.moveTo(x + size * 0.72, y - 12);
-  ctx.lineTo(x + size * 0.72, y + 6);
-  ctx.stroke();
+  // Número de racha adentro del cuerpo del calendario
+  const bodyTop = y + headerH;
+  const bodyCenterY = bodyTop + (size - headerH) * 0.54;
+  const digits = String(streakNumber);
+  const numSize =
+    digits.length >= 4 ? Math.round(size * 0.28) :
+    digits.length === 3 ? Math.round(size * 0.34) :
+    digits.length === 2 ? Math.round(size * 0.42) :
+    Math.round(size * 0.48);
 
-  ctx.beginPath();
-  ctx.arc(x + size * 0.5, y + size * 0.63, size * 0.13, 0, Math.PI * 2);
-  ctx.fill();
+  ctx.fillStyle = palette.fillCalendar ? palette.bg : palette.fg;
+  ctx.font = `bold ${numSize}px Arimo, sans-serif`;
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.fillText(digits, cx, bodyCenterY);
 
   ctx.restore();
 }
 
-async function shareStreakImage() {
+function renderStreakCanvas(canvas, styleIndex = selectedStreakStyleIndex) {
+  if (!canvas) return;
   const { currentStreak } = calculateStreaks();
   const todayISO = getTodayISO();
-  const isSpecial = isSpecialStreakMilestone(currentStreak);
+  const palette = getStreakPalette(currentStreak, styleIndex);
+  const ctx = canvas.getContext('2d');
 
-  const bgColor = isSpecial ? '#000000' : '#FFFFFF';
-  const fgColor = isSpecial ? '#FFFFFF' : '#000000';
-  const mutedColor = isSpecial ? '#A3A3A3' : '#737373';
+  ctx.fillStyle = palette.bg;
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
 
+  if (palette.framed) {
+    ctx.strokeStyle = palette.fg;
+    ctx.lineWidth = 8;
+    ctx.strokeRect(36, 36, canvas.width - 72, canvas.height - 72);
+  }
+
+  // Arriba un poco chico: "AMRAP" y abajo el link de la web
+  ctx.textAlign = 'left';
+  ctx.textBaseline = 'alphabetic';
+  ctx.fillStyle = palette.fg;
+  ctx.font = 'bold 32px Arimo, sans-serif';
+  ctx.fillText('AMRAP', 84, 108);
+
+  ctx.fillStyle = palette.muted;
+  ctx.font = '600 22px Arimo, sans-serif';
+  ctx.fillText('araujo-phi.github.io/AMRAP', 84, 142);
+
+  // Centro: número adentro del ícono de calendario y debajo "días de racha"
+  const calSize = 310;
+  const calCenterY = 485;
+  drawCalendarWithStreakNumber(ctx, canvas.width / 2, calCenterY, calSize, currentStreak, palette);
+
+  ctx.fillStyle = palette.fg;
+  ctx.font = 'bold 42px Arimo, sans-serif';
+  ctx.textAlign = 'center';
+  ctx.fillText(
+    currentStreak === 1 ? 'día de racha' : 'días de racha',
+    canvas.width / 2,
+    calCenterY + calSize / 2 + 72
+  );
+
+  // Abajo en la esquina, más clarito: la fecha
+  ctx.fillStyle = palette.muted;
+  ctx.font = '600 26px Arimo, sans-serif';
+  ctx.textAlign = 'left';
+  ctx.fillText(formatDisplayDate(todayISO), 84, canvas.height - 72);
+}
+
+function selectStreakStyle(styleIndex) {
+  selectedStreakStyleIndex = styleIndex;
+  document.querySelectorAll('.streak-style-btn').forEach(btn => {
+    const active = Number(btn.dataset.style) === styleIndex;
+    btn.classList.toggle('bg-pureblack', active);
+    btn.classList.toggle('text-purewhite', active);
+    btn.classList.toggle('bg-purewhite', !active);
+    btn.classList.toggle('text-pureblack', !active);
+  });
+  const previewCanvas = document.getElementById('streak-preview-canvas');
+  renderStreakCanvas(previewCanvas, selectedStreakStyleIndex);
+}
+
+function shareStreakImage() {
+  const modal = document.getElementById('share-streak-modal');
+  if (!modal) return;
+  selectStreakStyle(selectedStreakStyleIndex);
+  modal.classList.remove('hidden');
+  modal.classList.add('flex');
+}
+
+function closeShareStreakModal() {
+  const modal = document.getElementById('share-streak-modal');
+  if (!modal) return;
+  modal.classList.add('hidden');
+  modal.classList.remove('flex');
+}
+
+async function getStreakImageBlob() {
   const canvas = document.createElement('canvas');
   canvas.width = 1080;
   canvas.height = 1080;
-  const ctx = canvas.getContext('2d');
+  renderStreakCanvas(canvas, selectedStreakStyleIndex);
+  return new Promise(resolve => canvas.toBlob(resolve, 'image/png'));
+}
 
-  ctx.fillStyle = bgColor;
-  ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-  if (isSpecial) {
-    ctx.strokeStyle = '#FFFFFF';
-    ctx.lineWidth = 6;
-    ctx.strokeRect(42, 42, canvas.width - 84, canvas.height - 84);
+async function downloadStreakPreviewImage() {
+  const { currentStreak } = calculateStreaks();
+  const todayISO = getTodayISO();
+  const blob = await getStreakImageBlob();
+  if (!blob) {
+    showToast('No se pudo generar la imagen');
+    return;
   }
+
+  const fileName = `racha-amrap-${currentStreak}d-e${selectedStreakStyleIndex + 1}-${todayISO}.png`;
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = fileName;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+  showToast('Imagen PNG descargada');
+}
+
+async function confirmShareStreakImage() {
+  const { currentStreak } = calculateStreaks();
+  const todayISO = getTodayISO();
+  const blob = await getStreakImageBlob();
+  if (!blob) {
+    showToast('No se pudo generar la imagen');
+    return;
+  }
+
+  const fileName = `racha-amrap-${currentStreak}d-e${selectedStreakStyleIndex + 1}-${todayISO}.png`;
+  const file = new File([blob], fileName, { type: 'image/png' });
+
+  if (navigator.share && navigator.canShare && navigator.canShare({ files: [file] })) {
+    try {
+      await navigator.share({
+        title: 'Mi racha en AMRAP',
+        text: `${currentStreak} ${currentStreak === 1 ? 'día' : 'días'} de racha en AMRAP.`,
+        files: [file]
+      });
+      showToast('Racha compartida');
+      return;
+    } catch (err) {
+      if (err && err.name === 'AbortError') return;
+    }
+  }
+
+  await downloadStreakPreviewImage();
+}
 
   ctx.textAlign = 'left';
   ctx.fillStyle = fgColor;
