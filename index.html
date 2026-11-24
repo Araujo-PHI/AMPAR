@@ -297,7 +297,7 @@
         </button>
       </div>
 
-      <!-- 2 Tarjetas de Métricas y Racha -->
+<!-- 2 Tarjetas de Métricas y Racha + Botón Compartir -->
       <div class="grid grid-cols-2 gap-2.5">
         <div class="brutal-border p-3 bg-pureblack text-purewhite text-center">
           <div class="text-[11px] font-bold uppercase tracking-wider text-neutral-300">Racha Actual</div>
@@ -307,6 +307,46 @@
           <div class="text-[11px] font-bold uppercase tracking-wider text-neutral-600">Récord Vueltas</div>
           <div id="stat-best-rounds" class="text-xl sm:text-3xl font-bold tabular-nums mt-1">0</div>
         </div>
+      </div>
+
+      <button type="button" onclick="shareStreakImage()" class="w-full min-h-[50px] px-4 bg-purewhite text-pureblack border-2 border-pureblack text-xs sm:text-sm font-bold uppercase tracking-wider flex items-center justify-center gap-2 btn-press">
+        <svg class="w-4 h-4 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4">
+          <circle cx="18" cy="5" r="3"></circle>
+          <circle cx="6" cy="12" r="3"></circle>
+          <circle cx="18" cy="19" r="3"></circle>
+          <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line>
+          <line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line>
+        </svg>
+        <span id="share-streak-label">Compartir Imagen de Racha</span>
+      </button>
+
+      <!-- Monedas y Tienda de Protector de Racha -->
+      <div class="brutal-border bg-purewhite p-4 space-y-3">
+        <div class="flex items-center justify-between border-b-2 border-pureblack pb-2.5">
+          <div>
+            <div class="text-[11px] font-bold uppercase tracking-widest text-neutral-600">Tienda</div>
+            <h3 class="text-sm font-bold uppercase tracking-wider mt-0.5">Protector de Racha</h3>
+          </div>
+          <div class="px-3 py-1.5 border-2 border-pureblack bg-pureblack text-purewhite text-xs font-bold tabular-nums uppercase">
+            <span id="stat-coins">0</span> Monedas
+          </div>
+        </div>
+
+        <div class="flex items-center justify-between gap-3 text-xs">
+          <p class="text-neutral-700 leading-snug">
+            Salva tu racha si se te pasa 1 día. Máximo 2 protectores acumulados.
+          </p>
+          <span class="px-2.5 py-1 border-2 border-pureblack font-bold tabular-nums whitespace-nowrap shrink-0">
+            <span id="stat-freezes">0</span>/2
+          </span>
+        </div>
+
+        <button id="btn-buy-freeze" type="button" onclick="buyStreakFreeze()" class="w-full min-h-[50px] px-4 bg-pureblack text-purewhite border-2 border-pureblack text-xs font-bold uppercase tracking-wider flex items-center justify-center gap-2 btn-press disabled:opacity-40 disabled:cursor-not-allowed">
+          <svg class="w-4 h-4 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4">
+            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+          </svg>
+          <span id="buy-freeze-label">Comprar Protector (30 Monedas)</span>
+        </button>
       </div>
 
       <!-- Calendario Mensual Tipo Duolingo (Estilo Monocromático Brutalista) -->
