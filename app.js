@@ -116,7 +116,7 @@ const EXERCISES = [
 // ESTADO GLOBAL Y STORAGE
 // =========================================================================
 const STORAGE_KEY = 'amrap_13yo_mobile_v2';
-const TOTAL_SECONDS = 5; // 20:00
+const TOTAL_SECONDS = 20 * 60; // 20:00
 const COINS_PER_SESSION = 10;
 const FREEZE_COST = 30;
 const MAX_FREEZES = 2;
