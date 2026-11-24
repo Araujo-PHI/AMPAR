@@ -1,6 +1,3 @@
-// =========================================================================
-// DATOS DE LOS 6 EJERCICIOS (SISTEMA DE ESQUELETO ARTICULADO DE 11 PARTES)
-// =========================================================================
 const EXERCISES = [
   {
     id: 'squat',
@@ -47,7 +44,7 @@ const EXERCISES = [
     rhythm: 'Giro controlado • Abdomen firme',
     equipment: '1 pelota de fútbol',
     animHeader: 'PASO 1 Y PASO 2 • GIROS RUSOS CON PELOTA',
-    animFooter: 'Izquierda: Paso 1 (lado delantero) • Derecha: Paso 2 (lado trasero)',
+    animFooter: 'Izquierda: Paso 1 • Derecha: Paso 2',
     steps: [
       'Siéntate en el suelo con las rodillas flexionadas, talones apoyados y el torso levemente inclinado hacia atrás.',
       'Sostén la pelota con ambas manos frente al pecho manteniendo la espalda recta y el abdomen firme.',
@@ -112,13 +109,10 @@ const EXERCISES = [
   }
 ];
 
-// =========================================================================
-// ESTADO GLOBAL Y STORAGE
-// =========================================================================
 const STORAGE_KEY = 'amrap_13yo_mobile_v2';
-const TOTAL_SECONDS = 20 * 60; // 20:00
-const DAILY_COINS_REWARD = 10; // Exactamente 10 monedas diarias, máximo 10/día
-const FREEZE_COST = 100; // Protector de racha cuesta 100 monedas diarias
+const TOTAL_SECONDS = 20 * 60;
+const DAILY_COINS_REWARD = 10;
+const FREEZE_COST = 100;
 const MAX_FREEZES = 2;
 
 let timerSecondsLeft = TOTAL_SECONDS;
@@ -131,12 +125,11 @@ let resetConfirmTimeout = null;
 let currentRounds = 0;
 let selectedEffort = 'Normal';
 let checklistState = {};
-let selectedExerciseFilter = 'all';
+let selectedExerciseFilter = EXERCISES[0].id;
 let monthOffset = 0;
 let wakeLockSentinel = null;
 let selectedStreakStyleIndex = 0;
 
-// Estructura de sesión: { date: 'YYYY-MM-DD', rounds: number, effort: string, notes: string }
 let sessions = [];
 let dailyCoins = 0;
 let epicCoins = 0;
@@ -145,9 +138,6 @@ let frozenDates = [];
 let rewardedDates = [];
 let unlockedEpicPerks = [];
 
-// =========================================================================
-// INICIALIZACIÓN
-// =========================================================================
 document.addEventListener('DOMContentLoaded', () => {
   loadSessions();
   applyAutomaticStreakFreezes();
@@ -259,7 +249,7 @@ function saveSessions() {
     };
     localStorage.setItem(STORAGE_KEY, JSON.stringify(payload));
   } catch (e) {
-    showToast('No se pudo guardar en este navegador.');
+    showToast('No se pudo guardar.');
   }
 }
 
@@ -298,21 +288,17 @@ function applyAutomaticStreakFreezes() {
   if (consumedCount > 0) {
     frozenDates = Array.from(frozenSet).sort();
     saveSessions();
-    showToast(
-      consumedCount === 1
-        ? 'Protector usado: salvaste 1 día de racha'
-        : `Protectores usados: salvaste ${consumedCount} días`
-    );
+    showToast(consumedCount === 1 ? 'Protector usado: 1 día salvado' : `Protectores usados: ${consumedCount} días`);
   }
 }
 
 function buyStreakFreeze() {
   if (streakFreezes >= MAX_FREEZES) {
-    showToast(`Ya tenés el máximo (${MAX_FREEZES}/${MAX_FREEZES})`);
+    showToast(`Máximo ${MAX_FREEZES}/${MAX_FREEZES}`);
     return;
   }
   if (dailyCoins < FREEZE_COST) {
-    showToast(`Te faltan ${FREEZE_COST - dailyCoins} monedas diarias`);
+    showToast(`Faltan ${FREEZE_COST - dailyCoins} monedas diarias`);
     return;
   }
 
@@ -326,11 +312,11 @@ function buyStreakFreeze() {
 
 function buyEpicReward(perkId, cost) {
   if (unlockedEpicPerks.includes(perkId)) {
-    showToast('Ya desbloqueaste este extra');
+    showToast('Ya desbloqueado');
     return;
   }
   if (epicCoins < cost) {
-    showToast(`Te faltan ${cost - epicCoins} monedas épicas`);
+    showToast(`Faltan ${cost - epicCoins} monedas épicas`);
     return;
   }
 
@@ -338,7 +324,7 @@ function buyEpicReward(perkId, cost) {
   unlockedEpicPerks.push(perkId);
   saveSessions();
   refreshShopView();
-  showToast('¡Extra épico desbloqueado!');
+  showToast('Extra desbloqueado');
 }
 
 function refreshShopView() {
@@ -355,42 +341,29 @@ function refreshShopView() {
   if (buyBtn && buyLabel) {
     if (streakFreezes >= MAX_FREEZES) {
       buyBtn.disabled = true;
-      buyLabel.textContent = `Máximo Alcanzado (${MAX_FREEZES}/${MAX_FREEZES})`;
+      buyLabel.textContent = `Máximo (${MAX_FREEZES}/${MAX_FREEZES})`;
     } else if (dailyCoins < FREEZE_COST) {
       buyBtn.disabled = true;
-      buyLabel.textContent = `Protector · ${FREEZE_COST} Monedas (Faltan ${FREEZE_COST - dailyCoins})`;
+      buyLabel.textContent = `Protector · ${FREEZE_COST} monedas (faltan ${FREEZE_COST - dailyCoins})`;
     } else {
       buyBtn.disabled = false;
-      buyLabel.textContent = `Comprar Protector · ${FREEZE_COST} Monedas`;
+      buyLabel.textContent = `Protector · ${FREEZE_COST} monedas`;
     }
   }
 
   const frameBtn = document.getElementById('btn-buy-epic-frame');
   if (frameBtn) {
-    if (unlockedEpicPerks.includes('frame')) {
-      frameBtn.disabled = true;
-      frameBtn.textContent = 'Activo';
-    } else {
-      frameBtn.disabled = epicCoins < 25;
-      frameBtn.textContent = '25 Épicas';
-    }
+    frameBtn.disabled = unlockedEpicPerks.includes('frame') || epicCoins < 25;
+    frameBtn.textContent = unlockedEpicPerks.includes('frame') ? 'Activo' : '25 Épicas';
   }
 
   const chimeBtn = document.getElementById('btn-buy-epic-chime');
   if (chimeBtn) {
-    if (unlockedEpicPerks.includes('chime')) {
-      chimeBtn.disabled = true;
-      chimeBtn.textContent = 'Activo';
-    } else {
-      chimeBtn.disabled = epicCoins < 30;
-      chimeBtn.textContent = '30 Épicas';
-    }
+    chimeBtn.disabled = unlockedEpicPerks.includes('chime') || epicCoins < 30;
+    chimeBtn.textContent = unlockedEpicPerks.includes('chime') ? 'Activo' : '30 Épicas';
   }
 }
 
-// =========================================================================
-// NAVEGACIÓN INFERIOR FIJA
-// =========================================================================
 function switchView(viewName) {
   const views = ['timer', 'exercises', 'progress', 'shop'];
   views.forEach(v => {
@@ -409,24 +382,16 @@ function switchView(viewName) {
   });
 
   window.scrollTo({ top: 0, behavior: 'instant' });
-  if (viewName === 'progress') {
-    refreshProgressView();
-  } else if (viewName === 'shop') {
-    refreshShopView();
-  }
+  if (viewName === 'progress') refreshProgressView();
+  if (viewName === 'shop') refreshShopView();
 }
 
-// =========================================================================
-// SCREEN WAKE LOCK API (MANTENER PANTALLA ACTIVA)
-// =========================================================================
 async function toggleWakeLock() {
   if (wakeLockSentinel) {
-    try {
-      await wakeLockSentinel.release();
-    } catch (e) {}
+    try { await wakeLockSentinel.release(); } catch (e) {}
     wakeLockSentinel = null;
     updateWakeLockButton(false);
-    showToast('Modo pantalla activa desactivado');
+    showToast('Pantalla activa: Off');
   } else {
     await requestWakeLock(false);
   }
@@ -434,26 +399,17 @@ async function toggleWakeLock() {
 
 async function requestWakeLock(silent) {
   if (!('wakeLock' in navigator)) {
-    if (!silent) {
-      showToast('Tu navegador no soporta bloqueo automático de pantalla.');
-    }
+    if (!silent) showToast('No compatible en este navegador');
     return;
   }
   try {
     wakeLockSentinel = await navigator.wakeLock.request('screen');
     updateWakeLockButton(true);
-    if (!silent) {
-      showToast('Pantalla activa: no se apagará mientras entrenas');
-    }
-    wakeLockSentinel.addEventListener('release', () => {
-      updateWakeLockButton(false);
-    });
+    if (!silent) showToast('Pantalla activa: On');
+    wakeLockSentinel.addEventListener('release', () => updateWakeLockButton(false));
   } catch (err) {
     wakeLockSentinel = null;
     updateWakeLockButton(false);
-    if (!silent) {
-      showToast('No se pudo activar pantalla fija en este momento.');
-    }
   }
 }
 
@@ -462,25 +418,16 @@ function updateWakeLockButton(active) {
   const label = document.getElementById('wakelock-label');
   if (!btn || !label) return;
   btn.setAttribute('aria-pressed', active ? 'true' : 'false');
-  if (active) {
-    btn.classList.remove('bg-purewhite', 'text-pureblack');
-    btn.classList.add('bg-pureblack', 'text-purewhite');
-    label.textContent = 'Pantalla Activa: On';
-  } else {
-    btn.classList.remove('bg-pureblack', 'text-purewhite');
-    btn.classList.add('bg-purewhite', 'text-pureblack');
-    label.textContent = 'Pantalla Activa: Off';
-  }
+  btn.classList.toggle('bg-pureblack', active);
+  btn.classList.toggle('text-purewhite', active);
+  btn.classList.toggle('bg-purewhite', !active);
+  btn.classList.toggle('text-pureblack', !active);
+  label.textContent = active ? 'Pantalla activa: On' : 'Pantalla activa: Off';
 }
 
-// =========================================================================
-// CRONÓMETRO AMRAP 20 MINUTOS + SONIDO SUAVE WEB AUDIO + VIBRACIÓN
-// =========================================================================
 function playSoftFinishAlert() {
   if ('vibrate' in navigator) {
-    try {
-      navigator.vibrate([250, 120, 250, 120, 400]);
-    } catch (e) {}
+    try { navigator.vibrate([250, 120, 250, 120, 400]); } catch (e) {}
   }
 
   try {
@@ -517,21 +464,15 @@ function updateTimerUI() {
 
   const pct = Math.max(0, Math.min(100, (timerSecondsLeft / TOTAL_SECONDS) * 100));
   const bar = document.getElementById('timer-progress-bar');
-  if (bar) {
-    bar.style.width = `${pct}%`;
-  }
+  if (bar) bar.style.width = `${pct}%`;
 
   const badge = document.getElementById('timer-20m-badge');
   if (badge) {
-    if (completed20MinToday) {
-      badge.textContent = '20 min: Listo';
-      badge.classList.remove('bg-purewhite', 'text-pureblack');
-      badge.classList.add('bg-pureblack', 'text-purewhite');
-    } else {
-      badge.textContent = '20 min: Pendiente';
-      badge.classList.remove('bg-pureblack', 'text-purewhite');
-      badge.classList.add('bg-purewhite', 'text-pureblack');
-    }
+    badge.textContent = completed20MinToday ? '20 min: Listo' : '20 min: Pendiente';
+    badge.classList.toggle('bg-pureblack', completed20MinToday);
+    badge.classList.toggle('text-purewhite', completed20MinToday);
+    badge.classList.toggle('bg-purewhite', !completed20MinToday);
+    badge.classList.toggle('text-pureblack', !completed20MinToday);
   }
 
   const toggleBtn = document.getElementById('btn-toggle-timer');
@@ -554,18 +495,13 @@ function updateTimerUI() {
 }
 
 function toggleTimer() {
-  if (isTimerRunning) {
-    pauseTimer();
-  } else {
-    startTimer();
-  }
+  if (isTimerRunning) pauseTimer();
+  else startTimer();
 }
 
 function startTimer() {
   if (isTimerRunning) return;
-  if (timerSecondsLeft <= 0) {
-    timerSecondsLeft = TOTAL_SECONDS;
-  }
+  if (timerSecondsLeft <= 0) timerSecondsLeft = TOTAL_SECONDS;
   isTimerRunning = true;
   updateTimerUI();
 
@@ -581,12 +517,8 @@ function startTimer() {
       pauseTimer();
       completed20MinToday = true;
       updateTimerUI();
-      const sub = document.getElementById('timer-subtext');
-      if (sub) {
-        sub.textContent = '¡20 minutos cumplidos! Guarda tu sesión abajo.';
-      }
       playSoftFinishAlert();
-      showToast('¡20 minutos completados! Guarda tu sesión hoy.');
+      showToast('20 minutos listos');
     }
   }, 1000);
 }
@@ -602,7 +534,7 @@ function pauseTimer() {
 
 function handleResetTimerTap() {
   if (timerSecondsLeft === TOTAL_SECONDS && !isTimerRunning) {
-    showToast('El reloj ya está en 20:00');
+    showToast('Ya está en 20:00');
     return;
   }
 
@@ -625,25 +557,18 @@ function handleResetTimerTap() {
   } else {
     clearTimeout(resetConfirmTimeout);
     resetConfirmPending = false;
-    resetBtn.classList.remove('bg-pureblack', 'text-purewhite');
-    resetBtn.classList.add('bg-purewhite', 'text-pureblack');
+    resetBtn.classList.remove('bg-purewhite', 'text-pureblack');
+    resetBtn.classList.add('bg-pureblack', 'text-purewhite');
     resetText.textContent = 'Reiniciar';
 
     pauseTimer();
     timerSecondsLeft = TOTAL_SECONDS;
-    const sub = document.getElementById('timer-subtext');
-    if (sub) {
-      sub.textContent = 'Técnica limpia antes que velocidad';
-    }
     updateTimerUI();
-    showToast('Reloj reiniciado a 20:00');
+    showToast('Reiniciado a 20:00');
   }
 }
 
-// =========================================================================
-// CONTADOR DE VUELTAS Y CHECKLIST DE ESTACIONES
-// =========================================================================
-function changeRounds(delta) {
+function changeRounds(delta, fromFullCircuit = false) {
   currentRounds = Math.max(0, currentRounds + delta);
   updateRoundsUI();
   if (delta > 0) {
@@ -651,7 +576,7 @@ function changeRounds(delta) {
       try { navigator.vibrate(45); } catch (e) {}
     }
     resetChecklist();
-    showToast(`Vuelta ${currentRounds} sumada`);
+    showToast(fromFullCircuit ? `Vuelta completa (${currentRounds})` : `+1 vuelta (${currentRounds})`);
   }
 }
 
@@ -660,27 +585,17 @@ function updateRoundsUI() {
   if (disp) disp.textContent = currentRounds;
   const doneCount = EXERCISES.filter(ex => checklistState[ex.id]).length;
   const hint = document.getElementById('round-status-hint');
-  if (hint) hint.textContent = `${doneCount}/6 est.`;
+  if (hint) hint.textContent = `${doneCount}/6`;
 }
 
 function renderQuickChecklist() {
   const container = document.getElementById('quick-circuit-list');
   if (!container) return;
-  const allDone = EXERCISES.every(ex => checklistState[ex.id]);
-
-  const addRoundBtn = document.getElementById('btn-add-round');
-  if (addRoundBtn) {
-    if (allDone) {
-      addRoundBtn.classList.add('ring-4', 'ring-black/25');
-    } else {
-      addRoundBtn.classList.remove('ring-4', 'ring-black/25');
-    }
-  }
 
   container.innerHTML = EXERCISES.map(ex => {
     const checked = !!checklistState[ex.id];
     return `
-      <button type="button" onclick="toggleChecklistItem('${ex.id}')" class="w-full min-h-[60px] text-left border-2 border-pureblack px-3.5 py-2.5 flex items-center justify-between gap-3 btn-press ${checked ? 'bg-pureblack text-purewhite' : 'bg-purewhite text-pureblack'}">
+      <button type="button" onclick="toggleChecklistItem('${ex.id}')" class="w-full min-h-[58px] text-left border-2 border-pureblack px-3.5 py-2.5 flex items-center justify-between gap-3 btn-press ${checked ? 'bg-pureblack text-purewhite' : 'bg-purewhite text-pureblack'}">
         <div class="flex items-center gap-3 min-w-0">
           <span class="text-xs font-bold tabular-nums px-2 py-1 border ${checked ? 'border-purewhite text-purewhite' : 'border-pureblack text-pureblack'} shrink-0">
             ${ex.number}
@@ -709,7 +624,11 @@ function toggleChecklistItem(id) {
   renderQuickChecklist();
 
   if (EXERCISES.every(ex => checklistState[ex.id])) {
-    showToast('¡6 ejercicios listos! Toca "+1 Vuelta"');
+    setTimeout(() => {
+      if (EXERCISES.every(ex => checklistState[ex.id])) {
+        changeRounds(1, true);
+      }
+    }, 180);
   }
 }
 
@@ -721,13 +640,11 @@ function resetChecklist() {
 function selectEffort(effort) {
   selectedEffort = effort;
   document.querySelectorAll('.effort-btn').forEach(btn => {
-    if (btn.dataset.effort === effort) {
-      btn.classList.remove('bg-purewhite', 'text-pureblack');
-      btn.classList.add('bg-pureblack', 'text-purewhite');
-    } else {
-      btn.classList.remove('bg-pureblack', 'text-purewhite');
-      btn.classList.add('bg-purewhite', 'text-pureblack');
-    }
+    const active = btn.dataset.effort === effort;
+    btn.classList.toggle('bg-pureblack', active);
+    btn.classList.toggle('text-purewhite', active);
+    btn.classList.toggle('bg-purewhite', !active);
+    btn.classList.toggle('text-pureblack', !active);
   });
 }
 
@@ -735,19 +652,17 @@ function applySessionRewards(dateISO, rounds, previousBestRounds) {
   const todayISO = getTodayISO();
   const messages = [];
 
-  // 1. Moneda Diaria: solo al completar los 20 min del día, exactamente 10 (tope 10/día)
   if (dateISO === todayISO && completed20MinToday && rounds > 0 && !rewardedDates.includes(todayISO)) {
     dailyCoins += DAILY_COINS_REWARD;
     rewardedDates.push(todayISO);
     messages.push(`+${DAILY_COINS_REWARD} diarias`);
   }
 
-  // 2. Moneda Épica: por superar marca personal o esfuerzo extra
   let epicEarned = 0;
   if (rounds > previousBestRounds && rounds > 0) {
     epicEarned += 20;
   }
-  if (selectedEffort === 'Fuerte' && rounds > 0) {
+  if ((selectedEffort === 'Fuerte' || selectedEffort === 'A tope') && rounds > 0) {
     epicEarned += 5;
   }
   if (epicEarned > 0) {
@@ -766,31 +681,24 @@ function saveTodaySession() {
     date: today,
     rounds: currentRounds,
     effort: selectedEffort,
-    notes: idx >= 0 ? sessions[idx].notes : 'Circuito 20 min'
+    notes: idx >= 0 ? sessions[idx].notes : ''
   };
 
   const applySave = () => {
-    if (idx >= 0) {
-      sessions[idx] = record;
-    } else {
-      sessions.push(record);
-    }
+    if (idx >= 0) sessions[idx] = record;
+    else sessions.push(record);
+
     const rewardMsg = applySessionRewards(today, currentRounds, previousBestRounds);
     saveSessions();
     refreshProgressView();
     refreshShopView();
-
-    if (currentRounds > 0 && !completed20MinToday && !rewardedDates.includes(today)) {
-      showToast(`Guardado: ${currentRounds} vueltas (20 min dan +10 diarias)${rewardMsg}`);
-    } else {
-      showToast(`Guardado: ${currentRounds} vueltas (${selectedEffort})${rewardMsg}`);
-    }
+    showToast(`Guardado: ${currentRounds} vueltas${rewardMsg}`);
   };
 
   if (idx >= 0) {
     openConfirmModal(
-      'Actualizar Registro de Hoy',
-      `Hoy (${formatDisplayDate(today)}) ya tienes ${sessions[idx].rounds} vueltas guardadas. ¿Quieres actualizarlo a ${currentRounds} vueltas (${selectedEffort})?`,
+      'Actualizar hoy',
+      `Ya tenés ${sessions[idx].rounds} vueltas en ${formatDisplayDate(today)}. ¿Cambiar a ${currentRounds} vueltas?`,
       applySave
     );
   } else {
@@ -798,22 +706,15 @@ function saveTodaySession() {
   }
 }
 
-// =========================================================================
-// VISTA 2: GUÍA VISUAL DE EJERCICIOS CON ACORDEÓN COLAPSABLE
-// =========================================================================
 function renderExerciseTabs() {
   const container = document.getElementById('exercise-filter-tabs');
   if (!container) return;
-  const items = [
-    { id: 'all', label: 'Todos' },
-    ...EXERCISES.map(ex => ({ id: ex.id, label: ex.number }))
-  ];
 
-  container.innerHTML = items.map(item => {
-    const active = selectedExerciseFilter === item.id;
+  container.innerHTML = EXERCISES.map(ex => {
+    const active = selectedExerciseFilter === ex.id;
     return `
-      <button onclick="filterExercises('${item.id}')" class="min-h-[44px] px-2 text-xs font-bold uppercase border-2 border-pureblack btn-press ${active ? 'bg-pureblack text-purewhite' : 'bg-purewhite text-pureblack'}">
-        ${item.label}
+      <button type="button" onclick="filterExercises('${ex.id}')" class="min-h-[44px] px-1.5 text-xs font-bold uppercase border-2 border-pureblack btn-press ${active ? 'bg-pureblack text-purewhite' : 'bg-purewhite text-pureblack'}">
+        ${ex.number}
       </button>
     `;
   }).join('');
@@ -828,9 +729,7 @@ function filterExercises(id) {
 function renderExercisesGrid() {
   const grid = document.getElementById('exercises-grid');
   if (!grid) return;
-  const filtered = selectedExerciseFilter === 'all'
-    ? EXERCISES
-    : EXERCISES.filter(ex => ex.id === selectedExerciseFilter);
+  const filtered = EXERCISES.filter(ex => ex.id === selectedExerciseFilter);
 
   grid.innerHTML = filtered.map(ex => `
     <article class="brutal-border bg-purewhite overflow-hidden">
@@ -845,7 +744,7 @@ function renderExercisesGrid() {
       </div>
 
       <div class="p-3 bg-purewhite border-b border-lightborder">
-        <svg id="skel-svg-${ex.id}" viewBox="0 0 340 185" class="w-full h-auto bg-purewhite block" role="img" aria-label="Guía visual de ${ex.name}"></svg>
+        <svg id="skel-svg-${ex.id}" viewBox="0 0 340 185" class="w-full h-auto bg-purewhite block" role="img" aria-label="${ex.name}"></svg>
       </div>
 
       <div class="p-4 space-y-3">
@@ -860,13 +759,13 @@ function renderExercisesGrid() {
 
         <details class="border-2 border-pureblack mt-3">
           <summary class="min-h-[46px] px-3.5 py-2.5 bg-neutral-50 font-bold text-xs uppercase tracking-wider flex items-center justify-between cursor-pointer select-none">
-            <span>Ver error común y adaptación</span>
+            <span>Error y adaptación</span>
             <svg class="w-4 h-4 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
               <polyline points="6 9 12 15 18 9"></polyline>
             </svg>
           </summary>
           <div class="p-3.5 border-t border-pureblack bg-purewhite space-y-2.5 text-sm leading-relaxed">
-            <p><strong class="uppercase text-xs">Error común:</strong> ${ex.avoid}</p>
+            <p><strong class="uppercase text-xs">Error:</strong> ${ex.avoid}</p>
             <p><strong class="uppercase text-xs">Adaptación:</strong> ${ex.modification}</p>
           </div>
         </details>
@@ -877,9 +776,6 @@ function renderExercisesGrid() {
   drawStaticExerciseSVGs();
 }
 
-// =========================================================================
-// MOTOR DE CINEMÁTICA DIRECTA (FORWARD KINEMATICS) - 11 PARTES ARTICULADAS
-// =========================================================================
 let fkAnimationFrameId = null;
 
 function degToRad(deg) {
@@ -1428,9 +1324,6 @@ function startSkeletonAnimationLoop() {
   fkAnimationFrameId = requestAnimationFrame(updateAllSkeletonCanvases);
 }
 
-// =========================================================================
-// VISTA 3: PROGRESO MENSUAL Y COMPARTIR IMAGEN DE RACHA
-// =========================================================================
 function changeMonthOffset(delta) {
   if (monthOffset + delta > 0) return;
   monthOffset += delta;
@@ -1553,9 +1446,7 @@ function refreshProgressView() {
     for (let c = 0; c < 7; c++) {
       const cell = week[c];
       const activeInStreak = cell && (cell.trained || cell.protectedDay);
-      if (cell && cell.trained) {
-        trainedDaysCount++;
-      }
+      if (cell && cell.trained) trainedDaysCount++;
       if (activeInStreak) {
         if (segStart === null) segStart = c;
       } else {
@@ -1565,9 +1456,7 @@ function refreshProgressView() {
         }
       }
     }
-    if (segStart !== null) {
-      segments.push({ start: segStart, end: 6 });
-    }
+    if (segStart !== null) segments.push({ start: segStart, end: 6 });
 
     const streakBarsHTML = segments.map(seg => {
       const leftPct = (seg.start / 7) * 100;
@@ -1580,17 +1469,13 @@ function refreshProgressView() {
     }).join('');
 
     const cellsHTML = week.map(cell => {
-      if (!cell) {
-        return `<div class="h-11 sm:h-12"></div>`;
-      }
-
+      if (!cell) return `<div class="h-11 sm:h-12"></div>`;
       const isToday = cell.iso === todayISO;
       const isFuture = cell.iso > todayISO;
 
       if (cell.trained) {
         return `
           <button type="button" onclick="openSessionModal('${cell.iso}')"
-            title="${formatDisplayDate(cell.iso)}: ${cell.entry.rounds} vueltas"
             class="relative z-10 h-11 sm:h-12 w-full flex flex-col items-center justify-center text-purewhite btn-press ${isToday ? 'ring-2 ring-pureblack ring-offset-1' : ''}">
             <span class="text-sm font-bold tabular-nums leading-none">${cell.dayNum}</span>
             <span class="text-[9px] font-bold tabular-nums text-neutral-300 mt-0.5">${cell.entry.rounds}v</span>
@@ -1601,7 +1486,6 @@ function refreshProgressView() {
       if (cell.protectedDay) {
         return `
           <button type="button" onclick="openSessionModal('${cell.iso}')"
-            title="${formatDisplayDate(cell.iso)}: Protegido"
             class="relative z-10 h-11 sm:h-12 w-full flex flex-col items-center justify-center text-purewhite btn-press">
             <span class="text-sm font-bold tabular-nums leading-none">${cell.dayNum}</span>
             <span class="text-[8px] font-bold uppercase tracking-tighter text-neutral-300 mt-0.5">Prot.</span>
@@ -1612,7 +1496,6 @@ function refreshProgressView() {
       if (isFuture) {
         return `
           <div aria-disabled="true"
-            title="${formatDisplayDate(cell.iso)}: Día futuro"
             class="relative z-10 h-11 sm:h-12 w-full flex items-center justify-center text-neutral-300 cursor-not-allowed select-none">
             <span class="text-sm font-bold tabular-nums leading-none">${cell.dayNum}</span>
           </div>
@@ -1621,7 +1504,6 @@ function refreshProgressView() {
 
       return `
         <button type="button" onclick="openSessionModal('${cell.iso}')"
-          title="${formatDisplayDate(cell.iso)}: Sin registro"
           class="relative z-10 h-11 sm:h-12 w-full flex items-center justify-center btn-press ${isToday ? 'border-2 border-pureblack bg-purewhite text-pureblack font-bold' : 'text-neutral-600 hover:border hover:border-pureblack'}">
           <span class="text-sm font-bold tabular-nums leading-none">${cell.dayNum}</span>
         </button>
@@ -1638,7 +1520,7 @@ function refreshProgressView() {
 
   const summaryEl = document.getElementById('month-summary-subtitle');
   if (summaryEl) {
-    summaryEl.textContent = `${trainedDaysCount} ${trainedDaysCount === 1 ? 'día entrenado' : 'días entrenados'}`;
+    summaryEl.textContent = `${trainedDaysCount} ${trainedDaysCount === 1 ? 'día' : 'días'}`;
   }
 }
 
@@ -1820,7 +1702,7 @@ async function downloadStreakPreviewImage() {
   const todayISO = getTodayISO();
   const blob = await getStreakImageBlob();
   if (!blob) {
-    showToast('No se pudo generar la imagen');
+    showToast('Error al generar imagen');
     return;
   }
 
@@ -1833,7 +1715,7 @@ async function downloadStreakPreviewImage() {
   a.click();
   document.body.removeChild(a);
   URL.revokeObjectURL(url);
-  showToast('Imagen PNG descargada');
+  showToast('PNG descargado');
 }
 
 async function confirmShareStreakImage() {
@@ -1841,7 +1723,7 @@ async function confirmShareStreakImage() {
   const todayISO = getTodayISO();
   const blob = await getStreakImageBlob();
   if (!blob) {
-    showToast('No se pudo generar la imagen');
+    showToast('Error al generar imagen');
     return;
   }
 
@@ -1851,11 +1733,10 @@ async function confirmShareStreakImage() {
   if (navigator.share && navigator.canShare && navigator.canShare({ files: [file] })) {
     try {
       await navigator.share({
-        title: 'Mi racha en AMRAP',
-        text: `${currentStreak} ${currentStreak === 1 ? 'día' : 'días'} de racha en AMRAP.`,
+        title: 'AMRAP',
+        text: `${currentStreak} ${currentStreak === 1 ? 'día' : 'días'} de racha`,
         files: [file]
       });
-      showToast('Racha compartida');
       return;
     } catch (err) {
       if (err && err.name === 'AbortError') return;
@@ -1883,15 +1764,12 @@ function closeShareStreakModal() {
   modal.classList.remove('flex');
 }
 
-// =========================================================================
-// MODAL DE EDICIÓN / REGISTRO MANUAL Y EXPORTACIÓN JSON
-// =========================================================================
 function openSessionModal(prefillDate) {
   const todayISO = getTodayISO();
   let targetDate = prefillDate || todayISO;
 
   if (targetDate > todayISO) {
-    showToast('No puedes anotar días futuros');
+    showToast('Día futuro');
     return;
   }
 
@@ -1911,7 +1789,7 @@ function openSessionModal(prefillDate) {
   dateInput.value = targetDate;
 
   if (existing) {
-    if (titleEl) titleEl.textContent = `Editar Día (${formatDisplayDate(targetDate)})`;
+    if (titleEl) titleEl.textContent = formatDisplayDate(targetDate);
     roundsInput.value = existing.rounds;
     if (effortInput) effortInput.value = existing.effort || 'Normal';
     if (notesInput) notesInput.value = existing.notes || '';
@@ -1923,8 +1801,8 @@ function openSessionModal(prefillDate) {
       };
     }
   } else {
-    if (titleEl) titleEl.textContent = `Anotar Día (${formatDisplayDate(targetDate)})`;
-    roundsInput.value = currentRounds > 0 ? currentRounds : 3;
+    if (titleEl) titleEl.textContent = formatDisplayDate(targetDate);
+    roundsInput.value = currentRounds > 0 ? currentRounds : 1;
     if (effortInput) effortInput.value = 'Normal';
     if (notesInput) notesInput.value = '';
     if (deleteWrap) deleteWrap.classList.add('hidden');
@@ -1944,8 +1822,7 @@ function closeSessionModal() {
 function adjustModalRounds(delta) {
   const input = document.getElementById('modal-rounds');
   if (!input) return;
-  const val = Math.max(0, (parseInt(input.value, 10) || 0) + delta);
-  input.value = val;
+  input.value = Math.max(0, (parseInt(input.value, 10) || 0) + delta);
 }
 
 function handleManualSessionSubmit(e) {
@@ -1963,41 +1840,32 @@ function handleManualSessionSubmit(e) {
   const effort = effortEl ? effortEl.value : 'Normal';
   const notes = notesEl ? notesEl.value.trim() : '';
 
-  if (!date) return;
-
-  if (date > todayISO) {
-    showToast('No puedes anotar días futuros');
-    return;
-  }
+  if (!date || date > todayISO) return;
 
   const idx = sessions.findIndex(s => s.date === date);
   const record = { date, rounds, effort, notes };
 
-  if (idx >= 0) {
-    sessions[idx] = record;
-  } else {
-    sessions.push(record);
-  }
+  if (idx >= 0) sessions[idx] = record;
+  else sessions.push(record);
 
   const rewardMsg = applySessionRewards(date, rounds, previousBestRounds);
-
   saveSessions();
   closeSessionModal();
   refreshProgressView();
   refreshShopView();
-  showToast(`Guardado: ${formatDisplayDate(date)}${rewardMsg}`);
+  showToast(`Guardado${rewardMsg}`);
 }
 
 function confirmDeleteSession(date) {
   openConfirmModal(
-    'Eliminar Día',
-    `¿Borrar el registro del ${formatDisplayDate(date)}?`,
+    'Borrar día',
+    `¿Borrar ${formatDisplayDate(date)}?`,
     () => {
       sessions = sessions.filter(s => s.date !== date);
       saveSessions();
       refreshProgressView();
       refreshShopView();
-      showToast('Registro eliminado');
+      showToast('Borrado');
     }
   );
 }
@@ -2022,7 +1890,7 @@ function exportProgressJSON() {
   a.click();
   document.body.removeChild(a);
   URL.revokeObjectURL(url);
-  showToast('Respaldo JSON descargado');
+  showToast('JSON exportado');
 }
 
 function importProgressJSON(event) {
@@ -2033,13 +1901,9 @@ function importProgressJSON(event) {
     try {
       const imported = JSON.parse(e.target.result);
       if (Array.isArray(imported)) {
-        sessions = imported
-          .filter(item => item && typeof item.date === 'string')
-          .map(normalizeSessionItem);
+        sessions = imported.filter(item => item && typeof item.date === 'string').map(normalizeSessionItem);
       } else if (imported && typeof imported === 'object' && Array.isArray(imported.sessions)) {
-        sessions = imported.sessions
-          .filter(item => item && typeof item.date === 'string')
-          .map(normalizeSessionItem);
+        sessions = imported.sessions.filter(item => item && typeof item.date === 'string').map(normalizeSessionItem);
         const rawDaily = typeof imported.dailyCoins === 'number' ? imported.dailyCoins : (Number(imported.coins) || 0);
         dailyCoins = Math.max(0, Math.floor(rawDaily / 10) * 10);
         epicCoins = Math.max(0, Number(imported.epicCoins) || 0);
@@ -2060,18 +1924,15 @@ function importProgressJSON(event) {
       saveSessions();
       refreshProgressView();
       refreshShopView();
-      showToast(`Importadas ${sessions.length} sesiones`);
+      showToast('JSON importado');
     } catch (err) {
-      showToast('Archivo JSON inválido');
+      showToast('JSON inválido');
     }
     event.target.value = '';
   };
   reader.readAsText(file);
 }
 
-// =========================================================================
-// UTILIDADES DE NOTIFICACIÓN Y MODAL DE CONFIRMACIÓN
-// =========================================================================
 let toastTimeout = null;
 function showToast(msg) {
   const banner = document.getElementById('toast-banner');
@@ -2080,7 +1941,7 @@ function showToast(msg) {
   msgEl.textContent = msg;
   banner.classList.remove('hidden');
   if (toastTimeout) clearTimeout(toastTimeout);
-  toastTimeout = setTimeout(hideToast, 3200);
+  toastTimeout = setTimeout(hideToast, 2800);
 }
 
 function hideToast() {
