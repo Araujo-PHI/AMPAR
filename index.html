@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   <meta name="theme-color" content="#000000" />
-  <title>AMRAP 20 Min • Entrenamiento en Casa</title>
+  <title>AMRAP</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Arimo:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet" />
@@ -57,57 +57,43 @@
 </head>
 <body class="bg-purewhite text-pureblack min-h-screen pb-24">
 
-  <!-- Encabezado Superior -->
   <header class="sticky top-0 z-30 bg-purewhite border-b-2 border-pureblack">
-    <div class="max-w-xl mx-auto px-4 h-14 flex items-center justify-between gap-2">
-      <div class="flex items-center gap-2 min-w-0">
-        <span class="px-2 py-0.5 bg-pureblack text-purewhite text-xs font-bold uppercase tracking-wider shrink-0">AMRAP</span>
-        <span class="text-sm sm:text-base font-bold uppercase tracking-tight truncate">20 Min • Circuito</span>
-      </div>
-
-      <button id="btn-wakelock" type="button" onclick="toggleWakeLock()" aria-pressed="false"
-        class="min-h-[38px] px-3 border-2 border-pureblack bg-purewhite text-pureblack text-xs font-bold uppercase tracking-wider flex items-center gap-1.5 shrink-0 btn-press">
-        <svg class="w-3.5 h-3.5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4">
-          <rect x="5" y="2" width="14" height="20" rx="2" ry="2"></rect>
-          <line x1="12" y1="18" x2="12.01" y2="18"></line>
-        </svg>
-        <span id="wakelock-label">Pantalla Activa: Off</span>
-      </button>
+    <div class="max-w-xl mx-auto px-4 h-14 flex items-center justify-between">
+      <span class="px-2.5 py-1 bg-pureblack text-purewhite text-xs font-bold uppercase tracking-wider">AMRAP</span>
+      <span id="timer-20m-badge" class="px-2.5 py-1 border-2 border-pureblack bg-purewhite text-pureblack text-xs font-bold uppercase">
+        20 min: Pendiente
+      </span>
     </div>
   </header>
 
-  <!-- Contenido Principal -->
   <main class="max-w-xl mx-auto px-4 pt-4 space-y-5">
 
-    <!-- =================================================================== -->
-    <!-- VISTA 1: CRONÓMETRO AMRAP + VUELTAS                                   -->
-    <!-- =================================================================== -->
+    <!-- VISTA 1: RELOJ + VUELTAS -->
     <section id="view-timer" class="space-y-5">
 
-      <!-- Reloj Principal -->
       <section class="brutal-border bg-purewhite p-4 sm:p-5">
         <div class="flex items-center justify-between gap-2 mb-2">
-          <span class="text-xs font-bold uppercase tracking-wider text-neutral-600">Tiempo Restante</span>
-          <span id="timer-20m-badge" class="px-2.5 py-1 border-2 border-pureblack bg-purewhite text-pureblack text-xs font-bold uppercase">
-            20 min: Pendiente
-          </span>
+          <span class="text-xs font-bold uppercase tracking-wider text-neutral-600">Tiempo</span>
+          <button id="btn-wakelock" type="button" onclick="toggleWakeLock()" aria-pressed="false"
+            class="min-h-[38px] px-3 border-2 border-pureblack bg-purewhite text-pureblack text-xs font-bold uppercase tracking-wider flex items-center gap-1.5 btn-press">
+            <svg class="w-3.5 h-3.5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4">
+              <rect x="5" y="2" width="14" height="20" rx="2" ry="2"></rect>
+              <line x1="12" y1="18" x2="12.01" y2="18"></line>
+            </svg>
+            <span id="wakelock-label">Pantalla activa: Off</span>
+          </button>
         </div>
 
         <div class="text-center py-3">
           <div id="timer-display" class="text-6xl sm:text-7xl font-bold tabular-nums tracking-tight leading-none">
             20:00
           </div>
-          <p id="timer-subtext" class="text-xs sm:text-sm font-semibold text-neutral-600 mt-2.5">
-            Técnica limpia antes que velocidad
-          </p>
         </div>
 
-        <!-- Barra de progreso -->
         <div class="w-full h-3 border-2 border-pureblack bg-purewhite overflow-hidden my-3">
           <div id="timer-progress-bar" class="h-full bg-pureblack transition-all duration-300" style="width: 100%;"></div>
         </div>
 
-        <!-- Botones del reloj -->
         <div class="grid grid-cols-2 gap-3 mt-4">
           <button id="btn-toggle-timer" type="button" onclick="toggleTimer()"
             class="min-h-[54px] px-4 border-2 border-pureblack bg-pureblack text-purewhite text-sm font-bold uppercase tracking-wider flex items-center justify-center gap-2 btn-press">
@@ -128,11 +114,10 @@
         </div>
       </section>
 
-      <!-- Contador de Vueltas -->
       <section class="brutal-border bg-purewhite p-4 sm:p-5">
         <div class="flex items-center justify-between gap-2 mb-3">
-          <span class="text-xs font-bold uppercase tracking-wider text-neutral-600">Vueltas Completadas</span>
-          <span id="round-status-hint" class="px-2.5 py-0.5 border border-pureblack text-xs font-bold tabular-nums">0/6 est.</span>
+          <span class="text-xs font-bold uppercase tracking-wider text-neutral-600">Vueltas</span>
+          <span id="round-status-hint" class="px-2.5 py-0.5 border border-pureblack text-xs font-bold tabular-nums">0/6</span>
         </div>
 
         <div class="flex items-center justify-between gap-3">
@@ -143,7 +128,6 @@
 
           <div class="text-center flex-1">
             <div id="rounds-display" class="text-5xl sm:text-6xl font-bold tabular-nums leading-none">0</div>
-            <div class="text-xs font-bold uppercase tracking-wider text-neutral-600 mt-1">Vueltas</div>
           </div>
 
           <button id="btn-add-round" type="button" onclick="changeRounds(1)" aria-label="Sumar vuelta"
@@ -152,31 +136,37 @@
           </button>
         </div>
 
-        <!-- Checklist de 6 ejercicios -->
         <div class="mt-4 pt-4 border-t-2 border-pureblack space-y-2">
           <div class="flex items-center justify-between mb-1">
-            <span class="text-xs font-bold uppercase tracking-wider text-neutral-600">Estaciones de la Vuelta</span>
+            <span class="text-xs font-bold uppercase tracking-wider text-neutral-600">Ejercicios</span>
             <button type="button" onclick="resetChecklist()" class="text-xs font-bold uppercase underline">Limpiar</button>
           </div>
           <div id="quick-circuit-list" class="space-y-2"></div>
         </div>
 
-        <!-- Sensación / Esfuerzo + Guardar Hoy -->
         <div class="mt-4 pt-4 border-t-2 border-pureblack space-y-3">
           <div>
             <div class="text-xs font-bold uppercase tracking-wider text-neutral-600 mb-2">¿Cómo se sintió?</div>
-            <div class="grid grid-cols-3 gap-2">
+            <div class="grid grid-cols-5 gap-1.5">
+              <button type="button" data-effort="Muy suave" onclick="selectEffort('Muy suave')"
+                class="effort-btn min-h-[44px] px-1 border-2 border-pureblack bg-purewhite text-pureblack text-[11px] font-bold uppercase leading-tight btn-press">
+                Muy suave
+              </button>
               <button type="button" data-effort="Suave" onclick="selectEffort('Suave')"
-                class="effort-btn min-h-[44px] border-2 border-pureblack bg-purewhite text-pureblack text-xs font-bold uppercase btn-press">
+                class="effort-btn min-h-[44px] px-1 border-2 border-pureblack bg-purewhite text-pureblack text-[11px] font-bold uppercase leading-tight btn-press">
                 Suave
               </button>
               <button type="button" data-effort="Normal" onclick="selectEffort('Normal')"
-                class="effort-btn min-h-[44px] border-2 border-pureblack bg-pureblack text-purewhite text-xs font-bold uppercase btn-press">
+                class="effort-btn min-h-[44px] px-1 border-2 border-pureblack bg-pureblack text-purewhite text-[11px] font-bold uppercase leading-tight btn-press">
                 Normal
               </button>
               <button type="button" data-effort="Fuerte" onclick="selectEffort('Fuerte')"
-                class="effort-btn min-h-[44px] border-2 border-pureblack bg-purewhite text-pureblack text-xs font-bold uppercase btn-press">
+                class="effort-btn min-h-[44px] px-1 border-2 border-pureblack bg-purewhite text-pureblack text-[11px] font-bold uppercase leading-tight btn-press">
                 Fuerte
+              </button>
+              <button type="button" data-effort="A tope" onclick="selectEffort('A tope')"
+                class="effort-btn min-h-[44px] px-1 border-2 border-pureblack bg-purewhite text-pureblack text-[11px] font-bold uppercase leading-tight btn-press">
+                A tope
               </button>
             </div>
           </div>
@@ -188,33 +178,27 @@
               <polyline points="17 21 17 13 7 13 7 21"></polyline>
               <polyline points="7 3 7 8 15 8"></polyline>
             </svg>
-            <span>Guardar Sesión de Hoy</span>
+            <span>Guardar Hoy</span>
           </button>
         </div>
       </section>
     </section>
 
-    <!-- =================================================================== -->
-    <!-- VISTA 2: GUÍA DE EJERCICIOS                                         -->
-    <!-- =================================================================== -->
+    <!-- VISTA 2: GUÍA -->
     <section id="view-exercises" class="hidden space-y-4">
-      <section class="brutal-border bg-purewhite p-4">
-        <div class="text-xs font-bold uppercase tracking-wider text-neutral-600 mb-2">Filtrar Ejercicio</div>
-        <div id="exercise-filter-tabs" class="grid grid-cols-7 gap-1.5"></div>
+      <section class="brutal-border bg-purewhite p-3">
+        <div id="exercise-filter-tabs" class="grid grid-cols-6 gap-1.5"></div>
       </section>
 
       <div id="exercises-grid" class="space-y-4"></div>
     </section>
 
-    <!-- =================================================================== -->
-    <!-- VISTA 3: PROGRESO / RACHA                                           -->
-    <!-- =================================================================== -->
+    <!-- VISTA 3: RACHA -->
     <section id="view-progress" class="hidden space-y-5">
 
-      <!-- Resumen de Racha y Marcas -->
       <section class="brutal-border bg-purewhite p-4 sm:p-5 space-y-4">
         <div class="flex items-center justify-between border-b-2 border-pureblack pb-2.5">
-          <h2 class="text-sm font-bold uppercase tracking-wider">Tu Racha</h2>
+          <h2 class="text-sm font-bold uppercase tracking-wider">Racha</h2>
           <button type="button" onclick="shareStreakImage()"
             class="min-h-[40px] px-3 border-2 border-pureblack bg-pureblack text-purewhite text-xs font-bold uppercase tracking-wider flex items-center gap-1.5 btn-press">
             <svg class="w-3.5 h-3.5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4">
@@ -224,21 +208,21 @@
               <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line>
               <line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line>
             </svg>
-            <span>Compartir Imagen</span>
+            <span>Compartir</span>
           </button>
         </div>
 
         <div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
           <div class="border-2 border-pureblack p-3">
-            <div class="text-[10px] font-bold uppercase tracking-wider text-neutral-600">Racha Actual</div>
+            <div class="text-[10px] font-bold uppercase tracking-wider text-neutral-600">Racha</div>
             <div id="stat-current-streak" class="text-xl font-bold tabular-nums mt-0.5">0 días</div>
           </div>
           <div class="border-2 border-pureblack p-3">
-            <div class="text-[10px] font-bold uppercase tracking-wider text-neutral-600">Mejor Vuelta</div>
+            <div class="text-[10px] font-bold uppercase tracking-wider text-neutral-600">Mejor vuelta</div>
             <div id="stat-best-rounds" class="text-xl font-bold tabular-nums mt-0.5">0</div>
           </div>
           <div class="border-2 border-pureblack p-3">
-            <div class="text-[10px] font-bold uppercase tracking-wider text-neutral-600">Monedas Diarias</div>
+            <div class="text-[10px] font-bold uppercase tracking-wider text-neutral-600">Monedas diarias</div>
             <div id="stat-coins" class="text-xl font-bold tabular-nums mt-0.5">0</div>
           </div>
           <div class="border-2 border-pureblack p-3">
@@ -248,7 +232,6 @@
         </div>
       </section>
 
-      <!-- Calendario Mensual -->
       <section class="brutal-border bg-purewhite p-4 sm:p-5 space-y-3">
         <div class="flex items-center justify-between gap-2">
           <button type="button" onclick="changeMonthOffset(-1)" aria-label="Mes anterior"
@@ -258,7 +241,7 @@
 
           <div class="text-center">
             <div id="month-selector-title" class="text-sm sm:text-base font-bold uppercase tracking-wider">Mes</div>
-            <div id="month-summary-subtitle" class="text-xs text-neutral-600">0 días entrenados</div>
+            <div id="month-summary-subtitle" class="text-xs text-neutral-600">0 días</div>
           </div>
 
           <button id="btn-next-month" type="button" onclick="changeMonthOffset(1)" aria-label="Mes siguiente"
@@ -282,7 +265,7 @@
         <div class="pt-3 border-t-2 border-pureblack flex flex-wrap gap-2">
           <button type="button" onclick="openSessionModal()"
             class="flex-1 min-h-[48px] px-3 border-2 border-pureblack bg-pureblack text-purewhite text-xs font-bold uppercase tracking-wider btn-press">
-            + Anotar / Editar Día
+            + Anotar / Editar
           </button>
           <button type="button" onclick="exportProgressJSON()"
             class="min-h-[48px] px-3 border-2 border-pureblack bg-purewhite text-pureblack text-xs font-bold uppercase tracking-wider btn-press">
@@ -296,60 +279,43 @@
       </section>
     </section>
 
-    <!-- =================================================================== -->
-    <!-- VISTA 4: TIENDA                                                     -->
-    <!-- =================================================================== -->
+    <!-- VISTA 4: TIENDA -->
     <section id="view-shop" class="hidden space-y-5">
       <section class="brutal-border bg-purewhite p-4 sm:p-5">
         <div class="flex items-center justify-between border-b-2 border-pureblack pb-2.5 mb-4">
           <h2 class="text-sm font-bold uppercase tracking-wider">Tienda</h2>
-          <span class="text-xs font-bold uppercase text-neutral-600">2 Monedas</span>
+          <span id="shop-freeze-count" class="px-2.5 py-0.5 border-2 border-pureblack bg-purewhite text-xs font-bold tabular-nums">0/2</span>
         </div>
 
         <div class="grid grid-cols-2 gap-3 mb-4">
           <div class="border-2 border-pureblack p-3 bg-purewhite">
-            <div class="text-[11px] font-bold uppercase tracking-wider text-neutral-600">Monedas Diarias</div>
+            <div class="text-[11px] font-bold uppercase tracking-wider text-neutral-600">Monedas diarias</div>
             <div id="shop-daily-coins" class="text-2xl font-bold tabular-nums mt-1">0</div>
-            <div class="text-[11px] text-neutral-600 mt-0.5">+10 al completar 20 min (máx. 10/día)</div>
+            <div class="text-[11px] text-neutral-600 mt-0.5">+10 al día (20 min)</div>
           </div>
 
           <div class="border-2 border-pureblack p-3 bg-purewhite">
-            <div class="text-[11px] font-bold uppercase tracking-wider text-neutral-600">Monedas Épicas</div>
+            <div class="text-[11px] font-bold uppercase tracking-wider text-neutral-600">Monedas épicas</div>
             <div id="shop-epic-coins" class="text-2xl font-bold tabular-nums mt-1">0</div>
-            <div class="text-[11px] text-neutral-600 mt-0.5">Por superar marcas o esfuerzo extra</div>
+            <div class="text-[11px] text-neutral-600 mt-0.5">Marcas y esfuerzo</div>
           </div>
         </div>
 
-        <!-- Protector de Racha (100 Monedas Diarias) -->
-        <div class="border-2 border-pureblack p-4 bg-neutral-50 space-y-3">
-          <div class="flex items-start justify-between gap-2">
-            <div>
-              <h3 class="text-base font-bold uppercase tracking-tight">Protector de Racha</h3>
-              <p class="text-xs text-neutral-700 mt-0.5">
-                Salva tu racha si un día no entrenás. Se compra solo con monedas diarias.
-              </p>
-            </div>
-            <span id="shop-freeze-count" class="px-2.5 py-1 border-2 border-pureblack bg-purewhite text-xs font-bold tabular-nums shrink-0">0/2</span>
-          </div>
-
-          <button id="btn-buy-freeze" type="button" onclick="buyStreakFreeze()"
-            class="w-full min-h-[52px] px-4 bg-pureblack text-purewhite border-2 border-pureblack text-xs sm:text-sm font-bold uppercase tracking-wider flex items-center justify-center gap-2 btn-press disabled:opacity-40">
-            <span id="buy-freeze-label">Comprar Protector · 100 Monedas</span>
-          </button>
-        </div>
+        <button id="btn-buy-freeze" type="button" onclick="buyStreakFreeze()"
+          class="w-full min-h-[54px] px-4 bg-pureblack text-purewhite border-2 border-pureblack text-xs sm:text-sm font-bold uppercase tracking-wider flex items-center justify-center gap-2 btn-press disabled:opacity-40">
+          <span id="buy-freeze-label">Protector de racha · 100 monedas</span>
+        </button>
       </section>
 
-      <!-- Extras con Monedas Épicas -->
       <section class="brutal-border bg-purewhite p-4 sm:p-5 space-y-3">
-        <div class="flex items-center justify-between border-b-2 border-pureblack pb-2.5">
-          <h3 class="text-sm font-bold uppercase tracking-wider">Extras con Épicas</h3>
-          <span class="text-xs font-bold uppercase text-neutral-600">Sin afectar la racha</span>
+        <div class="border-b-2 border-pureblack pb-2.5">
+          <h3 class="text-sm font-bold uppercase tracking-wider">Extras con épicas</h3>
         </div>
 
         <div class="border-2 border-pureblack p-3.5 flex items-center justify-between gap-3">
           <div>
-            <div class="text-sm font-bold uppercase">Marco Doble en Racha</div>
-            <div class="text-xs text-neutral-600">Suma un borde doble en la imagen compartible</div>
+            <div class="text-sm font-bold uppercase">Marco doble en racha</div>
+            <div class="text-xs text-neutral-600">Borde doble en imagen</div>
           </div>
           <button id="btn-buy-epic-frame" type="button" onclick="buyEpicReward('frame', 25)"
             class="min-h-[44px] px-3 border-2 border-pureblack bg-pureblack text-purewhite text-xs font-bold uppercase shrink-0 btn-press disabled:opacity-40">
@@ -359,8 +325,8 @@
 
         <div class="border-2 border-pureblack p-3.5 flex items-center justify-between gap-3">
           <div>
-            <div class="text-sm font-bold uppercase">Acorde Extra al Final</div>
-            <div class="text-xs text-neutral-600">Sonido más largo cuando terminan los 20 min</div>
+            <div class="text-sm font-bold uppercase">Campanada extra</div>
+            <div class="text-xs text-neutral-600">Sonido largo al terminar</div>
           </div>
           <button id="btn-buy-epic-chime" type="button" onclick="buyEpicReward('chime', 30)"
             class="min-h-[44px] px-3 border-2 border-pureblack bg-pureblack text-purewhite text-xs font-bold uppercase shrink-0 btn-press disabled:opacity-40">
@@ -372,13 +338,11 @@
 
   </main>
 
-  <!-- ===================================================================== -->
-  <!-- MODAL: COMPARTIR RACHA (3 ESTILOS + VISTA PREVIA)                      -->
-  <!-- ===================================================================== -->
+  <!-- MODAL COMPARTIR RACHA -->
   <div id="share-streak-modal" class="fixed inset-0 z-50 hidden items-end sm:items-center justify-center bg-black/75 p-3 sm:p-4">
     <div class="bg-purewhite border-2 border-pureblack max-w-md w-full p-4 sm:p-5 max-h-[92vh] overflow-y-auto space-y-4">
       <div class="flex items-center justify-between border-b-2 border-pureblack pb-2.5">
-        <h3 class="text-sm font-bold uppercase tracking-wider">Compartir Racha</h3>
+        <h3 class="text-sm font-bold uppercase tracking-wider">Compartir racha</h3>
         <button type="button" onclick="closeShareStreakModal()" class="p-1.5 -mr-1.5" aria-label="Cerrar">
           <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
             <line x1="18" y1="6" x2="6" y2="18"></line>
@@ -387,22 +351,19 @@
         </button>
       </div>
 
-      <div>
-        <div class="text-[11px] font-bold uppercase tracking-wider text-neutral-600 mb-2">Elegí un estilo (3)</div>
-        <div class="grid grid-cols-3 gap-2">
-          <button type="button" data-style="0" onclick="selectStreakStyle(0)"
-            class="streak-style-btn min-h-[44px] px-2 text-xs font-bold uppercase border-2 border-pureblack bg-pureblack text-purewhite btn-press">
-            Estilo 1
-          </button>
-          <button type="button" data-style="1" onclick="selectStreakStyle(1)"
-            class="streak-style-btn min-h-[44px] px-2 text-xs font-bold uppercase border-2 border-pureblack bg-purewhite text-pureblack btn-press">
-            Estilo 2
-          </button>
-          <button type="button" data-style="2" onclick="selectStreakStyle(2)"
-            class="streak-style-btn min-h-[44px] px-2 text-xs font-bold uppercase border-2 border-pureblack bg-purewhite text-pureblack btn-press">
-            Estilo 3
-          </button>
-        </div>
+      <div class="grid grid-cols-3 gap-2">
+        <button type="button" data-style="0" onclick="selectStreakStyle(0)"
+          class="streak-style-btn min-h-[44px] px-2 text-xs font-bold uppercase border-2 border-pureblack bg-pureblack text-purewhite btn-press">
+          Estilo 1
+        </button>
+        <button type="button" data-style="1" onclick="selectStreakStyle(1)"
+          class="streak-style-btn min-h-[44px] px-2 text-xs font-bold uppercase border-2 border-pureblack bg-purewhite text-pureblack btn-press">
+          Estilo 2
+        </button>
+        <button type="button" data-style="2" onclick="selectStreakStyle(2)"
+          class="streak-style-btn min-h-[44px] px-2 text-xs font-bold uppercase border-2 border-pureblack bg-purewhite text-pureblack btn-press">
+          Estilo 3
+        </button>
       </div>
 
       <div class="border-2 border-pureblack bg-neutral-100 p-2">
@@ -422,13 +383,11 @@
     </div>
   </div>
 
-  <!-- ===================================================================== -->
-  <!-- MODAL: EDITAR / ANOTAR DÍA                                            -->
-  <!-- ===================================================================== -->
+  <!-- MODAL EDITAR / ANOTAR DÍA -->
   <div id="session-modal" class="fixed inset-0 z-50 hidden items-end sm:items-center justify-center bg-black/75 p-3 sm:p-4">
     <div class="bg-purewhite border-2 border-pureblack max-w-md w-full p-4 sm:p-5 space-y-4">
       <div class="flex items-center justify-between border-b-2 border-pureblack pb-2.5">
-        <h3 id="session-modal-title" class="text-sm font-bold uppercase tracking-wider">Anotar Día</h3>
+        <h3 id="session-modal-title" class="text-sm font-bold uppercase tracking-wider">Anotar día</h3>
         <button type="button" onclick="closeSessionModal()" class="p-1.5 -mr-1.5" aria-label="Cerrar">
           <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
             <line x1="18" y1="6" x2="6" y2="18"></line>
@@ -453,17 +412,19 @@
         </div>
 
         <div>
-          <label for="modal-effort" class="block text-xs font-bold uppercase tracking-wider mb-1">Esfuerzo</label>
+          <label for="modal-effort" class="block text-xs font-bold uppercase tracking-wider mb-1">¿Cómo se sintió?</label>
           <select id="modal-effort" class="w-full min-h-[46px] px-3 border-2 border-pureblack bg-purewhite text-sm font-bold">
+            <option value="Muy suave">Muy suave</option>
             <option value="Suave">Suave</option>
             <option value="Normal">Normal</option>
             <option value="Fuerte">Fuerte</option>
+            <option value="A tope">A tope</option>
           </select>
         </div>
 
         <div>
-          <label for="modal-notes" class="block text-xs font-bold uppercase tracking-wider mb-1">Nota (opcional)</label>
-          <input id="modal-notes" type="text" placeholder="Ej: con mi hermano" class="w-full min-h-[46px] px-3 border-2 border-pureblack bg-purewhite text-sm" />
+          <label for="modal-notes" class="block text-xs font-bold uppercase tracking-wider mb-1">Nota</label>
+          <input id="modal-notes" type="text" class="w-full min-h-[46px] px-3 border-2 border-pureblack bg-purewhite text-sm" />
         </div>
 
         <div class="flex items-center justify-between gap-2 pt-2">
@@ -480,9 +441,7 @@
     </div>
   </div>
 
-  <!-- ===================================================================== -->
-  <!-- MODAL: CONFIRMACIÓN                                                   -->
-  <!-- ===================================================================== -->
+  <!-- MODAL CONFIRMACIÓN -->
   <div id="confirm-modal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/75 p-4">
     <div class="bg-purewhite border-2 border-pureblack max-w-sm w-full p-5 space-y-4">
       <h3 id="confirm-title" class="text-sm font-bold uppercase tracking-wider">Confirmar</h3>
@@ -498,9 +457,7 @@
     </div>
   </div>
 
-  <!-- ===================================================================== -->
-  <!-- TOAST DE AVISO                                                        -->
-  <!-- ===================================================================== -->
+  <!-- TOAST -->
   <div id="toast-banner" class="fixed top-16 left-1/2 -translate-x-1/2 z-50 hidden w-[92%] max-w-md">
     <div class="bg-pureblack text-purewhite border-2 border-purewhite px-4 py-2.5 flex items-center justify-between gap-3">
       <span id="toast-message" class="text-xs font-bold uppercase tracking-wide"></span>
@@ -508,9 +465,7 @@
     </div>
   </div>
 
-  <!-- ===================================================================== -->
-  <!-- BARRA DE NAVEGACIÓN FIJA INFERIOR (4 BOTONES)                          -->
-  <!-- ===================================================================== -->
+  <!-- BARRA INFERIOR -->
   <nav class="fixed bottom-0 inset-x-0 z-40 bg-purewhite border-t-2 border-pureblack">
     <div class="max-w-xl mx-auto grid grid-cols-4 divide-x-2 divide-pureblack">
       <button id="nav-timer" type="button" onclick="switchView('timer')"
