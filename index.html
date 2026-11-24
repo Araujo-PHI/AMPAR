@@ -2,174 +2,123 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
-  <title>AMRAP</title>
-  <!-- Fuente Arimo (400, 600, 700) -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <meta name="theme-color" content="#000000" />
+  <title>AMRAP 20 Min • Entrenamiento en Casa</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Arimo:wght@400;600;700&display=swap" rel="stylesheet" />
-  <!-- Tailwind CSS -->
+  <link href="https://fonts.googleapis.com/css2?family=Arimo:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet" />
   <script src="https://cdn.tailwindcss.com"></script>
-  <script src="./tailwind.config.js"></script>
-  <link rel="stylesheet" href="./styles.css" />
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            arimo: ['Arimo', 'Arial', 'sans-serif'],
+          },
+          colors: {
+            purewhite: '#FFFFFF',
+            pureblack: '#000000',
+            lightborder: '#E5E5E5',
+          }
+        }
+      }
+    };
+  </script>
+  <style>
+    * {
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+    }
+    html, body {
+      font-family: 'Arimo', Arial, sans-serif;
+      background-color: #FFFFFF;
+      color: #000000;
+      margin: 0;
+      padding: 0;
+      overflow-x: hidden;
+    }
+    .brutal-border {
+      border: 2px solid #000000;
+    }
+    .btn-press {
+      transition: transform 0.07s ease, background-color 0.12s ease, color 0.12s ease;
+    }
+    .btn-press:active {
+      transform: scale(0.97);
+    }
+    details > summary {
+      list-style: none;
+    }
+    details > summary::-webkit-details-marker {
+      display: none;
+    }
+  </style>
 </head>
-  
-<body class="min-h-screen flex flex-col bg-purewhite text-pureblack selection:bg-pureblack selection:text-purewhite">
+<body class="bg-purewhite text-pureblack min-h-screen pb-24">
 
-  <!-- Toast / Notificación flotante superior para no tapar los botones del pulgar -->
-  <div id="toast-banner" class="fixed top-3 left-3 right-3 z-50 hidden max-w-md mx-auto bg-pureblack text-purewhite border-2 border-pureblack px-4 py-3">
-    <div class="flex items-center justify-between gap-3">
-      <div class="flex items-center gap-2.5">
-        <svg class="w-4 h-4 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-          <polyline points="20 6 9 17 4 12"></polyline>
-        </svg>
-        <p id="toast-message" class="text-xs font-bold tracking-wide uppercase leading-snug"></p>
+  <!-- Encabezado Superior -->
+  <header class="sticky top-0 z-30 bg-purewhite border-b-2 border-pureblack">
+    <div class="max-w-xl mx-auto px-4 h-14 flex items-center justify-between gap-2">
+      <div class="flex items-center gap-2 min-w-0">
+        <span class="px-2 py-0.5 bg-pureblack text-purewhite text-xs font-bold uppercase tracking-wider shrink-0">AMRAP</span>
+        <span class="text-sm sm:text-base font-bold uppercase tracking-tight truncate">20 Min • Circuito</span>
       </div>
-      <button onclick="hideToast()" aria-label="Cerrar aviso" class="text-purewhite p-1.5 -mr-1">
-        <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-          <line x1="18" y1="6" x2="6" y2="18"></line>
-          <line x1="6" y1="6" x2="18" y2="18"></line>
+
+      <button id="btn-wakelock" type="button" onclick="toggleWakeLock()" aria-pressed="false"
+        class="min-h-[38px] px-3 border-2 border-pureblack bg-purewhite text-pureblack text-xs font-bold uppercase tracking-wider flex items-center gap-1.5 shrink-0 btn-press">
+        <svg class="w-3.5 h-3.5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4">
+          <rect x="5" y="2" width="14" height="20" rx="2" ry="2"></rect>
+          <line x1="12" y1="18" x2="12.01" y2="18"></line>
         </svg>
+        <span id="wakelock-label">Pantalla Activa: Off</span>
       </button>
-    </div>
-  </div>
-
-  <!-- Modal de Confirmación Personalizado -->
-  <div id="confirm-modal" class="fixed inset-0 z-50 hidden items-end sm:items-center justify-center bg-black/75 p-3 sm:p-4">
-    <div class="bg-purewhite border-2 border-pureblack max-w-md w-full p-5 sm:p-6">
-      <div class="flex items-center justify-between border-b-2 border-pureblack pb-3 mb-4">
-        <h3 id="confirm-title" class="text-sm font-bold uppercase tracking-wider">Confirmar Acción</h3>
-        <button onclick="closeConfirmModal()" class="p-2 -mr-2" aria-label="Cerrar">
-          <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
-            <line x1="18" y1="6" x2="6" y2="18"></line>
-            <line x1="6" y1="6" x2="18" y2="18"></line>
-          </svg>
-        </button>
-      </div>
-      <p id="confirm-text" class="text-base text-pureblack mb-6 leading-relaxed"></p>
-      <div class="grid grid-cols-2 gap-3">
-        <button onclick="closeConfirmModal()" class="min-h-[52px] px-4 text-xs font-bold uppercase tracking-wider border-2 border-pureblack bg-purewhite text-pureblack btn-press">
-          Cancelar
-        </button>
-        <button id="confirm-accept-btn" class="min-h-[52px] px-4 text-xs font-bold uppercase tracking-wider border-2 border-pureblack bg-pureblack text-purewhite btn-press">
-          Confirmar
-        </button>
-      </div>
-    </div>
-  </div>
-
-  <!-- Modal para Registrar o Editar Sesión Manualmente -->
-  <div id="session-modal" class="fixed inset-0 z-50 hidden items-end sm:items-center justify-center bg-black/75 p-3 sm:p-4">
-    <div class="bg-purewhite border-2 border-pureblack max-w-md w-full p-5 sm:p-6 max-h-[90vh] overflow-y-auto">
-      <div class="flex items-center justify-between border-b-2 border-pureblack pb-3 mb-4">
-        <h3 id="session-modal-title" class="text-sm font-bold uppercase tracking-wider">Registrar / Editar Día</h3>
-        <button onclick="closeSessionModal()" class="p-2 -mr-2" aria-label="Cerrar">
-          <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
-            <line x1="18" y1="6" x2="6" y2="18"></line>
-            <line x1="6" y1="6" x2="18" y2="18"></line>
-          </svg>
-        </button>
-      </div>
-      <form id="manual-session-form" class="space-y-4">
-        <div>
-          <label for="modal-date" class="block text-xs font-bold uppercase tracking-wider mb-1.5">Fecha de Entrenamiento</label>
-          <input type="date" id="modal-date" required class="w-full min-h-[48px] border-2 border-pureblack px-3 py-2 text-base bg-purewhite text-pureblack focus:outline-none" />
-        </div>
-        <div>
-          <label for="modal-rounds" class="block text-xs font-bold uppercase tracking-wider mb-1.5">Vueltas Completadas (20 min)</label>
-          <div class="flex items-center gap-2">
-            <button type="button" onclick="adjustModalRounds(-1)" class="w-14 h-12 border-2 border-pureblack bg-purewhite text-pureblack font-bold text-xl btn-press">-1</button>
-            <input type="number" id="modal-rounds" min="0" max="40" step="1" value="3" required class="w-full min-h-[48px] border-2 border-pureblack px-3 py-2 text-center text-lg font-bold tabular-nums bg-purewhite text-pureblack focus:outline-none" />
-            <button type="button" onclick="adjustModalRounds(1)" class="w-14 h-12 border-2 border-pureblack bg-pureblack text-purewhite font-bold text-xl btn-press">+1</button>
-          </div>
-        </div>
-        <div>
-          <label for="modal-effort" class="block text-xs font-bold uppercase tracking-wider mb-1.5">Sensación de Esfuerzo</label>
-          <select id="modal-effort" class="w-full min-h-[48px] border-2 border-pureblack px-3 py-2 text-base bg-purewhite text-pureblack focus:outline-none">
-            <option value="Muy suave">1 • Muy suave</option>
-            <option value="Suave">2 • Suave</option>
-            <option value="Normal" selected>3 • Normal</option>
-            <option value="Fuerte">4 • Fuerte</option>
-            <option value="Intenso">5 • Intenso</option>
-          </select>
-        </div>
-        <div>
-          <label for="modal-notes" class="block text-xs font-bold uppercase tracking-wider mb-1.5">Nota Corta (Opcional)</label>
-          <input type="text" id="modal-notes" maxlength="80" placeholder="Ej. Buen control en conos con izquierda" class="w-full min-h-[48px] border-2 border-pureblack px-3 py-2 text-base bg-purewhite text-pureblack focus:outline-none" />
-        </div>
-        <div class="grid grid-cols-2 gap-3 pt-2">
-          <button type="button" onclick="closeSessionModal()" class="min-h-[52px] px-4 text-xs font-bold uppercase tracking-wider border-2 border-pureblack bg-purewhite text-pureblack btn-press">
-            Cancelar
-          </button>
-          <button type="submit" class="min-h-[52px] px-4 text-xs font-bold uppercase tracking-wider border-2 border-pureblack bg-pureblack text-purewhite btn-press">
-            Guardar
-          </button>
-        </div>
-        <div id="modal-delete-wrapper" class="hidden pt-1">
-          <button type="button" id="modal-delete-btn" class="w-full min-h-[46px] text-xs font-bold uppercase tracking-wider border border-pureblack text-pureblack hover:bg-neutral-100 btn-press">
-            Eliminar Registro de Este Día
-          </button>
-        </div>
-      </form>
-    </div>
-  </div>
-
-  <!-- Encabezado Compacto Superior -->
-  <header class="border-b-2 border-pureblack bg-purewhite sticky top-0 z-30">
-    <div class="max-w-3xl mx-auto px-4 py-3 flex items-center justify-between gap-2">
-      <div class="flex items-center gap-2.5">
-        <span class="inline-block w-3 h-3 bg-pureblack shrink-0"></span>
-        <h1 class="text-xl sm:text-2xl font-bold tracking-tight uppercase leading-none">AMRAP</h1>
-      </div>
     </div>
   </header>
 
-  <!-- Contenedor Principal (con espacio inferior para la barra fija móvil) -->
-  <main class="flex-1 max-w-3xl w-full mx-auto px-4 pt-4 main-bottom-clearance">
+  <!-- Contenido Principal -->
+  <main class="max-w-xl mx-auto px-4 pt-4 space-y-5">
 
-    <!-- ========================================================= -->
-    <!-- VISTA 1: ENTRENAR (DISEÑADA PARA UNA SOLA MANO EN MÓVIL)  -->
-    <!-- ========================================================= -->
-    <section id="view-timer" class="space-y-4">
+    <!-- =================================================================== -->
+    <!-- VISTA 1: CRONÓMETRO AMRAP + VUELTAS                                   -->
+    <!-- =================================================================== -->
+    <section id="view-timer" class="space-y-5">
 
-      <!-- Tarjeta Principal del Cronómetro 20:00 -->
-      <div class="brutal-border bg-purewhite p-4 sm:p-6">
-        <div class="flex items-center justify-between gap-2 mb-3">
-          <span id="timer-20m-badge" class="min-h-[32px] px-2.5 py-1 border border-pureblack bg-purewhite text-pureblack text-[11px] font-bold uppercase tracking-wider flex items-center">
+      <!-- Reloj Principal -->
+      <section class="brutal-border bg-purewhite p-4 sm:p-5">
+        <div class="flex items-center justify-between gap-2 mb-2">
+          <span class="text-xs font-bold uppercase tracking-wider text-neutral-600">Tiempo Restante</span>
+          <span id="timer-20m-badge" class="px-2.5 py-1 border-2 border-pureblack bg-purewhite text-pureblack text-xs font-bold uppercase">
             20 min: Pendiente
           </span>
-
-          <!-- Botón Screen Wake Lock (Mantener pantalla activa) -->
-          <button id="btn-wakelock" onclick="toggleWakeLock()" class="min-h-[32px] px-2.5 py-1 border border-pureblack bg-purewhite text-pureblack text-[11px] font-bold uppercase tracking-wider flex items-center justify-center btn-press" aria-pressed="false">
-            <span id="wakelock-label">Pantalla Activa: Off</span>
-          </button>
         </div>
 
-        <!-- Reloj Regresivo Gigante -->
-        <div class="my-4 text-center">
-          <div id="timer-display" class="text-[76px] sm:text-8xl font-bold tracking-tight tabular-nums leading-none select-none">
+        <div class="text-center py-3">
+          <div id="timer-display" class="text-6xl sm:text-7xl font-bold tabular-nums tracking-tight leading-none">
             20:00
           </div>
-          <p id="timer-subtext" class="text-xs font-semibold uppercase tracking-wider text-neutral-600 mt-2">
+          <p id="timer-subtext" class="text-xs sm:text-sm font-semibold text-neutral-600 mt-2.5">
             Técnica limpia antes que velocidad
           </p>
         </div>
 
-        <!-- Barra de Progreso Lineal de Alto Contraste -->
-        <div class="w-full h-3.5 border-2 border-pureblack bg-purewhite mb-4 overflow-hidden">
+        <!-- Barra de progreso -->
+        <div class="w-full h-3 border-2 border-pureblack bg-purewhite overflow-hidden my-3">
           <div id="timer-progress-bar" class="h-full bg-pureblack transition-all duration-300" style="width: 100%;"></div>
         </div>
 
-        <!-- Controles Principales del Cronómetro (Mínimo 54px alto) -->
-        <div class="grid grid-cols-12 gap-3">
-          <button id="btn-toggle-timer" onclick="toggleTimer()" class="col-span-8 min-h-[56px] px-4 bg-pureblack text-purewhite border-2 border-pureblack text-sm sm:text-base font-bold uppercase tracking-wider flex items-center justify-center gap-2.5 btn-press">
-            <svg id="toggle-timer-icon" class="w-5 h-5 shrink-0" viewBox="0 0 24 24" fill="currentColor">
+        <!-- Botones del reloj -->
+        <div class="grid grid-cols-2 gap-3 mt-4">
+          <button id="btn-toggle-timer" type="button" onclick="toggleTimer()"
+            class="min-h-[54px] px-4 border-2 border-pureblack bg-pureblack text-purewhite text-sm font-bold uppercase tracking-wider flex items-center justify-center gap-2 btn-press">
+            <svg id="toggle-timer-icon" class="w-4 h-4 shrink-0" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="2">
               <polygon points="5 3 19 12 5 21 5 3"></polygon>
             </svg>
             <span id="toggle-timer-text">Iniciar</span>
           </button>
 
-          <button id="btn-reset-timer" onclick="handleResetTimerTap()" class="col-span-4 min-h-[56px] px-3 bg-purewhite text-pureblack border-2 border-pureblack text-xs sm:text-sm font-bold uppercase tracking-wider flex items-center justify-center gap-1.5 btn-press">
+          <button id="btn-reset-timer" type="button" onclick="handleResetTimerTap()"
+            class="min-h-[54px] px-4 border-2 border-pureblack bg-purewhite text-pureblack text-sm font-bold uppercase tracking-wider flex items-center justify-center gap-2 btn-press">
             <svg class="w-4 h-4 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4">
               <polyline points="1 4 1 10 7 10"></polyline>
               <path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"></path>
@@ -177,284 +126,255 @@
             <span id="reset-timer-text">Reiniciar</span>
           </button>
         </div>
-      </div>
+      </section>
 
-      <!-- Contador de Vueltas Ergonómico para el Pulgar -->
-      <div class="brutal-border bg-purewhite p-4 sm:p-6">
-        <div class="flex items-center justify-between mb-3">
-          <span class="text-xs font-bold uppercase tracking-wider">Contador de Vueltas</span>
-          <span class="text-xs font-semibold text-neutral-600">6 ejercicios = 1 vuelta</span>
+      <!-- Contador de Vueltas -->
+      <section class="brutal-border bg-purewhite p-4 sm:p-5">
+        <div class="flex items-center justify-between gap-2 mb-3">
+          <span class="text-xs font-bold uppercase tracking-wider text-neutral-600">Vueltas Completadas</span>
+          <span id="round-status-hint" class="px-2.5 py-0.5 border border-pureblack text-xs font-bold tabular-nums">0/6 est.</span>
         </div>
 
-        <!-- Display de número gigante + botón discreto -1 -->
-        <div class="flex items-center justify-between border-2 border-pureblack px-4 py-3 mb-3 bg-purewhite">
-          <button onclick="changeRounds(-1)" aria-label="Restar 1 vuelta" class="w-14 h-14 border-2 border-pureblack bg-purewhite text-pureblack text-lg font-bold flex items-center justify-center btn-press">
-            -1
+        <div class="flex items-center justify-between gap-3">
+          <button type="button" onclick="changeRounds(-1)" aria-label="Restar vuelta"
+            class="w-16 h-16 border-2 border-pureblack bg-purewhite text-pureblack text-3xl font-bold flex items-center justify-center shrink-0 btn-press">
+            -
           </button>
 
-          <div class="text-center">
+          <div class="text-center flex-1">
             <div id="rounds-display" class="text-5xl sm:text-6xl font-bold tabular-nums leading-none">0</div>
-            <div class="text-[11px] font-bold uppercase tracking-widest text-neutral-600 mt-1">Vueltas Logradas</div>
+            <div class="text-xs font-bold uppercase tracking-wider text-neutral-600 mt-1">Vueltas</div>
           </div>
 
-          <div class="w-14 text-right">
-            <span id="round-status-hint" class="text-[11px] font-bold uppercase leading-tight block text-neutral-600">En curso</span>
-          </div>
-        </div>
-
-        <!-- Botón Principal Gigante (1 VUELTA COMPLETA, mínimo 74px alto) -->
-        <button id="btn-add-round" onclick="changeRounds(1)" class="w-full min-h-[76px] px-5 bg-pureblack text-purewhite border-2 border-pureblack text-base sm:text-lg font-bold uppercase tracking-wider flex items-center justify-center gap-3 btn-press">
-          <svg class="w-6 h-6 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
-            <line x1="12" y1="5" x2="12" y2="19"></line>
-            <line x1="5" y1="12" x2="19" y2="12"></line>
-          </svg>
-          <span>1 Vuelta Completa</span>
-        </button>
-      </div>
-
-      <!-- Checklist Táctil de la Ronda Actual -->
-      <div class="brutal-border bg-purewhite p-4 sm:p-6">
-        <div class="flex items-center justify-between border-b-2 border-pureblack pb-2.5 mb-3">
-          <div>
-            <h2 class="text-xs font-bold uppercase tracking-wider">Estaciones de la Ronda Actual</h2>
-            <p class="text-xs text-neutral-600 mt-0.5">Toca cada ejercicio al terminarlo</p>
-          </div>
-          <button onclick="resetChecklist()" class="min-h-[38px] px-3 text-xs font-bold uppercase border border-pureblack bg-purewhite text-pureblack btn-press">
-            Limpiar
+          <button id="btn-add-round" type="button" onclick="changeRounds(1)" aria-label="Sumar vuelta"
+            class="min-h-[64px] px-4 border-2 border-pureblack bg-pureblack text-purewhite text-xs sm:text-sm font-bold uppercase tracking-wider flex items-center justify-center shrink-0 btn-press">
+            +1 Vuelta
           </button>
         </div>
 
-        <div id="quick-circuit-list" class="space-y-2.5">
-          <!-- Renderizado dinámicamente por JS -->
-        </div>
-      </div>
-
-      <!-- Sensación de Esfuerzo y Guardado de Sesión -->
-      <div class="brutal-border bg-purewhite p-4 sm:p-6 space-y-4">
-        <div>
-          <label class="block text-xs font-bold uppercase tracking-wider mb-2">Sensación de Esfuerzo Hoy</label>
-          <div class="grid grid-cols-5 gap-1.5" id="effort-selector">
-            <button type="button" data-effort="Muy suave" onclick="selectEffort('Muy suave')" class="effort-btn min-h-[50px] px-1 text-[11px] sm:text-xs font-bold uppercase leading-tight border-2 border-pureblack bg-purewhite text-pureblack btn-press">
-              Muy suave
-            </button>
-            <button type="button" data-effort="Suave" onclick="selectEffort('Suave')" class="effort-btn min-h-[50px] px-1 text-[11px] sm:text-xs font-bold uppercase leading-tight border-2 border-pureblack bg-purewhite text-pureblack btn-press">
-              Suave
-            </button>
-            <button type="button" data-effort="Normal" onclick="selectEffort('Normal')" class="effort-btn min-h-[50px] px-1 text-[11px] sm:text-xs font-bold uppercase leading-tight border-2 border-pureblack bg-pureblack text-purewhite btn-press">
-              Normal
-            </button>
-            <button type="button" data-effort="Fuerte" onclick="selectEffort('Fuerte')" class="effort-btn min-h-[50px] px-1 text-[11px] sm:text-xs font-bold uppercase leading-tight border-2 border-pureblack bg-purewhite text-pureblack btn-press">
-              Fuerte
-            </button>
-            <button type="button" data-effort="Intenso" onclick="selectEffort('Intenso')" class="effort-btn min-h-[50px] px-1 text-[11px] sm:text-xs font-bold uppercase leading-tight border-2 border-pureblack bg-purewhite text-pureblack btn-press">
-              Intenso
-            </button>
+        <!-- Checklist de 6 ejercicios -->
+        <div class="mt-4 pt-4 border-t-2 border-pureblack space-y-2">
+          <div class="flex items-center justify-between mb-1">
+            <span class="text-xs font-bold uppercase tracking-wider text-neutral-600">Estaciones de la Vuelta</span>
+            <button type="button" onclick="resetChecklist()" class="text-xs font-bold uppercase underline">Limpiar</button>
           </div>
+          <div id="quick-circuit-list" class="space-y-2"></div>
         </div>
 
-        <button onclick="saveTodaySession()" class="w-full min-h-[58px] px-4 bg-pureblack text-purewhite border-2 border-pureblack text-sm sm:text-base font-bold uppercase tracking-wider flex items-center justify-center gap-2.5 btn-press">
-          <svg class="w-5 h-5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4">
-            <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path>
-            <polyline points="17 21 17 13 7 13 7 21"></polyline>
-            <polyline points="7 3 7 8 15 8"></polyline>
-          </svg>
-          <span>Guardar Sesión de Hoy</span>
-        </button>
-      </div>
-    </section>
-
-    <!-- ========================================================= -->
-    <!-- VISTA 2: EJERCICIOS (LECTURA RÁPIDA Y GRÁFICOS SVG)       -->
-    <!-- ========================================================= -->
-    <section id="view-exercises" class="hidden space-y-4">
-      <div class="border-b-2 border-pureblack pb-3">
-        <span class="text-xs font-bold uppercase tracking-widest text-neutral-600">Guía Visual Técnica</span>
-        <h2 class="text-xl font-bold uppercase tracking-tight mt-0.5">Los 6 Ejercicios del Circuito</h2>
-      </div>
-
-      <!-- Filtro horizontal táctil sin desbordar pantalla -->
-      <div id="exercise-filter-tabs" class="grid grid-cols-4 sm:grid-cols-7 gap-1.5">
-        <!-- Renderizado por JS -->
-      </div>
-
-      <!-- Tarjetas de ejercicios -->
-      <div id="exercises-grid" class="space-y-4">
-        <!-- Renderizado por JS -->
-      </div>
-    </section>
-
-    <!-- ========================================================= -->
-    <!-- VISTA 3: PROGRESO MENSUAL, TIENDA Y RACHA                 -->
-    <!-- ========================================================= -->
-    <section id="view-progress" class="hidden space-y-4">
-      <div class="flex items-center justify-between border-b-2 border-pureblack pb-3">
-        <div>
-          <span class="text-xs font-bold uppercase tracking-widest text-neutral-600">Seguimiento</span>
-          <h2 class="text-xl font-bold uppercase tracking-tight mt-0.5">Progreso Mensual</h2>
-        </div>
-        <button onclick="openSessionModal()" class="min-h-[44px] px-3.5 bg-pureblack text-purewhite border-2 border-pureblack text-xs font-bold uppercase tracking-wider flex items-center gap-1.5 btn-press">
-          <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-            <line x1="12" y1="5" x2="12" y2="19"></line>
-            <line x1="5" y1="12" x2="19" y2="12"></line>
-          </svg>
-          <span>Anotar Día</span>
-        </button>
-      </div>
-
-      <!-- 2 Tarjetas de Métricas y Racha -->
-      <div class="grid grid-cols-2 gap-2.5">
-        <div class="brutal-border p-3 bg-pureblack text-purewhite text-center">
-          <div class="text-[11px] font-bold uppercase tracking-wider text-neutral-300">Racha Actual</div>
-          <div id="stat-current-streak" class="text-xl sm:text-3xl font-bold tabular-nums mt-1">0 días</div>
-        </div>
-        <div class="brutal-border p-3 bg-purewhite text-center">
-          <div class="text-[11px] font-bold uppercase tracking-wider text-neutral-600">Récord Vueltas</div>
-          <div id="stat-best-rounds" class="text-xl sm:text-3xl font-bold tabular-nums mt-1">0</div>
-        </div>
-      </div>
-
-      <!-- Compartir Imagen de Racha -->
-      <button type="button" onclick="shareStreakImage()" class="w-full min-h-[50px] px-4 bg-purewhite text-pureblack border-2 border-pureblack text-xs sm:text-sm font-bold uppercase tracking-wider flex items-center justify-center gap-2 btn-press">
-        <svg class="w-4 h-4 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4">
-          <circle cx="18" cy="5" r="3"></circle>
-          <circle cx="6" cy="12" r="3"></circle>
-          <circle cx="18" cy="19" r="3"></circle>
-          <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line>
-          <line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line>
-        </svg>
-        <span>Compartir Imagen de Racha</span>
-      </button>
-
-      <!-- Monedas y Tienda de Protector de Racha -->
-      <div class="brutal-border bg-purewhite p-4 space-y-3">
-        <div class="flex items-center justify-between border-b-2 border-pureblack pb-2.5">
+        <!-- Sensación / Esfuerzo + Guardar Hoy -->
+        <div class="mt-4 pt-4 border-t-2 border-pureblack space-y-3">
           <div>
-            <div class="text-[11px] font-bold uppercase tracking-widest text-neutral-600">Tienda</div>
-            <h3 class="text-sm font-bold uppercase tracking-wider mt-0.5">Protector de Racha</h3>
+            <div class="text-xs font-bold uppercase tracking-wider text-neutral-600 mb-2">¿Cómo se sintió?</div>
+            <div class="grid grid-cols-3 gap-2">
+              <button type="button" data-effort="Suave" onclick="selectEffort('Suave')"
+                class="effort-btn min-h-[44px] border-2 border-pureblack bg-purewhite text-pureblack text-xs font-bold uppercase btn-press">
+                Suave
+              </button>
+              <button type="button" data-effort="Normal" onclick="selectEffort('Normal')"
+                class="effort-btn min-h-[44px] border-2 border-pureblack bg-pureblack text-purewhite text-xs font-bold uppercase btn-press">
+                Normal
+              </button>
+              <button type="button" data-effort="Fuerte" onclick="selectEffort('Fuerte')"
+                class="effort-btn min-h-[44px] border-2 border-pureblack bg-purewhite text-pureblack text-xs font-bold uppercase btn-press">
+                Fuerte
+              </button>
+            </div>
           </div>
-          <div class="px-3 py-1.5 border-2 border-pureblack bg-pureblack text-purewhite text-xs font-bold tabular-nums uppercase">
-            <span id="stat-coins">0</span> Monedas
-          </div>
-        </div>
 
-        <div class="flex items-center justify-between gap-3 text-xs">
-          <p class="text-neutral-700 leading-snug">
-            +10 monedas solo hoy al completar los 20 min y guardar vueltas. Máximo 2 protectores.
-          </p>
-          <span class="px-2.5 py-1 border-2 border-pureblack font-bold tabular-nums whitespace-nowrap shrink-0">
-            <span id="stat-freezes">0</span>/2
-          </span>
-        </div>
-
-        <button id="btn-buy-freeze" type="button" onclick="buyStreakFreeze()" class="w-full min-h-[50px] px-4 bg-pureblack text-purewhite border-2 border-pureblack text-xs font-bold uppercase tracking-wider flex items-center justify-center gap-2 btn-press disabled:opacity-40 disabled:cursor-not-allowed">
-          <svg class="w-4 h-4 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4">
-            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
-          </svg>
-          <span id="buy-freeze-label">Comprar Protector (30 Monedas)</span>
-        </button>
-      </div>
-
-      <!-- Calendario Mensual Tipo Duolingo (Estilo Monocromático Brutalista) -->
-      <div class="brutal-border bg-purewhite p-4">
-        <div class="flex items-center justify-between gap-2 border-b-2 border-pureblack pb-3 mb-3">
-          <button onclick="changeMonthOffset(-1)" aria-label="Mes anterior" class="min-h-[42px] px-3 border border-pureblack bg-purewhite text-pureblack text-xs font-bold uppercase flex items-center gap-1 btn-press">
-            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-              <polyline points="15 18 9 12 15 6"></polyline>
+          <button type="button" onclick="saveTodaySession()"
+            class="w-full min-h-[54px] px-4 border-2 border-pureblack bg-pureblack text-purewhite text-sm font-bold uppercase tracking-wider flex items-center justify-center gap-2 btn-press">
+            <svg class="w-4 h-4 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4">
+              <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path>
+              <polyline points="17 21 17 13 7 13 7 21"></polyline>
+              <polyline points="7 3 7 8 15 8"></polyline>
             </svg>
-            <span>Ant.</span>
+            <span>Guardar Sesión de Hoy</span>
+          </button>
+        </div>
+      </section>
+    </section>
+
+    <!-- =================================================================== -->
+    <!-- VISTA 2: GUÍA DE EJERCICIOS                                         -->
+    <!-- =================================================================== -->
+    <section id="view-exercises" class="hidden space-y-4">
+      <section class="brutal-border bg-purewhite p-4">
+        <div class="text-xs font-bold uppercase tracking-wider text-neutral-600 mb-2">Filtrar Ejercicio</div>
+        <div id="exercise-filter-tabs" class="grid grid-cols-7 gap-1.5"></div>
+      </section>
+
+      <div id="exercises-grid" class="space-y-4"></div>
+    </section>
+
+    <!-- =================================================================== -->
+    <!-- VISTA 3: PROGRESO / RACHA                                           -->
+    <!-- =================================================================== -->
+    <section id="view-progress" class="hidden space-y-5">
+
+      <!-- Resumen de Racha y Marcas -->
+      <section class="brutal-border bg-purewhite p-4 sm:p-5 space-y-4">
+        <div class="flex items-center justify-between border-b-2 border-pureblack pb-2.5">
+          <h2 class="text-sm font-bold uppercase tracking-wider">Tu Racha</h2>
+          <button type="button" onclick="shareStreakImage()"
+            class="min-h-[40px] px-3 border-2 border-pureblack bg-pureblack text-purewhite text-xs font-bold uppercase tracking-wider flex items-center gap-1.5 btn-press">
+            <svg class="w-3.5 h-3.5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4">
+              <circle cx="18" cy="5" r="3"></circle>
+              <circle cx="6" cy="12" r="3"></circle>
+              <circle cx="18" cy="19" r="3"></circle>
+              <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line>
+              <line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line>
+            </svg>
+            <span>Compartir Imagen</span>
+          </button>
+        </div>
+
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
+          <div class="border-2 border-pureblack p-3">
+            <div class="text-[10px] font-bold uppercase tracking-wider text-neutral-600">Racha Actual</div>
+            <div id="stat-current-streak" class="text-xl font-bold tabular-nums mt-0.5">0 días</div>
+          </div>
+          <div class="border-2 border-pureblack p-3">
+            <div class="text-[10px] font-bold uppercase tracking-wider text-neutral-600">Mejor Vuelta</div>
+            <div id="stat-best-rounds" class="text-xl font-bold tabular-nums mt-0.5">0</div>
+          </div>
+          <div class="border-2 border-pureblack p-3">
+            <div class="text-[10px] font-bold uppercase tracking-wider text-neutral-600">Monedas Diarias</div>
+            <div id="stat-coins" class="text-xl font-bold tabular-nums mt-0.5">0</div>
+          </div>
+          <div class="border-2 border-pureblack p-3">
+            <div class="text-[10px] font-bold uppercase tracking-wider text-neutral-600">Protectores</div>
+            <div id="stat-freezes" class="text-xl font-bold tabular-nums mt-0.5">0</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Calendario Mensual -->
+      <section class="brutal-border bg-purewhite p-4 sm:p-5 space-y-3">
+        <div class="flex items-center justify-between gap-2">
+          <button type="button" onclick="changeMonthOffset(-1)" aria-label="Mes anterior"
+            class="w-10 h-10 border-2 border-pureblack bg-purewhite text-pureblack font-bold flex items-center justify-center btn-press">
+            &lt;
           </button>
 
           <div class="text-center">
-            <div id="month-selector-title" class="text-xs sm:text-sm font-bold uppercase tracking-wider">Noviembre 2026</div>
-            <div id="month-summary-subtitle" class="text-[11px] text-neutral-600 font-semibold mt-0.5">0 días entrenados</div>
+            <div id="month-selector-title" class="text-sm sm:text-base font-bold uppercase tracking-wider">Mes</div>
+            <div id="month-summary-subtitle" class="text-xs text-neutral-600">0 días entrenados</div>
           </div>
 
-          <button id="btn-next-month" onclick="changeMonthOffset(1)" aria-label="Mes siguiente" class="min-h-[42px] px-3 border border-pureblack bg-purewhite text-pureblack text-xs font-bold uppercase flex items-center gap-1 btn-press disabled:opacity-30">
-            <span>Sig.</span>
-            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-              <polyline points="9 18 15 12 9 6"></polyline>
-            </svg>
+          <button id="btn-next-month" type="button" onclick="changeMonthOffset(1)" aria-label="Mes siguiente"
+            class="w-10 h-10 border-2 border-pureblack bg-purewhite text-pureblack font-bold flex items-center justify-center btn-press disabled:opacity-35">
+            &gt;
           </button>
         </div>
 
-        <!-- Cabecera de días L a D -->
-        <div class="grid grid-cols-7 text-center mb-2">
-          <span class="text-[11px] font-bold uppercase text-neutral-600">L</span>
-          <span class="text-[11px] font-bold uppercase text-neutral-600">MA</span>
-          <span class="text-[11px] font-bold uppercase text-neutral-600">MI</span>
-          <span class="text-[11px] font-bold uppercase text-neutral-600">J</span>
-          <span class="text-[11px] font-bold uppercase text-neutral-600">V</span>
-          <span class="text-[11px] font-bold uppercase text-neutral-600">S</span>
-          <span class="text-[11px] font-bold uppercase text-neutral-600">D</span>
+        <div class="grid grid-cols-7 text-center text-[11px] font-bold uppercase text-neutral-600 pt-1">
+          <div>Lun</div>
+          <div>Mar</div>
+          <div>Mié</div>
+          <div>Jue</div>
+          <div>Vie</div>
+          <div>Sáb</div>
+          <div>Dom</div>
         </div>
 
-        <!-- Filas semanales del mes con racha continua tipo Duolingo -->
-        <div id="monthly-calendar-rows" class="space-y-2">
-          <!-- Renderizado dinámicamente por JS -->
-        </div>
+        <div id="monthly-calendar-rows" class="space-y-1.5"></div>
 
-        <div class="flex items-center justify-center gap-4 mt-3 pt-2.5 border-t border-lightborder text-[10px] font-bold uppercase text-neutral-600">
-          <span class="flex items-center gap-1.5">
-            <span class="inline-block w-3 h-3 bg-pureblack border border-pureblack"></span> Entrenado
-          </span>
-          <span class="flex items-center gap-1.5">
-            <span class="inline-block w-3 h-3 bg-purewhite border-2 border-pureblack"></span> Hoy
-          </span>
-          <span class="flex items-center gap-1.5">
-            <span class="inline-block w-3 h-3 bg-neutral-100 border border-lightborder"></span> Sin registro
-          </span>
-        </div>
-
-        <p class="text-[11px] text-neutral-600 text-center mt-2">
-          Toca un día actual o anterior para anotar o corregir sus vueltas
-        </p>
-      </div>
-
-      <!-- Respaldo JSON Compacto -->
-      <div class="brutal-border bg-purewhite p-4 space-y-3">
-        <div class="text-xs font-bold uppercase tracking-wider">Respaldo de Datos en el Celular</div>
-        <div class="grid grid-cols-2 gap-2.5">
-          <button onclick="exportProgressJSON()" class="min-h-[48px] px-3 bg-purewhite text-pureblack border-2 border-pureblack text-xs font-bold uppercase tracking-wider flex items-center justify-center gap-1.5 btn-press">
-            <svg class="w-4 h-4 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
-              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
-              <polyline points="7 10 12 15 17 10"></polyline>
-              <line x1="12" y1="15" x2="12" y2="3"></line>
-            </svg>
-            <span>Exportar JSON</span>
+        <div class="pt-3 border-t-2 border-pureblack flex flex-wrap gap-2">
+          <button type="button" onclick="openSessionModal()"
+            class="flex-1 min-h-[48px] px-3 border-2 border-pureblack bg-pureblack text-purewhite text-xs font-bold uppercase tracking-wider btn-press">
+            + Anotar / Editar Día
           </button>
-
-          <label class="min-h-[48px] px-3 bg-purewhite text-pureblack border-2 border-pureblack text-xs font-bold uppercase tracking-wider flex items-center justify-center gap-1.5 cursor-pointer btn-press">
-            <svg class="w-4 h-4 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
-              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
-              <polyline points="17 8 12 3 7 8"></polyline>
-              <line x1="12" y1="3" x2="12" y2="15"></line>
-            </svg>
+          <button type="button" onclick="exportProgressJSON()"
+            class="min-h-[48px] px-3 border-2 border-pureblack bg-purewhite text-pureblack text-xs font-bold uppercase tracking-wider btn-press">
+            Exportar JSON
+          </button>
+          <label class="min-h-[48px] px-3 border-2 border-pureblack bg-purewhite text-pureblack text-xs font-bold uppercase tracking-wider flex items-center justify-center cursor-pointer btn-press">
             <span>Importar JSON</span>
-            <input type="file" id="import-json-input" accept=".json" class="hidden" onchange="importProgressJSON(event)" />
+            <input type="file" accept="application/json" onchange="importProgressJSON(event)" class="hidden" />
           </label>
         </div>
-      </div>
+      </section>
+    </section>
 
-      <footer class="mt-8 pb-6 text-center font-sans text-xs tracking-wide text-pureblack/70">
-        <p>AMRAP · v1.0.0</p>
-        <p class="mt-1 text-[11px] text-pureblack/50">
-          Copyright © 2026 Araujo PHI ·
-          <a
-            href="https://github.com/Araujo-PHI/AMRAP?tab=License-1-ov-file"
-            target="_blank"
-            rel="noopener noreferrer"
-            class="underline hover:text-pureblack"
-          >
-            Licencia MIT
-          </a>
-        </p>
-      </footer>
-      
+    <!-- =================================================================== -->
+    <!-- VISTA 4: TIENDA                                                     -->
+    <!-- =================================================================== -->
+    <section id="view-shop" class="hidden space-y-5">
+      <section class="brutal-border bg-purewhite p-4 sm:p-5">
+        <div class="flex items-center justify-between border-b-2 border-pureblack pb-2.5 mb-4">
+          <h2 class="text-sm font-bold uppercase tracking-wider">Tienda</h2>
+          <span class="text-xs font-bold uppercase text-neutral-600">2 Monedas</span>
+        </div>
+
+        <div class="grid grid-cols-2 gap-3 mb-4">
+          <div class="border-2 border-pureblack p-3 bg-purewhite">
+            <div class="text-[11px] font-bold uppercase tracking-wider text-neutral-600">Monedas Diarias</div>
+            <div id="shop-daily-coins" class="text-2xl font-bold tabular-nums mt-1">0</div>
+            <div class="text-[11px] text-neutral-600 mt-0.5">+10 al completar 20 min (máx. 10/día)</div>
+          </div>
+
+          <div class="border-2 border-pureblack p-3 bg-purewhite">
+            <div class="text-[11px] font-bold uppercase tracking-wider text-neutral-600">Monedas Épicas</div>
+            <div id="shop-epic-coins" class="text-2xl font-bold tabular-nums mt-1">0</div>
+            <div class="text-[11px] text-neutral-600 mt-0.5">Por superar marcas o esfuerzo extra</div>
+          </div>
+        </div>
+
+        <!-- Protector de Racha (100 Monedas Diarias) -->
+        <div class="border-2 border-pureblack p-4 bg-neutral-50 space-y-3">
+          <div class="flex items-start justify-between gap-2">
+            <div>
+              <h3 class="text-base font-bold uppercase tracking-tight">Protector de Racha</h3>
+              <p class="text-xs text-neutral-700 mt-0.5">
+                Salva tu racha si un día no entrenás. Se compra solo con monedas diarias.
+              </p>
+            </div>
+            <span id="shop-freeze-count" class="px-2.5 py-1 border-2 border-pureblack bg-purewhite text-xs font-bold tabular-nums shrink-0">0/2</span>
+          </div>
+
+          <button id="btn-buy-freeze" type="button" onclick="buyStreakFreeze()"
+            class="w-full min-h-[52px] px-4 bg-pureblack text-purewhite border-2 border-pureblack text-xs sm:text-sm font-bold uppercase tracking-wider flex items-center justify-center gap-2 btn-press disabled:opacity-40">
+            <span id="buy-freeze-label">Comprar Protector · 100 Monedas</span>
+          </button>
+        </div>
+      </section>
+
+      <!-- Extras con Monedas Épicas -->
+      <section class="brutal-border bg-purewhite p-4 sm:p-5 space-y-3">
+        <div class="flex items-center justify-between border-b-2 border-pureblack pb-2.5">
+          <h3 class="text-sm font-bold uppercase tracking-wider">Extras con Épicas</h3>
+          <span class="text-xs font-bold uppercase text-neutral-600">Sin afectar la racha</span>
+        </div>
+
+        <div class="border-2 border-pureblack p-3.5 flex items-center justify-between gap-3">
+          <div>
+            <div class="text-sm font-bold uppercase">Marco Doble en Racha</div>
+            <div class="text-xs text-neutral-600">Suma un borde doble en la imagen compartible</div>
+          </div>
+          <button id="btn-buy-epic-frame" type="button" onclick="buyEpicReward('frame', 25)"
+            class="min-h-[44px] px-3 border-2 border-pureblack bg-pureblack text-purewhite text-xs font-bold uppercase shrink-0 btn-press disabled:opacity-40">
+            25 Épicas
+          </button>
+        </div>
+
+        <div class="border-2 border-pureblack p-3.5 flex items-center justify-between gap-3">
+          <div>
+            <div class="text-sm font-bold uppercase">Acorde Extra al Final</div>
+            <div class="text-xs text-neutral-600">Sonido más largo cuando terminan los 20 min</div>
+          </div>
+          <button id="btn-buy-epic-chime" type="button" onclick="buyEpicReward('chime', 30)"
+            class="min-h-[44px] px-3 border-2 border-pureblack bg-pureblack text-purewhite text-xs font-bold uppercase shrink-0 btn-press disabled:opacity-40">
+            30 Épicas
+          </button>
+        </div>
+      </section>
     </section>
 
   </main>
 
-  <!-- Modal Selector de Estilo y Vista Previa para Compartir Racha -->
+  <!-- ===================================================================== -->
+  <!-- MODAL: COMPARTIR RACHA (3 ESTILOS + VISTA PREVIA)                      -->
+  <!-- ===================================================================== -->
   <div id="share-streak-modal" class="fixed inset-0 z-50 hidden items-end sm:items-center justify-center bg-black/75 p-3 sm:p-4">
     <div class="bg-purewhite border-2 border-pureblack max-w-md w-full p-4 sm:p-5 max-h-[92vh] overflow-y-auto space-y-4">
       <div class="flex items-center justify-between border-b-2 border-pureblack pb-2.5">
@@ -467,71 +387,176 @@
         </button>
       </div>
 
-      <!-- Selector de 3 estilos -->
       <div>
         <div class="text-[11px] font-bold uppercase tracking-wider text-neutral-600 mb-2">Elegí un estilo (3)</div>
-        <div class="grid grid-cols-3 gap-2" id="streak-style-buttons">
-          <button type="button" data-style="0" onclick="selectStreakStyle(0)" class="streak-style-btn min-h-[44px] px-2 text-xs font-bold uppercase border-2 border-pureblack bg-pureblack text-purewhite btn-press">
+        <div class="grid grid-cols-3 gap-2">
+          <button type="button" data-style="0" onclick="selectStreakStyle(0)"
+            class="streak-style-btn min-h-[44px] px-2 text-xs font-bold uppercase border-2 border-pureblack bg-pureblack text-purewhite btn-press">
             Estilo 1
           </button>
-          <button type="button" data-style="1" onclick="selectStreakStyle(1)" class="streak-style-btn min-h-[44px] px-2 text-xs font-bold uppercase border-2 border-pureblack bg-purewhite text-pureblack btn-press">
+          <button type="button" data-style="1" onclick="selectStreakStyle(1)"
+            class="streak-style-btn min-h-[44px] px-2 text-xs font-bold uppercase border-2 border-pureblack bg-purewhite text-pureblack btn-press">
             Estilo 2
           </button>
-          <button type="button" data-style="2" onclick="selectStreakStyle(2)" class="streak-style-btn min-h-[44px] px-2 text-xs font-bold uppercase border-2 border-pureblack bg-purewhite text-pureblack btn-press">
+          <button type="button" data-style="2" onclick="selectStreakStyle(2)"
+            class="streak-style-btn min-h-[44px] px-2 text-xs font-bold uppercase border-2 border-pureblack bg-purewhite text-pureblack btn-press">
             Estilo 3
           </button>
         </div>
       </div>
 
-      <!-- Vista previa en vivo -->
       <div class="border-2 border-pureblack bg-neutral-100 p-2">
         <canvas id="streak-preview-canvas" width="1080" height="1080" class="w-full h-auto block border border-pureblack"></canvas>
       </div>
 
-      <!-- Acciones -->
       <div class="grid grid-cols-2 gap-2.5">
-        <button type="button" onclick="downloadStreakPreviewImage()" class="min-h-[50px] px-3 bg-purewhite text-pureblack border-2 border-pureblack text-xs font-bold uppercase tracking-wider flex items-center justify-center gap-1.5 btn-press">
+        <button type="button" onclick="downloadStreakPreviewImage()"
+          class="min-h-[50px] px-3 bg-purewhite text-pureblack border-2 border-pureblack text-xs font-bold uppercase tracking-wider flex items-center justify-center btn-press">
           <span>Descargar</span>
         </button>
-        <button type="button" onclick="confirmShareStreakImage()" class="min-h-[50px] px-3 bg-pureblack text-purewhite border-2 border-pureblack text-xs font-bold uppercase tracking-wider flex items-center justify-center gap-1.5 btn-press">
+        <button type="button" onclick="confirmShareStreakImage()"
+          class="min-h-[50px] px-3 bg-pureblack text-purewhite border-2 border-pureblack text-xs font-bold uppercase tracking-wider flex items-center justify-center btn-press">
           <span>Compartir</span>
         </button>
       </div>
     </div>
   </div>
 
-  <!-- Barra de Navegación Fija Inferior Mobile-First (Mínimo 62px + safe area) -->
-  <nav aria-label="Navegación principal inferior" class="fixed bottom-0 left-0 right-0 z-40 bg-purewhite border-t-2 border-pureblack bottom-nav-safe">
-    <div class="max-w-3xl mx-auto grid grid-cols-3">
-      <button id="nav-timer" onclick="switchView('timer')" class="min-h-[62px] py-2 px-2 bg-pureblack text-purewhite border-r border-pureblack flex flex-col items-center justify-center gap-1 btn-press">
+  <!-- ===================================================================== -->
+  <!-- MODAL: EDITAR / ANOTAR DÍA                                            -->
+  <!-- ===================================================================== -->
+  <div id="session-modal" class="fixed inset-0 z-50 hidden items-end sm:items-center justify-center bg-black/75 p-3 sm:p-4">
+    <div class="bg-purewhite border-2 border-pureblack max-w-md w-full p-4 sm:p-5 space-y-4">
+      <div class="flex items-center justify-between border-b-2 border-pureblack pb-2.5">
+        <h3 id="session-modal-title" class="text-sm font-bold uppercase tracking-wider">Anotar Día</h3>
+        <button type="button" onclick="closeSessionModal()" class="p-1.5 -mr-1.5" aria-label="Cerrar">
+          <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </button>
+      </div>
+
+      <form id="manual-session-form" class="space-y-3">
+        <div>
+          <label for="modal-date" class="block text-xs font-bold uppercase tracking-wider mb-1">Fecha</label>
+          <input id="modal-date" type="date" required class="w-full min-h-[46px] px-3 border-2 border-pureblack bg-purewhite text-sm font-bold" />
+        </div>
+
+        <div>
+          <label for="modal-rounds" class="block text-xs font-bold uppercase tracking-wider mb-1">Vueltas</label>
+          <div class="flex items-center gap-2">
+            <button type="button" onclick="adjustModalRounds(-1)" class="w-12 h-12 border-2 border-pureblack bg-purewhite text-xl font-bold">-</button>
+            <input id="modal-rounds" type="number" min="0" required class="flex-1 min-h-[48px] px-3 border-2 border-pureblack bg-purewhite text-center text-lg font-bold tabular-nums" />
+            <button type="button" onclick="adjustModalRounds(1)" class="w-12 h-12 border-2 border-pureblack bg-pureblack text-purewhite text-xl font-bold">+</button>
+          </div>
+        </div>
+
+        <div>
+          <label for="modal-effort" class="block text-xs font-bold uppercase tracking-wider mb-1">Esfuerzo</label>
+          <select id="modal-effort" class="w-full min-h-[46px] px-3 border-2 border-pureblack bg-purewhite text-sm font-bold">
+            <option value="Suave">Suave</option>
+            <option value="Normal">Normal</option>
+            <option value="Fuerte">Fuerte</option>
+          </select>
+        </div>
+
+        <div>
+          <label for="modal-notes" class="block text-xs font-bold uppercase tracking-wider mb-1">Nota (opcional)</label>
+          <input id="modal-notes" type="text" placeholder="Ej: con mi hermano" class="w-full min-h-[46px] px-3 border-2 border-pureblack bg-purewhite text-sm" />
+        </div>
+
+        <div class="flex items-center justify-between gap-2 pt-2">
+          <div id="modal-delete-wrapper" class="hidden">
+            <button id="modal-delete-btn" type="button" class="min-h-[46px] px-3 border-2 border-pureblack bg-purewhite text-pureblack text-xs font-bold uppercase btn-press">
+              Borrar
+            </button>
+          </div>
+          <button type="submit" class="flex-1 min-h-[48px] px-4 border-2 border-pureblack bg-pureblack text-purewhite text-xs font-bold uppercase tracking-wider btn-press">
+            Guardar
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ===================================================================== -->
+  <!-- MODAL: CONFIRMACIÓN                                                   -->
+  <!-- ===================================================================== -->
+  <div id="confirm-modal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/75 p-4">
+    <div class="bg-purewhite border-2 border-pureblack max-w-sm w-full p-5 space-y-4">
+      <h3 id="confirm-title" class="text-sm font-bold uppercase tracking-wider">Confirmar</h3>
+      <p id="confirm-text" class="text-sm text-neutral-800 leading-relaxed"></p>
+      <div class="grid grid-cols-2 gap-2.5 pt-1">
+        <button type="button" onclick="closeConfirmModal()" class="min-h-[46px] border-2 border-pureblack bg-purewhite text-pureblack text-xs font-bold uppercase btn-press">
+          Cancelar
+        </button>
+        <button id="confirm-accept-btn" type="button" class="min-h-[46px] border-2 border-pureblack bg-pureblack text-purewhite text-xs font-bold uppercase btn-press">
+          Aceptar
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===================================================================== -->
+  <!-- TOAST DE AVISO                                                        -->
+  <!-- ===================================================================== -->
+  <div id="toast-banner" class="fixed top-16 left-1/2 -translate-x-1/2 z-50 hidden w-[92%] max-w-md">
+    <div class="bg-pureblack text-purewhite border-2 border-purewhite px-4 py-2.5 flex items-center justify-between gap-3">
+      <span id="toast-message" class="text-xs font-bold uppercase tracking-wide"></span>
+      <button type="button" onclick="hideToast()" class="text-xs font-bold uppercase underline shrink-0">OK</button>
+    </div>
+  </div>
+
+  <!-- ===================================================================== -->
+  <!-- BARRA DE NAVEGACIÓN FIJA INFERIOR (4 BOTONES)                          -->
+  <!-- ===================================================================== -->
+  <nav class="fixed bottom-0 inset-x-0 z-40 bg-purewhite border-t-2 border-pureblack">
+    <div class="max-w-xl mx-auto grid grid-cols-4 divide-x-2 divide-pureblack">
+      <button id="nav-timer" type="button" onclick="switchView('timer')"
+        class="min-h-[56px] flex flex-col items-center justify-center gap-0.5 bg-pureblack text-purewhite btn-press">
         <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
-          <circle cx="12" cy="13" r="8"></circle>
-          <polyline points="12 9 12 13 15 15"></polyline>
-          <line x1="9" y1="2" x2="15" y2="2"></line>
+          <circle cx="12" cy="12" r="10"></circle>
+          <polyline points="12 6 12 12 16 14"></polyline>
         </svg>
-        <span class="text-xs font-bold uppercase tracking-wider">Entrenar</span>
+        <span class="text-[11px] font-bold uppercase tracking-wider">Reloj</span>
       </button>
 
-      <button id="nav-exercises" onclick="switchView('exercises')" class="min-h-[62px] py-2 px-2 bg-purewhite text-pureblack border-r border-pureblack flex flex-col items-center justify-center gap-1 btn-press">
+      <button id="nav-exercises" type="button" onclick="switchView('exercises')"
+        class="min-h-[56px] flex flex-col items-center justify-center gap-0.5 bg-purewhite text-pureblack btn-press">
         <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
-          <rect x="3" y="3" width="7" height="7"></rect>
-          <rect x="14" y="3" width="7" height="7"></rect>
-          <rect x="14" y="14" width="7" height="7"></rect>
-          <rect x="3" y="14" width="7" height="7"></rect>
+          <path d="M18 8h1a4 4 0 0 1 0 8h-1"></path>
+          <path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"></path>
+          <line x1="6" y1="1" x2="6" y2="4"></line>
+          <line x1="10" y1="1" x2="10" y2="4"></line>
+          <line x1="14" y1="1" x2="14" y2="4"></line>
         </svg>
-        <span class="text-xs font-bold uppercase tracking-wider">Ejercicios</span>
+        <span class="text-[11px] font-bold uppercase tracking-wider">Guía</span>
       </button>
 
-      <button id="nav-progress" onclick="switchView('progress')" class="min-h-[62px] py-2 px-2 bg-purewhite text-pureblack flex flex-col items-center justify-center gap-1 btn-press">
+      <button id="nav-progress" type="button" onclick="switchView('progress')"
+        class="min-h-[56px] flex flex-col items-center justify-center gap-0.5 bg-purewhite text-pureblack btn-press">
         <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
-          <line x1="18" y1="20" x2="18" y2="10"></line>
-          <line x1="12" y1="20" x2="12" y2="4"></line>
-          <line x1="6" y1="20" x2="6" y2="14"></line>
+          <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+          <line x1="16" y1="2" x2="16" y2="6"></line>
+          <line x1="8" y1="2" x2="8" y2="6"></line>
+          <line x1="3" y1="10" x2="21" y2="10"></line>
         </svg>
-        <span class="text-xs font-bold uppercase tracking-wider">Progreso</span>
+        <span class="text-[11px] font-bold uppercase tracking-wider">Racha</span>
+      </button>
+
+      <button id="nav-shop" type="button" onclick="switchView('shop')"
+        class="min-h-[56px] flex flex-col items-center justify-center gap-0.5 bg-purewhite text-pureblack btn-press">
+        <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+          <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path>
+          <line x1="3" y1="6" x2="21" y2="6"></line>
+          <path d="M16 10a4 4 0 0 1-8 0"></path>
+        </svg>
+        <span class="text-[11px] font-bold uppercase tracking-wider">Tienda</span>
       </button>
     </div>
   </nav>
-  <script src="./app.js"></script>
+
+  <script src="app.js"></script>
 </body>
 </html>
