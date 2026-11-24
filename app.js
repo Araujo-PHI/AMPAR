@@ -117,6 +117,9 @@ const EXERCISES = [
 // =========================================================================
 const STORAGE_KEY = 'amrap_13yo_mobile_v2';
 const TOTAL_SECONDS = 20 * 60; // 20:00
+const COINS_PER_SESSION = 10;
+const FREEZE_COST = 30;
+const MAX_FREEZES = 2;
 
 let timerSecondsLeft = TOTAL_SECONDS;
 let timerInterval = null;
@@ -133,12 +136,16 @@ let wakeLockSentinel = null;
 
 // Estructura de sesión: { date: 'YYYY-MM-DD', rounds: number, effort: string, notes: string }
 let sessions = [];
+let coins = 0;
+let streakFreezes = 0;
+let frozenDates = [];
 
 // =========================================================================
 // INICIALIZACIÓN
 // =========================================================================
 document.addEventListener('DOMContentLoaded', () => {
   loadSessions();
+  applyAutomaticStreakFreezes();
   renderQuickChecklist();
   renderExerciseTabs();
   renderExercisesGrid();
@@ -157,8 +164,23 @@ document.addEventListener('DOMContentLoaded', () => {
 
 function getTodayISO() {
   const now = new Date();
-  const offset = now.getTimezoneOffset();
-  return new Date(now.getTime() - offset * 60 * 1000).toISOString().split('T')[0];
+  const y = now.getFullYear();
+  const m = String(now.getMonth() + 1).padStart(2, '0');
+  const d = String(now.getDate()).padStart(2, '0');
+  return `${y}-${m}-${d}`;
+}
+
+function isoToDayNumber(isoStr) {
+  const [y, m, d] = isoStr.split('-').map(Number);
+  return Math.floor(Date.UTC(y, m - 1, d) / (24 * 60 * 60 * 1000));
+}
+
+function dayNumberToISO(dayNum) {
+  const dt = new Date(dayNum * 24 * 60 * 60 * 1000);
+  const y = dt.getUTCFullYear();
+  const m = String(dt.getUTCMonth() + 1).padStart(2, '0');
+  const d = String(dt.getUTCDate()).padStart(2, '0');
+  return `${y}-${m}-${d}`;
 }
 
 function formatDisplayDate(iso) {
@@ -167,31 +189,118 @@ function formatDisplayDate(iso) {
   return `${d}/${m}/${y}`;
 }
 
+function normalizeSessionItem(item) {
+  return {
+    date: item.date,
+    rounds: Number(item.rounds) || 0,
+    effort: (item.effort === 'Bien' ? 'Normal' : item.effort) || (item.quality === 'Bien' ? 'Normal' : item.quality) || 'Normal',
+    notes: item.notes || ''
+  };
+}
+
 function loadSessions() {
   try {
     const raw = localStorage.getItem(STORAGE_KEY) || localStorage.getItem('amrap_13yo_progress_v1');
     if (raw) {
       const parsed = JSON.parse(raw);
       if (Array.isArray(parsed)) {
-        sessions = parsed.map(item => ({
-          date: item.date,
-          rounds: Number(item.rounds) || 0,
-          effort: (item.effort === 'Bien' ? 'Normal' : item.effort) || (item.quality === 'Bien' ? 'Normal' : item.quality) || 'Normal',
-          notes: item.notes || ''
-        }));
+        sessions = parsed.filter(i => i && typeof i.date === 'string').map(normalizeSessionItem);
+        coins = 0;
+        streakFreezes = 0;
+        frozenDates = [];
+      } else if (parsed && typeof parsed === 'object') {
+        sessions = Array.isArray(parsed.sessions)
+          ? parsed.sessions.filter(i => i && typeof i.date === 'string').map(normalizeSessionItem)
+          : [];
+        coins = Math.max(0, Number(parsed.coins) || 0);
+        streakFreezes = Math.max(0, Math.min(MAX_FREEZES, Number(parsed.streakFreezes) || 0));
+        frozenDates = Array.isArray(parsed.frozenDates)
+          ? Array.from(new Set(parsed.frozenDates.filter(d => typeof d === 'string')))
+          : [];
       }
     }
   } catch (e) {
     sessions = [];
+    coins = 0;
+    streakFreezes = 0;
+    frozenDates = [];
   }
 }
 
 function saveSessions() {
   try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(sessions));
+    const payload = {
+      sessions,
+      coins,
+      streakFreezes,
+      frozenDates
+    };
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(payload));
   } catch (e) {
     showToast('No se pudo guardar en este navegador.');
   }
+}
+
+function applyAutomaticStreakFreezes() {
+  if (!sessions.length || streakFreezes <= 0) return;
+
+  const trainedDays = new Set(sessions.map(s => s.date));
+  const frozenSet = new Set(frozenDates);
+  const sortedTrained = Array.from(trainedDays).sort();
+  let consumedCount = 0;
+
+  // Huecos exactos de 1 día entre entrenamientos
+  for (let i = 1; i < sortedTrained.length && streakFreezes > 0; i++) {
+    const prevDay = isoToDayNumber(sortedTrained[i - 1]);
+    const currDay = isoToDayNumber(sortedTrained[i]);
+    if (currDay - prevDay === 2) {
+      const missedISO = dayNumberToISO(prevDay + 1);
+      if (!trainedDays.has(missedISO) && !frozenSet.has(missedISO)) {
+        frozenSet.add(missedISO);
+        streakFreezes = Math.max(0, streakFreezes - 1);
+        consumedCount++;
+      }
+    }
+  }
+
+  // Si ayer quedó sin entrenar y la última sesión fue anteayer
+  const todayDay = isoToDayNumber(getTodayISO());
+  const lastTrainedDay = isoToDayNumber(sortedTrained[sortedTrained.length - 1]);
+  if (todayDay - lastTrainedDay === 2 && streakFreezes > 0) {
+    const yesterdayISO = dayNumberToISO(todayDay - 1);
+    if (!trainedDays.has(yesterdayISO) && !frozenSet.has(yesterdayISO)) {
+      frozenSet.add(yesterdayISO);
+      streakFreezes = Math.max(0, streakFreezes - 1);
+      consumedCount++;
+    }
+  }
+
+  if (consumedCount > 0) {
+    frozenDates = Array.from(frozenSet).sort();
+    saveSessions();
+    showToast(
+      consumedCount === 1
+        ? 'Protector usado: salvaste 1 día de racha'
+        : `Protectores usados: salvaste ${consumedCount} días`
+    );
+  }
+}
+
+function buyStreakFreeze() {
+  if (streakFreezes >= MAX_FREEZES) {
+    showToast(`Ya tenés el máximo (${MAX_FREEZES}/${MAX_FREEZES})`);
+    return;
+  }
+  if (coins < FREEZE_COST) {
+    showToast(`Te faltan ${FREEZE_COST - coins} monedas`);
+    return;
+  }
+
+  coins -= FREEZE_COST;
+  streakFreezes = Math.min(MAX_FREEZES, streakFreezes + 1);
+  saveSessions();
+  refreshProgressView();
+  showToast(`Protector comprado (${streakFreezes}/${MAX_FREEZES})`);
 }
 
 // =========================================================================
@@ -500,6 +609,7 @@ function selectEffort(effort) {
 function saveTodaySession() {
   const today = getTodayISO();
   const idx = sessions.findIndex(s => s.date === today);
+  const prevRounds = idx >= 0 ? (Number(sessions[idx].rounds) || 0) : 0;
   const record = {
     date: today,
     rounds: currentRounds,
@@ -507,22 +617,30 @@ function saveTodaySession() {
     notes: idx >= 0 ? sessions[idx].notes : 'Circuito 20 min'
   };
 
+  const applySave = () => {
+    if (idx >= 0) {
+      sessions[idx] = record;
+    } else {
+      sessions.push(record);
+    }
+    let earnedMsg = '';
+    if (currentRounds > 0 && prevRounds === 0) {
+      coins += COINS_PER_SESSION;
+      earnedMsg = ` (+${COINS_PER_SESSION} monedas)`;
+    }
+    saveSessions();
+    refreshProgressView();
+    showToast(`Guardado: ${currentRounds} vueltas (${selectedEffort})${earnedMsg}`);
+  };
+
   if (idx >= 0) {
     openConfirmModal(
       'Actualizar Registro de Hoy',
       `Hoy (${formatDisplayDate(today)}) ya tienes ${sessions[idx].rounds} vueltas guardadas. ¿Quieres actualizarlo a ${currentRounds} vueltas (${selectedEffort})?`,
-      () => {
-        sessions[idx] = record;
-        saveSessions();
-        refreshProgressView();
-        showToast('Sesión de hoy actualizada');
-      }
+      applySave
     );
   } else {
-    sessions.push(record);
-    saveSessions();
-    refreshProgressView();
-    showToast(`Guardado: ${currentRounds} vueltas (${selectedEffort})`);
+    applySave();
   }
 }
 
@@ -560,7 +678,6 @@ function renderExercisesGrid() {
 
   grid.innerHTML = filtered.map(ex => `
     <article class="brutal-border bg-purewhite overflow-hidden">
-      <!-- Cabecera de tarjeta -->
       <div class="p-4 border-b-2 border-pureblack flex items-center justify-between gap-2">
         <div class="flex items-center gap-2.5 min-w-0">
           <span class="px-2.5 py-1 bg-pureblack text-purewhite text-xs font-bold tabular-nums shrink-0">${ex.number}</span>
@@ -571,12 +688,10 @@ function renderExercisesGrid() {
         </span>
       </div>
 
-      <!-- Lienzo SVG Articulado (11 partes conectadas por cinemática directa) -->
       <div class="p-3 bg-purewhite border-b border-lightborder">
         <svg id="skel-svg-${ex.id}" viewBox="0 0 340 185" class="w-full h-auto bg-purewhite block" role="img" aria-label="Guía visual de ${ex.name}"></svg>
       </div>
 
-      <!-- 3 Pasos cortos en letra grande y legible (16px+) -->
       <div class="p-4 space-y-3">
         <div class="flex flex-wrap items-center justify-between gap-2 text-xs font-bold uppercase text-neutral-600">
           <span>${ex.rhythm}</span>
@@ -587,7 +702,6 @@ function renderExercisesGrid() {
           ${ex.steps.map(step => `<li class="leading-snug">${step}</li>`).join('')}
         </ol>
 
-        <!-- Acordeón desplegable para no saturar pantalla móvil -->
         <details class="border-2 border-pureblack mt-3">
           <summary class="min-h-[46px] px-3.5 py-2.5 bg-neutral-50 font-bold text-xs uppercase tracking-wider flex items-center justify-between cursor-pointer select-none">
             <span>Ver error común y adaptación</span>
@@ -604,7 +718,6 @@ function renderExercisesGrid() {
     </article>
   `).join('');
 
-  // Dibujar estáticos de inmediato al cambiar filtro
   drawStaticExerciseSVGs();
 }
 
@@ -633,7 +746,6 @@ function smoothWave(tSec, periodSec) {
   return 0.5 - 0.5 * Math.cos((2 * Math.PI * tSec) / periodSec);
 }
 
-// Genera el SVG de los 11 segmentos independientes conectados en sus articulaciones
 function renderArticulatedFigure(sk, extrasTop = '', extrasBottom = '') {
   const LEFT_COLOR = '#000000';
   const RIGHT_COLOR = '#777777';
@@ -649,7 +761,6 @@ function renderArticulatedFigure(sk, extrasTop = '', extrasBottom = '') {
 
   return `
     ${extrasBottom}
-    <!-- LADO DERECHO (EN SEGUNDO PLANO, GRIS #777777) -->
     ${seg(sk.hipR, sk.kneeR, RIGHT_COLOR, 3.2)}
     ${seg(sk.kneeR, sk.ankleR, RIGHT_COLOR, 3.2)}
     ${foot(sk.ankleR, sk.footR, RIGHT_COLOR)}
@@ -659,14 +770,12 @@ function renderArticulatedFigure(sk, extrasTop = '', extrasBottom = '') {
     ${seg(sk.elbowR, sk.handR, RIGHT_COLOR, 3)}
     ${joint(sk.elbowR, RIGHT_COLOR, 1.9)}
 
-    <!-- EJE CENTRAL: TORSO INFERIOR, TORSO SUPERIOR Y CABEZA -->
     ${seg(sk.pelvis, sk.waist, LEFT_COLOR, 3.8)}
     ${seg(sk.waist, sk.neck, LEFT_COLOR, 3.8)}
     ${joint(sk.waist, LEFT_COLOR, 2.2)}
     ${seg(sk.neck, sk.headCenter, LEFT_COLOR, 2.6)}
     <circle cx="${sk.headCenter.x.toFixed(1)}" cy="${sk.headCenter.y.toFixed(1)}" r="${sk.headR || 9.5}" fill="#FFFFFF" stroke="${LEFT_COLOR}" stroke-width="2.5" />
 
-    <!-- LADO IZQUIERDO (EN PRIMER PLANO, NEGRO #000000) -->
     ${seg(sk.hipL, sk.kneeL, LEFT_COLOR, 3.4)}
     ${seg(sk.kneeL, sk.ankleL, LEFT_COLOR, 3.4)}
     ${foot(sk.ankleL, sk.footL, LEFT_COLOR)}
@@ -679,7 +788,6 @@ function renderArticulatedFigure(sk, extrasTop = '', extrasBottom = '') {
   `;
 }
 
-// 1. SENTADILLA CON PESO CORPORAL
 function buildSquatFrame(tSec) {
   const p = smoothWave(tSec, 2.8);
   const floorY = 148;
@@ -729,7 +837,6 @@ function buildSquatFrame(tSec) {
   }, '', floorLine);
 }
 
-// 2. FLEXIONES DE BRAZOS
 function buildPushupFrame(tSec) {
   const p = smoothWave(tSec, 2.6);
   const floorY = 144;
@@ -791,7 +898,6 @@ function solveTwoBoneIK(p1, p2, len1, len2, bendUp) {
   return bendUp ? (opt1.y < opt2.y ? opt1 : opt2) : (opt1.y > opt2.y ? opt1 : opt2);
 }
 
-// 3. GIROS RUSOS CON PELOTA — ESTÁTICO CON 2 HOMBRES PALITOS (PASO 1 Y PASO 2)
 function buildRussianTwistFrame() {
   const floorY = 148;
   const LEFT_COLOR = '#000000';
@@ -892,7 +998,6 @@ function buildRussianTwistFrame() {
   `;
 }
 
-// 4. PRESS DE HOMBROS CON 2 MANCUERNAS DE 1 KG
 function buildShoulderPressFrame(tSec) {
   const p = smoothWave(tSec, 2.4);
   const floorY = 152;
@@ -945,7 +1050,6 @@ function buildShoulderPressFrame(tSec) {
   }, dumbbells, floorLine);
 }
 
-// 5. PERRO PÁJARO
 function buildBirdDogFrame(tSec) {
   const cycle = 4.6;
   const phase = (tSec % cycle) / cycle;
@@ -1004,7 +1108,6 @@ function buildBirdDogFrame(tSec) {
   }, '', floorLine);
 }
 
-// 6. CONDUCCIÓN EN ZIGZAG / 8 FLUIDO
 function buildZigzagFrame(tSec) {
   const cycle = 5.2;
   const tau = ((tSec % cycle) / cycle) * Math.PI * 2;
@@ -1170,7 +1273,7 @@ function startSkeletonAnimationLoop() {
 }
 
 // =========================================================================
-// VISTA 3: PROGRESO MENSUAL TIPO DUOLINGO (ESTILO MONOCROMÁTICO WEB)
+// VISTA 3: PROGRESO MENSUAL, TIENDA Y COMPARTIR IMAGEN DE RACHA
 // =========================================================================
 function changeMonthOffset(delta) {
   if (monthOffset + delta > 0) return;
@@ -1179,47 +1282,36 @@ function changeMonthOffset(delta) {
 }
 
 function calculateStreaks() {
-  if (!sessions || sessions.length === 0) {
-    return { currentStreak: 0, bestStreak: 0 };
+  const trainedSet = new Set(sessions.map(s => s.date));
+  const frozenSet = new Set(frozenDates);
+  const activeSet = new Set([...trainedSet, ...frozenSet]);
+
+  if (activeSet.size === 0) {
+    return { currentStreak: 0, bestStreak: 0, totalTrainedDays: trainedSet.size };
   }
 
-  const uniqueDates = Array.from(new Set(sessions.map(s => s.date))).sort();
-
-  const parseISOToUTC = (isoStr) => {
-    const [y, m, d] = isoStr.split('-').map(Number);
-    return Date.UTC(y, m - 1, d);
-  };
-  const MS_PER_DAY = 24 * 60 * 60 * 1000;
+  const sortedDays = Array.from(activeSet).map(isoToDayNumber).sort((a, b) => a - b);
 
   let bestStreak = 1;
   let runningStreak = 1;
 
-  for (let i = 1; i < uniqueDates.length; i++) {
-    const prevMs = parseISOToUTC(uniqueDates[i - 1]);
-    const currMs = parseISOToUTC(uniqueDates[i]);
-    const diffDays = Math.round((currMs - prevMs) / MS_PER_DAY);
-
-    if (diffDays === 1) {
+  for (let i = 1; i < sortedDays.length; i++) {
+    if (sortedDays[i] - sortedDays[i - 1] === 1) {
       runningStreak++;
       if (runningStreak > bestStreak) bestStreak = runningStreak;
-    } else if (diffDays > 1) {
+    } else {
       runningStreak = 1;
     }
   }
 
-  const todayISO = getTodayISO();
-  const todayMs = parseISOToUTC(todayISO);
-  const lastDateMs = parseISOToUTC(uniqueDates[uniqueDates.length - 1]);
-  const daysSinceLast = Math.round((todayMs - lastDateMs) / MS_PER_DAY);
+  const todayDay = isoToDayNumber(getTodayISO());
+  const lastDay = sortedDays[sortedDays.length - 1];
 
   let currentStreak = 0;
-  if (daysSinceLast <= 1) {
+  if (todayDay - lastDay <= 1) {
     currentStreak = 1;
-    for (let i = uniqueDates.length - 1; i > 0; i--) {
-      const currMs = parseISOToUTC(uniqueDates[i]);
-      const prevMs = parseISOToUTC(uniqueDates[i - 1]);
-      const diffDays = Math.round((currMs - prevMs) / MS_PER_DAY);
-      if (diffDays === 1) {
+    for (let i = sortedDays.length - 1; i > 0; i--) {
+      if (sortedDays[i] - sortedDays[i - 1] === 1) {
         currentStreak++;
       } else {
         break;
@@ -1227,13 +1319,14 @@ function calculateStreaks() {
     }
   }
 
-  return { currentStreak, bestStreak };
+  return { currentStreak, bestStreak, totalTrainedDays: trainedSet.size };
 }
 
 function buildMonthWeeks(year, monthIndex) {
   const firstDay = new Date(year, monthIndex, 1);
   const daysInMonth = new Date(year, monthIndex + 1, 0).getDate();
   const startWeekday = (firstDay.getDay() + 6) % 7;
+  const frozenSet = new Set(frozenDates);
 
   const weeks = [];
   let currentWeek = new Array(7).fill(null);
@@ -1242,12 +1335,14 @@ function buildMonthWeeks(year, monthIndex) {
     const col = (startWeekday + d - 1) % 7;
     const iso = `${year}-${String(monthIndex + 1).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
     const entry = sessions.find(s => s.date === iso) || null;
+    const isProtected = !entry && frozenSet.has(iso);
 
     currentWeek[col] = {
       dayNum: d,
       iso,
       entry,
-      trained: !!entry
+      trained: !!entry,
+      protectedDay: isProtected
     };
 
     if (col === 6 || d === daysInMonth) {
@@ -1283,6 +1378,26 @@ function refreshProgressView() {
     `${currentStreak} ${currentStreak === 1 ? 'día' : 'días'}`;
   document.getElementById('stat-best-rounds').textContent = bestRounds;
 
+  const coinsEl = document.getElementById('stat-coins');
+  const freezesEl = document.getElementById('stat-freezes');
+  if (coinsEl) coinsEl.textContent = coins;
+  if (freezesEl) freezesEl.textContent = streakFreezes;
+
+  const buyBtn = document.getElementById('btn-buy-freeze');
+  const buyLabel = document.getElementById('buy-freeze-label');
+  if (buyBtn && buyLabel) {
+    if (streakFreezes >= MAX_FREEZES) {
+      buyBtn.disabled = true;
+      buyLabel.textContent = `Máximo Alcanzado (${MAX_FREEZES}/${MAX_FREEZES})`;
+    } else if (coins < FREEZE_COST) {
+      buyBtn.disabled = true;
+      buyLabel.textContent = `Protector (${FREEZE_COST} Monedas · Faltan ${FREEZE_COST - coins})`;
+    } else {
+      buyBtn.disabled = false;
+      buyLabel.textContent = `Comprar Protector (${FREEZE_COST} Monedas)`;
+    }
+  }
+
   const weeks = buildMonthWeeks(year, monthIndex);
   let trainedDaysCount = 0;
 
@@ -1292,8 +1407,11 @@ function refreshProgressView() {
     let segStart = null;
     for (let c = 0; c < 7; c++) {
       const cell = week[c];
+      const activeInStreak = cell && (cell.trained || cell.protectedDay);
       if (cell && cell.trained) {
         trainedDaysCount++;
+      }
+      if (activeInStreak) {
         if (segStart === null) segStart = c;
       } else {
         if (segStart !== null) {
@@ -1335,6 +1453,17 @@ function refreshProgressView() {
         `;
       }
 
+      if (cell.protectedDay) {
+        return `
+          <button type="button" onclick="openSessionModal('${cell.iso}')"
+            title="${formatDisplayDate(cell.iso)}: Protegido"
+            class="relative z-10 h-11 sm:h-12 w-full flex flex-col items-center justify-center text-purewhite btn-press">
+            <span class="text-sm font-bold tabular-nums leading-none">${cell.dayNum}</span>
+            <span class="text-[8px] font-bold uppercase tracking-tighter text-neutral-300 mt-0.5">Prot.</span>
+          </button>
+        `;
+      }
+
       if (isFuture) {
         return `
           <div aria-disabled="true"
@@ -1364,6 +1493,120 @@ function refreshProgressView() {
 
   document.getElementById('month-summary-subtitle').textContent =
     `${trainedDaysCount} ${trainedDaysCount === 1 ? 'día entrenado' : 'días entrenados'}`;
+}
+
+async function shareStreakImage() {
+  const { currentStreak, bestStreak, totalTrainedDays } = calculateStreaks();
+  const todayISO = getTodayISO();
+
+  const canvas = document.createElement('canvas');
+  canvas.width = 1080;
+  canvas.height = 1350;
+  const ctx = canvas.getContext('2d');
+
+  ctx.fillStyle = '#FFFFFF';
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+  ctx.strokeStyle = '#000000';
+  ctx.lineWidth = 18;
+  ctx.strokeRect(48, 48, canvas.width - 96, canvas.height - 96);
+
+  ctx.fillStyle = '#000000';
+  ctx.fillRect(96, 104, 28, 28);
+  ctx.font = 'bold 36px Arimo, sans-serif';
+  ctx.textAlign = 'left';
+  ctx.fillText('AMRAP · 20 MIN', 142, 130);
+
+  ctx.font = 'bold 24px Arimo, sans-serif';
+  ctx.fillStyle = '#555555';
+  ctx.textAlign = 'right';
+  ctx.fillText(formatDisplayDate(todayISO), canvas.width - 96, 128);
+
+  ctx.fillStyle = '#000000';
+  ctx.fillRect(96, 210, canvas.width - 192, 540);
+
+  ctx.fillStyle = '#D4D4D4';
+  ctx.font = 'bold 30px Arimo, sans-serif';
+  ctx.textAlign = 'center';
+  ctx.fillText('RACHA ACTUAL', canvas.width / 2, 290);
+
+  ctx.fillStyle = '#FFFFFF';
+  ctx.font = 'bold 240px Arimo, sans-serif';
+  ctx.fillText(`${currentStreak}`, canvas.width / 2, 540);
+
+  ctx.font = 'bold 38px Arimo, sans-serif';
+  ctx.fillText(currentStreak === 1 ? 'DÍA CONSECUTIVO' : 'DÍAS CONSECUTIVOS', canvas.width / 2, 630);
+
+  const stats = [
+    { label: 'RÉCORD VUELTAS', value: `${bestStreak}` },
+    { label: 'DÍAS ENTRENADOS', value: `${totalTrainedDays}` },
+    { label: 'PROTECTORES', value: `${streakFreezes}/${MAX_FREEZES}` }
+  ];
+
+  const gap = 24;
+  const cardW = (canvas.width - 192 - gap * 2) / 3;
+  const cardY = 800;
+  const cardH = 230;
+
+  stats.forEach((st, idx) => {
+    const x = 96 + idx * (cardW + gap);
+    ctx.fillStyle = '#FFFFFF';
+    ctx.fillRect(x, cardY, cardW, cardH);
+    ctx.strokeStyle = '#000000';
+    ctx.lineWidth = 6;
+    ctx.strokeRect(x, cardY, cardW, cardH);
+
+    ctx.fillStyle = '#555555';
+    ctx.font = 'bold 20px Arimo, sans-serif';
+    ctx.textAlign = 'center';
+    ctx.fillText(st.label, x + cardW / 2, cardY + 62);
+
+    ctx.fillStyle = '#000000';
+    ctx.font = 'bold 68px Arimo, sans-serif';
+    ctx.fillText(st.value, x + cardW / 2, cardY + 158);
+  });
+
+  ctx.fillStyle = '#000000';
+  ctx.font = 'bold 26px Arimo, sans-serif';
+  ctx.textAlign = 'center';
+  ctx.fillText('TÉCNICA LIMPIA ANTES QUE VELOCIDAD', canvas.width / 2, 1140);
+
+  ctx.fillStyle = '#666666';
+  ctx.font = 'bold 22px Arimo, sans-serif';
+  ctx.fillText('araujo-phi.github.io/AMRAP', canvas.width / 2, 1190);
+
+  const blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/png'));
+  if (!blob) {
+    showToast('No se pudo generar la imagen');
+    return;
+  }
+
+  const fileName = `racha-amrap-${todayISO}.png`;
+  const file = new File([blob], fileName, { type: 'image/png' });
+
+  if (navigator.share && navigator.canShare && navigator.canShare({ files: [file] })) {
+    try {
+      await navigator.share({
+        title: 'Mi racha en AMRAP',
+        text: `Racha de ${currentStreak} ${currentStreak === 1 ? 'día' : 'días'} en AMRAP.`,
+        files: [file]
+      });
+      showToast('Racha compartida');
+      return;
+    } catch (err) {
+      if (err && err.name === 'AbortError') return;
+    }
+  }
+
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = fileName;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+  showToast('Imagen PNG descargada');
 }
 
 // =========================================================================
@@ -1441,6 +1684,7 @@ document.getElementById('manual-session-form').addEventListener('submit', (e) =>
   }
 
   const idx = sessions.findIndex(s => s.date === date);
+  const prevRounds = idx >= 0 ? (Number(sessions[idx].rounds) || 0) : 0;
   const record = { date, rounds, effort, notes };
 
   if (idx >= 0) {
@@ -1449,10 +1693,16 @@ document.getElementById('manual-session-form').addEventListener('submit', (e) =>
     sessions.push(record);
   }
 
+  let earnedMsg = '';
+  if (rounds > 0 && prevRounds === 0) {
+    coins += COINS_PER_SESSION;
+    earnedMsg = ` (+${COINS_PER_SESSION} monedas)`;
+  }
+
   saveSessions();
   closeSessionModal();
   refreshProgressView();
-  showToast(`Guardado: ${formatDisplayDate(date)}`);
+  showToast(`Guardado: ${formatDisplayDate(date)}${earnedMsg}`);
 });
 
 function confirmDeleteSession(date) {
@@ -1469,7 +1719,13 @@ function confirmDeleteSession(date) {
 }
 
 function exportProgressJSON() {
-  const blob = new Blob([JSON.stringify(sessions, null, 2)], { type: 'application/json' });
+  const backupData = {
+    sessions,
+    coins,
+    streakFreezes,
+    frozenDates
+  };
+  const blob = new Blob([JSON.stringify(backupData, null, 2)], { type: 'application/json' });
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
   a.href = url;
@@ -1488,15 +1744,23 @@ function importProgressJSON(event) {
   reader.onload = (e) => {
     try {
       const imported = JSON.parse(e.target.result);
-      if (!Array.isArray(imported)) throw new Error('Inválido');
-      sessions = imported
-        .filter(item => item && typeof item.date === 'string')
-        .map(item => ({
-          date: item.date,
-          rounds: Number(item.rounds) || 0,
-          effort: (item.effort === 'Bien' ? 'Normal' : item.effort) || (item.quality === 'Bien' ? 'Normal' : item.quality) || 'Normal',
-          notes: item.notes || ''
-        }));
+      if (Array.isArray(imported)) {
+        sessions = imported
+          .filter(item => item && typeof item.date === 'string')
+          .map(normalizeSessionItem);
+      } else if (imported && typeof imported === 'object' && Array.isArray(imported.sessions)) {
+        sessions = imported.sessions
+          .filter(item => item && typeof item.date === 'string')
+          .map(normalizeSessionItem);
+        coins = Math.max(0, Number(imported.coins) || 0);
+        streakFreezes = Math.max(0, Math.min(MAX_FREEZES, Number(imported.streakFreezes) || 0));
+        frozenDates = Array.isArray(imported.frozenDates)
+          ? Array.from(new Set(imported.frozenDates.filter(d => typeof d === 'string')))
+          : [];
+      } else {
+        throw new Error('Inválido');
+      }
+      applyAutomaticStreakFreezes();
       saveSessions();
       refreshProgressView();
       showToast(`Importadas ${sessions.length} sesiones`);
