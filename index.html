@@ -134,7 +134,11 @@
 
       <!-- Tarjeta Principal del Cronómetro 20:00 -->
       <div class="brutal-border bg-purewhite p-4 sm:p-6">
-        <div class="flex items-center justify-center mb-3">
+        <div class="flex items-center justify-between gap-2 mb-3">
+          <span id="timer-20m-badge" class="min-h-[32px] px-2.5 py-1 border border-pureblack bg-purewhite text-pureblack text-[11px] font-bold uppercase tracking-wider flex items-center">
+            20 min: Pendiente
+          </span>
+
           <!-- Botón Screen Wake Lock (Mantener pantalla activa) -->
           <button id="btn-wakelock" onclick="toggleWakeLock()" class="min-h-[32px] px-2.5 py-1 border border-pureblack bg-purewhite text-pureblack text-[11px] font-bold uppercase tracking-wider flex items-center justify-center btn-press" aria-pressed="false">
             <span id="wakelock-label">Pantalla Activa: Off</span>
@@ -280,7 +284,7 @@
     </section>
 
     <!-- ========================================================= -->
-    <!-- VISTA 3: PROGRESO MENSUAL Y RACHA                         -->
+    <!-- VISTA 3: PROGRESO MENSUAL, TIENDA Y RACHA                 -->
     <!-- ========================================================= -->
     <section id="view-progress" class="hidden space-y-4">
       <div class="flex items-center justify-between border-b-2 border-pureblack pb-3">
@@ -297,7 +301,7 @@
         </button>
       </div>
 
-<!-- 2 Tarjetas de Métricas y Racha + Botón Compartir -->
+      <!-- 2 Tarjetas de Métricas y Racha -->
       <div class="grid grid-cols-2 gap-2.5">
         <div class="brutal-border p-3 bg-pureblack text-purewhite text-center">
           <div class="text-[11px] font-bold uppercase tracking-wider text-neutral-300">Racha Actual</div>
@@ -309,6 +313,7 @@
         </div>
       </div>
 
+      <!-- Compartir Imagen de Racha -->
       <button type="button" onclick="shareStreakImage()" class="w-full min-h-[50px] px-4 bg-purewhite text-pureblack border-2 border-pureblack text-xs sm:text-sm font-bold uppercase tracking-wider flex items-center justify-center gap-2 btn-press">
         <svg class="w-4 h-4 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4">
           <circle cx="18" cy="5" r="3"></circle>
@@ -317,7 +322,7 @@
           <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line>
           <line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line>
         </svg>
-        <span id="share-streak-label">Compartir Imagen de Racha</span>
+        <span>Compartir Imagen de Racha</span>
       </button>
 
       <!-- Monedas y Tienda de Protector de Racha -->
@@ -334,7 +339,7 @@
 
         <div class="flex items-center justify-between gap-3 text-xs">
           <p class="text-neutral-700 leading-snug">
-            Salva tu racha si se te pasa 1 día. Máximo 2 protectores acumulados.
+            +10 monedas solo hoy al completar los 20 min y guardar vueltas. Máximo 2 protectores.
           </p>
           <span class="px-2.5 py-1 border-2 border-pureblack font-bold tabular-nums whitespace-nowrap shrink-0">
             <span id="stat-freezes">0</span>/2
@@ -443,7 +448,7 @@
             Licencia MIT
           </a>
         </p>
-    </footer>
+      </footer>
       
     </section>
 
@@ -484,4 +489,3 @@
   <script src="./app.js"></script>
 </body>
 </html>
-
