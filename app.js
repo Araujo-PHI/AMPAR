@@ -124,6 +124,7 @@ const MAX_FREEZES = 2;
 let timerSecondsLeft = TOTAL_SECONDS;
 let timerInterval = null;
 let isTimerRunning = false;
+let completed20MinToday = false;
 let resetConfirmPending = false;
 let resetConfirmTimeout = null;
 
@@ -139,6 +140,7 @@ let sessions = [];
 let coins = 0;
 let streakFreezes = 0;
 let frozenDates = [];
+let rewardedDates = [];
 
 // =========================================================================
 // INICIALIZACIÓN
@@ -208,6 +210,7 @@ function loadSessions() {
         coins = 0;
         streakFreezes = 0;
         frozenDates = [];
+        rewardedDates = [];
       } else if (parsed && typeof parsed === 'object') {
         sessions = Array.isArray(parsed.sessions)
           ? parsed.sessions.filter(i => i && typeof i.date === 'string').map(normalizeSessionItem)
@@ -217,6 +220,9 @@ function loadSessions() {
         frozenDates = Array.isArray(parsed.frozenDates)
           ? Array.from(new Set(parsed.frozenDates.filter(d => typeof d === 'string')))
           : [];
+        rewardedDates = Array.isArray(parsed.rewardedDates)
+          ? Array.from(new Set(parsed.rewardedDates.filter(d => typeof d === 'string')))
+          : [];
       }
     }
   } catch (e) {
@@ -224,6 +230,7 @@ function loadSessions() {
     coins = 0;
     streakFreezes = 0;
     frozenDates = [];
+    rewardedDates = [];
   }
 }
 
@@ -233,7 +240,8 @@ function saveSessions() {
       sessions,
       coins,
       streakFreezes,
-      frozenDates
+      frozenDates,
+      rewardedDates
     };
     localStorage.setItem(STORAGE_KEY, JSON.stringify(payload));
   } catch (e) {
@@ -424,6 +432,19 @@ function updateTimerUI() {
   const pct = Math.max(0, Math.min(100, (timerSecondsLeft / TOTAL_SECONDS) * 100));
   document.getElementById('timer-progress-bar').style.width = `${pct}%`;
 
+  const badge = document.getElementById('timer-20m-badge');
+  if (badge) {
+    if (completed20MinToday) {
+      badge.textContent = '20 min: Listo';
+      badge.classList.remove('bg-purewhite', 'text-pureblack');
+      badge.classList.add('bg-pureblack', 'text-purewhite');
+    } else {
+      badge.textContent = '20 min: Pendiente';
+      badge.classList.remove('bg-pureblack', 'text-purewhite');
+      badge.classList.add('bg-purewhite', 'text-pureblack');
+    }
+  }
+
   const toggleBtn = document.getElementById('btn-toggle-timer');
   const toggleText = document.getElementById('toggle-timer-text');
   const toggleIcon = document.getElementById('toggle-timer-icon');
@@ -467,9 +488,11 @@ function startTimer() {
       updateTimerUI();
     } else {
       pauseTimer();
+      completed20MinToday = true;
+      updateTimerUI();
       document.getElementById('timer-subtext').textContent = '¡20 minutos cumplidos! Guarda tu sesión abajo.';
       playSoftFinishAlert();
-      showToast('¡20 minutos completados! Pulsa Guardar Sesión.');
+      showToast('¡20 minutos completados! Guarda tu sesión hoy.');
     }
   }, 1000);
 }
@@ -606,10 +629,20 @@ function selectEffort(effort) {
   });
 }
 
+function tryAwardTodayCoins(dateISO, rounds) {
+  const todayISO = getTodayISO();
+  if (dateISO !== todayISO) return '';
+  if (!completed20MinToday || rounds <= 0) return '';
+  if (rewardedDates.includes(todayISO)) return '';
+
+  coins += COINS_PER_SESSION;
+  rewardedDates.push(todayISO);
+  return ` (+${COINS_PER_SESSION} monedas)`;
+}
+
 function saveTodaySession() {
   const today = getTodayISO();
   const idx = sessions.findIndex(s => s.date === today);
-  const prevRounds = idx >= 0 ? (Number(sessions[idx].rounds) || 0) : 0;
   const record = {
     date: today,
     rounds: currentRounds,
@@ -623,14 +656,15 @@ function saveTodaySession() {
     } else {
       sessions.push(record);
     }
-    let earnedMsg = '';
-    if (currentRounds > 0 && prevRounds === 0) {
-      coins += COINS_PER_SESSION;
-      earnedMsg = ` (+${COINS_PER_SESSION} monedas)`;
-    }
+    const earnedMsg = tryAwardTodayCoins(today, currentRounds);
     saveSessions();
     refreshProgressView();
-    showToast(`Guardado: ${currentRounds} vueltas (${selectedEffort})${earnedMsg}`);
+
+    if (currentRounds > 0 && !completed20MinToday && !rewardedDates.includes(today)) {
+      showToast(`Guardado: ${currentRounds} vueltas (Completa los 20 min para monedas)`);
+    } else {
+      showToast(`Guardado: ${currentRounds} vueltas (${selectedEffort})${earnedMsg}`);
+    }
   };
 
   if (idx >= 0) {
@@ -1684,7 +1718,6 @@ document.getElementById('manual-session-form').addEventListener('submit', (e) =>
   }
 
   const idx = sessions.findIndex(s => s.date === date);
-  const prevRounds = idx >= 0 ? (Number(sessions[idx].rounds) || 0) : 0;
   const record = { date, rounds, effort, notes };
 
   if (idx >= 0) {
@@ -1693,11 +1726,7 @@ document.getElementById('manual-session-form').addEventListener('submit', (e) =>
     sessions.push(record);
   }
 
-  let earnedMsg = '';
-  if (rounds > 0 && prevRounds === 0) {
-    coins += COINS_PER_SESSION;
-    earnedMsg = ` (+${COINS_PER_SESSION} monedas)`;
-  }
+  const earnedMsg = tryAwardTodayCoins(date, rounds);
 
   saveSessions();
   closeSessionModal();
@@ -1723,7 +1752,8 @@ function exportProgressJSON() {
     sessions,
     coins,
     streakFreezes,
-    frozenDates
+    frozenDates,
+    rewardedDates
   };
   const blob = new Blob([JSON.stringify(backupData, null, 2)], { type: 'application/json' });
   const url = URL.createObjectURL(blob);
@@ -1756,6 +1786,9 @@ function importProgressJSON(event) {
         streakFreezes = Math.max(0, Math.min(MAX_FREEZES, Number(imported.streakFreezes) || 0));
         frozenDates = Array.isArray(imported.frozenDates)
           ? Array.from(new Set(imported.frozenDates.filter(d => typeof d === 'string')))
+          : [];
+        rewardedDates = Array.isArray(imported.rewardedDates)
+          ? Array.from(new Set(imported.rewardedDates.filter(d => typeof d === 'string')))
           : [];
       } else {
         throw new Error('Inválido');
