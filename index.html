@@ -58,7 +58,7 @@
 <body class="bg-purewhite text-pureblack min-h-screen pb-24">
 
   <header class="sticky top-0 z-30 bg-purewhite border-b-2 border-pureblack">
-    <div class="max-w-xl mx-auto px-4 h-14 flex items-center justify-between">
+    <div class="max-w-xl mx-auto px-4 h-14 flex items-center justify-center sm:justify-between">
       <span class="px-2.5 py-1 bg-pureblack text-purewhite text-xs font-bold uppercase tracking-wider">AMRAP</span>
     </div>
   </header>
@@ -112,18 +112,18 @@
           <span id="round-status-hint" class="px-2.5 py-0.5 border border-pureblack text-xs font-bold tabular-nums">0/6</span>
         </div>
 
-        <div class="flex items-center justify-between gap-3">
+        <div class="flex items-center justify-between gap-2 sm:gap-3">
           <button type="button" onclick="changeRounds(-1)" aria-label="Restar vuelta"
-            class="w-16 h-16 border-2 border-pureblack bg-purewhite text-pureblack text-3xl font-bold flex items-center justify-center shrink-0 btn-press">
+            class="w-14 sm:w-16 h-14 sm:h-16 border-2 border-pureblack bg-purewhite text-pureblack text-3xl font-bold flex items-center justify-center shrink-0 btn-press">
             -
           </button>
 
-          <div class="text-center flex-1">
+          <div class="text-center flex-1 min-w-0">
             <div id="rounds-display" class="text-5xl sm:text-6xl font-bold tabular-nums leading-none">0</div>
           </div>
 
           <button id="btn-add-round" type="button" onclick="changeRounds(1)" aria-label="Sumar vuelta"
-            class="min-h-[64px] px-4 border-2 border-pureblack bg-pureblack text-purewhite text-xs sm:text-sm font-bold uppercase tracking-wider flex items-center justify-center shrink-0 btn-press">
+            class="min-h-[56px] sm:min-h-[64px] px-3 sm:px-4 border-2 border-pureblack bg-pureblack text-purewhite text-xs sm:text-sm font-bold uppercase tracking-wide whitespace-nowrap flex items-center justify-center shrink-0 btn-press">
             +1 Vuelta
           </button>
         </div>
@@ -138,26 +138,26 @@
 
         <div class="mt-4 pt-4 border-t-2 border-pureblack space-y-3">
           <div>
-            <div class="text-xs font-bold uppercase tracking-wider text-neutral-600 mb-2">¿Cómo se sintió?</div>
+            <div class="text-xs font-bold uppercase tracking-wider text-neutral-600 text-center sm:text-left mb-2">¿Cómo se sintió?</div>
             <div class="grid grid-cols-5 gap-1.5">
               <button type="button" data-effort="Muy suave" onclick="selectEffort('Muy suave')"
-                class="effort-btn min-h-[44px] px-1 border-2 border-pureblack bg-purewhite text-pureblack text-[11px] font-bold uppercase leading-tight btn-press">
+                class="effort-btn min-h-[44px] px-1 border-2 border-pureblack bg-purewhite text-pureblack text-[11px] font-bold uppercase leading-tight flex items-center justify-center text-center btn-press">
                 Muy suave
               </button>
               <button type="button" data-effort="Suave" onclick="selectEffort('Suave')"
-                class="effort-btn min-h-[44px] px-1 border-2 border-pureblack bg-purewhite text-pureblack text-[11px] font-bold uppercase leading-tight btn-press">
+                class="effort-btn min-h-[44px] px-1 border-2 border-pureblack bg-purewhite text-pureblack text-[11px] font-bold uppercase leading-tight flex items-center justify-center text-center btn-press">
                 Suave
               </button>
               <button type="button" data-effort="Normal" onclick="selectEffort('Normal')"
-                class="effort-btn min-h-[44px] px-1 border-2 border-pureblack bg-pureblack text-purewhite text-[11px] font-bold uppercase leading-tight btn-press">
+                class="effort-btn min-h-[44px] px-1 border-2 border-pureblack bg-pureblack text-purewhite text-[11px] font-bold uppercase leading-tight flex items-center justify-center text-center btn-press">
                 Normal
               </button>
               <button type="button" data-effort="Fuerte" onclick="selectEffort('Fuerte')"
-                class="effort-btn min-h-[44px] px-1 border-2 border-pureblack bg-purewhite text-pureblack text-[11px] font-bold uppercase leading-tight btn-press">
+                class="effort-btn min-h-[44px] px-1 border-2 border-pureblack bg-purewhite text-pureblack text-[11px] font-bold uppercase leading-tight flex items-center justify-center text-center btn-press">
                 Fuerte
               </button>
               <button type="button" data-effort="A tope" onclick="selectEffort('A tope')"
-                class="effort-btn min-h-[44px] px-1 border-2 border-pureblack bg-purewhite text-pureblack text-[11px] font-bold uppercase leading-tight btn-press">
+                class="effort-btn min-h-[44px] px-1 border-2 border-pureblack bg-purewhite text-pureblack text-[11px] font-bold uppercase leading-tight flex items-center justify-center text-center btn-press">
                 A tope
               </button>
             </div>
@@ -204,16 +204,16 @@
           </button>
         </div>
 
-        <div class="grid grid-cols-3 gap-2">
-          <div class="border-2 border-pureblack p-2.5">
+        <div class="grid grid-cols-3 gap-2 text-center">
+          <div class="border-2 border-pureblack p-2.5 flex flex-col items-center justify-center">
             <div class="text-[10px] font-bold uppercase tracking-wider text-neutral-600">Racha</div>
             <div id="stat-current-streak" class="text-lg sm:text-xl font-bold tabular-nums mt-0.5">0 días</div>
           </div>
-          <div class="border-2 border-pureblack p-2.5">
+          <div class="border-2 border-pureblack p-2.5 flex flex-col items-center justify-center">
             <div class="text-[10px] font-bold uppercase tracking-wider text-neutral-600">Mejor vuelta</div>
             <div id="stat-best-rounds" class="text-lg sm:text-xl font-bold tabular-nums mt-0.5">0</div>
           </div>
-          <div class="border-2 border-pureblack p-2.5">
+          <div class="border-2 border-pureblack p-2.5 flex flex-col items-center justify-center">
             <div class="text-[10px] font-bold uppercase tracking-wider text-neutral-600">Monedas</div>
             <div id="stat-coins" class="text-lg sm:text-xl font-bold tabular-nums mt-0.5">0</div>
           </div>
@@ -250,16 +250,16 @@
 
         <div id="monthly-calendar-rows" class="space-y-1.5"></div>
 
-        <div class="pt-3 border-t-2 border-pureblack flex flex-wrap gap-2">
+        <div class="pt-3 border-t-2 border-pureblack flex items-center justify-center gap-1.5 sm:gap-2">
           <button type="button" onclick="openSessionModal()"
-            class="flex-1 min-h-[48px] px-3 border-2 border-pureblack bg-pureblack text-purewhite text-xs font-bold uppercase tracking-wider btn-press">
-            + Anotar / Editar
+            class="min-h-[40px] px-2.5 border-2 border-pureblack bg-pureblack text-purewhite text-[11px] font-bold uppercase tracking-wide whitespace-nowrap flex items-center justify-center btn-press">
+            Anotar / Editar
           </button>
           <button type="button" onclick="exportProgressJSON()"
-            class="min-h-[48px] px-3 border-2 border-pureblack bg-purewhite text-pureblack text-xs font-bold uppercase tracking-wider btn-press">
+            class="min-h-[40px] px-2.5 border-2 border-pureblack bg-purewhite text-pureblack text-[11px] font-bold uppercase tracking-wide whitespace-nowrap flex items-center justify-center btn-press">
             Exportar JSON
           </button>
-          <label class="min-h-[48px] px-3 border-2 border-pureblack bg-purewhite text-pureblack text-xs font-bold uppercase tracking-wider flex items-center justify-center cursor-pointer btn-press">
+          <label class="min-h-[40px] px-2.5 border-2 border-pureblack bg-purewhite text-pureblack text-[11px] font-bold uppercase tracking-wide whitespace-nowrap flex items-center justify-center cursor-pointer btn-press">
             <span>Importar JSON</span>
             <input type="file" accept="application/json" onchange="importProgressJSON(event)" class="hidden" />
           </label>
@@ -314,7 +314,7 @@
           <span class="px-2 py-0.5 bg-pureblack text-purewhite text-xs font-bold uppercase">+5 Bonus</span>
         </div>
 
-        <div class="border-2 border-pureblack p-3.5 bg-neutral-50 space-y-2">
+        <div class="border-2 border-pureblack p-3.5 bg-neutral-50 text-center sm:text-left space-y-2">
           <div class="flex items-center justify-between gap-2">
             <span id="daily-challenge-number" class="text-xs font-bold uppercase text-neutral-600">Día #1</span>
             <span id="daily-challenge-target" class="px-2 py-0.5 border border-pureblack bg-purewhite text-xs font-bold">Meta</span>
