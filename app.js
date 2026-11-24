@@ -109,9 +109,77 @@ const EXERCISES = [
   }
 ];
 
+// Más de 60 ejercicios diarios diferentes (uno por día según la fecha)
+const DAILY_EXERCISES = [
+  { title: 'Sentadilla con pausa abajo', target: '3 x 10 reps', desc: 'Bajá en 3 segundos, quedate 1 segundo abajo y subí firme.' },
+  { title: 'Flexiones diamante o cerradas', target: '3 x 6 reps', desc: 'Manos más juntas que los hombros y codos cerca del cuerpo.' },
+  { title: 'Toques de talón en suelo', target: '3 x 20 toques', desc: 'Acostado boca arriba, rodillas flexionadas, tocá un talón y luego el otro.' },
+  { title: 'Press militar lento con 1 kg', target: '3 x 12 reps', desc: 'Subí las mancuernas en 2 segundos y bajalas en 3 segundos.' },
+  { title: 'Plancha frontal firme', target: '3 x 30 seg', desc: 'Apoyá antebrazos y puntas de pie con abdomen y glúteos apretados.' },
+  { title: 'Slalom corto con pelota', target: '6 pasadas', desc: 'Toques cortos alternando borde interno y externo en espacio reducido.' },
+  { title: 'Zancadas alternas al frente', target: '3 x 8 por pierna', desc: 'Paso al frente, bajá controlado y volvé empujando con la pierna delantera.' },
+  { title: 'Elevación de pelvis (puente)', target: '3 x 15 reps', desc: 'Boca arriba con pies apoyados, subí la cadera y apretá glúteos arriba.' },
+  { title: 'Elevación lateral con 1 kg', target: '3 x 12 reps', desc: 'Subí los brazos hasta la altura de los hombros sin encoger el cuello.' },
+  { title: 'Escaladores controlados', target: '3 x 20 pasos', desc: 'En posición de plancha alta, llevá una rodilla al pecho y luego la otra.' },
+  { title: 'Sentadilla búlgara o trasera', target: '3 x 8 por lado', desc: 'Llevá un pie atrás y bajá vertical manteniendo el torso estable.' },
+  { title: 'Flexiones con apoyo en rodillas', target: '3 x 10 reps', desc: 'Cuerpo alineado desde rodillas a cabeza, pecho cerca del piso.' },
+  { title: 'Bicho muerto (Dead Bug)', target: '3 x 8 por lado', desc: 'Boca arriba, extendé brazo y pierna contrarios sin despegar la cintura.' },
+  { title: 'Pases rápidos entre pies', target: '3 x 30 seg', desc: 'Con la pelota, pasala de un pie al otro manteniendo el equilibrio.' },
+  { title: 'Sentadilla sumo abierta', target: '3 x 12 reps', desc: 'Pies bien separados y puntas hacia afuera, bajá recto.' },
+  { title: 'Fondos en borde de silla/sofá', target: '3 x 8 reps', desc: 'Manos en el borde, bajá flexionando codos y empujá arriba.' },
+  { title: 'Plancha lateral izquierda y derecha', target: '3 x 20 seg/lado', desc: 'Cadera arriba en línea recta con el tronco.' },
+  { title: 'Vuelos frontales con 1 kg', target: '3 x 12 reps', desc: 'Subí las mancuernas al frente hasta la altura de los hombros.' },
+  { title: 'Saltos suaves en el lugar', target: '4 x 25 saltos', desc: 'Caé suave sobre la punta de los pies amortiguando con rodillas.' },
+  { title: 'Pisa-pelota alterno rápido', target: '3 x 20 toques', desc: 'Tocá la parte superior de la pelota alternando plantas de pie.' },
+  { title: 'Sentadilla isométrica en pared', target: '3 x 35 seg', desc: 'Espalda apoyada en la pared, muslos paralelos al suelo.' },
+  { title: 'Flexiones con pausa de 1 seg', target: '3 x 6 reps', desc: 'Sostené 1 segundo abajo antes de empujar hacia arriba.' },
+  { title: 'Crunches cortos con manos al pecho', target: '3 x 15 reps', desc: 'Despegá apenas los omóplatos sin tirar del cuello.' },
+  { title: 'Press Arnold suave con 1 kg', target: '3 x 10 reps', desc: 'Rotá las palmas al empujar arriba y volvé al inicio.' },
+  { title: 'Perro pájaro con pausa de 2 seg', target: '3 x 5 por lado', desc: 'Sostené 2 segundos brazo y pierna extendidos sin mover la cadera.' },
+  { title: 'Conducción solo con pie izquierdo', target: '4 idas y vueltas', desc: 'Llevá y traé la pelota usando únicamente el pie izquierdo.' },
+  { title: 'Conducción solo con pie derecho', target: '4 idas y vueltas', desc: 'Llevá y traé la pelota usando únicamente el pie derecho.' },
+  { title: 'Sentadilla + elevación de talones', target: '3 x 10 reps', desc: 'Al subir de la sentadilla, ponete en puntas de pie.' },
+  { title: 'Flexiones declinadas (pies elevados)', target: '3 x 6 reps', desc: 'Pies sobre un escalón o banco bajo, abdomen firme.' },
+  { title: 'Giros rusos con pausa en cada lado', target: '3 x 12 giros', desc: 'Marcá 1 segundo a cada lado manteniendo el torso girado.' },
+  { title: 'Remo inclinado con 1 kg', target: '3 x 12 reps', desc: 'Torso inclinado con espalda recta, llevá codos atrás.' },
+  { title: 'Trote en el lugar rodillas altas', target: '4 x 20 seg', desc: 'Llevá las rodillas a la altura de la cadera con buen braceo.' },
+  { title: 'Control con muslo y empeine', target: '3 x 10 toques', desc: 'Elevá la pelota con el muslo y controlá suave.' },
+  { title: 'Sentadilla lenta (4 seg bajada)', target: '3 x 8 reps', desc: 'Bajá en 4 tiempos y subí en 1 tiempo.' },
+  { title: 'Plancha con toque de hombro', target: '3 x 12 toques', desc: 'En plancha alta, tocá el hombro contrario sin balancear la cadera.' },
+  { title: 'Elevación de piernas acostado', target: '3 x 10 reps', desc: 'Subí y bajá las piernas controladas sin tocar el suelo.' },
+  { title: 'Press con un brazo a la vez', target: '3 x 10 por brazo', desc: 'Mantené el tronco derechito sin inclinarte a los costados.' },
+  { title: 'Puente a una pierna', target: '3 x 8 por pierna', desc: 'Subí la cadera impulsando con un solo pie.' },
+  { title: 'Zigzag con cambio de ritmo', target: '4 pasadas', desc: 'Despacio en los conos y acelerá en el tramo recto.' },
+  { title: 'Sentadilla con rebote corto', target: '3 x 10 reps', desc: 'Abajo hacé un pequeño rebote controlado y subí.' },
+  { title: 'Flexiones amplias', target: '3 x 8 reps', desc: 'Manos un poco más abiertas que lo habitual, pecho firme.' },
+  { title: 'Bicicleta abdominal lenta', target: '3 x 16 giros', desc: 'Llevá codo hacia la rodilla contraria de forma controlada.' },
+  { title: 'Círculos pequeños con mancuernas', target: '3 x 15 seg/sentido', desc: 'Brazos extendidos a los costados, círculos firmes.' },
+  { title: 'Paso lateral con sentadilla', target: '3 x 8 por lado', desc: 'Desplazate de lado sin subir la cadera en los pasos.' },
+  { title: 'Freno de pelota con planta', target: '3 x 15 frenos', desc: 'Rodá la pelota suave y frenala con la planta del pie.' },
+  { title: 'Plancha antebrazos con balanceo', target: '3 x 20 seg', desc: 'Pequeño balanceo adelante y atrás desde los hombros.' },
+  { title: 'Sentadilla + salto suave', target: '3 x 8 reps', desc: 'Bajá controlado y saltá suave, cayendo con rodillas blandas.' },
+  { title: 'Flexiones hasta la mitad', target: '3 x 8 reps', desc: 'Bajá hasta 90° en codos y subí con fuerza controlada.' },
+  { title: 'Lumbares tipo superman suave', target: '3 x 10 reps', desc: 'Boca abajo, levantá pecho y piernas suavemente sin forzar el cuello.' },
+  { title: 'Hombros: aguante arriba', target: '3 x 20 seg', desc: 'Sostené las mancuernas arriba con brazos casi extendidos.' },
+  { title: 'Conducción en 8 entre dos conos', target: '4 vueltas', desc: 'Dibujá el 8 completo alrededor de los conos con control.' },
+  { title: 'Sentadilla con manos atrás de cabeza', target: '3 x 10 reps', desc: 'Mantené el pecho arriba y la espalda recta todo el recorrido.' },
+  { title: 'Plancha lateral con elevación de pierna', target: '3 x 8 por lado', desc: 'Subí y bajá la pierna de arriba manteniendo la cadera firme.' },
+  { title: 'Toques rápidos de punta de pie', target: '4 x 20 seg', desc: 'Ritmo ágil alternando pies en el lugar.' },
+  { title: 'Giros rusos sin apoyar talones', target: '3 x 10 giros', desc: 'Si te resulta cómodo, mantené los pies apenas elevados.' },
+  { title: 'Flexiones + perro boca abajo', target: '3 x 6 reps', desc: 'Hacé 1 flexión y llevá la cadera arriba y atrás.' },
+  { title: 'Press de hombros sentado', target: '3 x 12 reps', desc: 'Sentado con espalda recta, empujá las mancuernas arriba.' },
+  { title: 'Zancada atrás alterna', target: '3 x 8 por pierna', desc: 'Llevá un pie hacia atrás y bajá controlando el equilibrio.' },
+  { title: 'Conducción con borde externo', target: '4 pasadas', desc: 'Enfocá los toques con el exterior del pie para girar.' },
+  { title: 'Abdominales en V (tuck)', target: '3 x 10 reps', desc: 'Llevá rodillas al pecho mientras acercás el torso controlado.' },
+  { title: 'Circuito relámpago de 6 estaciones', target: '1 vuelta completa', desc: 'Completá los 6 ejercicios básicos con buena técnica.' },
+  { title: 'Estabilidad en un pie', target: '3 x 25 seg/pie', desc: 'Mantené el equilibrio en un pie con leve flexión de rodilla.' },
+  { title: 'Flexiones lentas al bajar', target: '3 x 6 reps', desc: 'Bajá en 3 segundos y subí firme.' }
+];
+
 const STORAGE_KEY = 'amrap_13yo_mobile_v2';
 const TOTAL_SECONDS = 20 * 60;
 const DAILY_COINS_REWARD = 10;
+const DAILY_CHALLENGE_BONUS = 5;
 const FREEZE_COST = 100;
 const MAX_FREEZES = 2;
 
@@ -128,15 +196,15 @@ let checklistState = {};
 let selectedExerciseFilter = EXERCISES[0].id;
 let monthOffset = 0;
 let wakeLockSentinel = null;
-let selectedStreakStyleIndex = 0;
+let selectedStreakStyleIndex = 2;
 
 let sessions = [];
-let dailyCoins = 0;
-let epicCoins = 0;
+let coins = 0;
 let streakFreezes = 0;
 let frozenDates = [];
 let rewardedDates = [];
-let unlockedEpicPerks = [];
+let claimedChallengeDates = [];
+let unlockedPerks = [];
 
 document.addEventListener('DOMContentLoaded', () => {
   loadSessions();
@@ -189,6 +257,15 @@ function formatDisplayDate(iso) {
   return `${d}/${m}/${y}`;
 }
 
+function getDailyChallengeForDate(isoStr) {
+  const dayNum = isoToDayNumber(isoStr);
+  const idx = ((dayNum % DAILY_EXERCISES.length) + DAILY_EXERCISES.length) % DAILY_EXERCISES.length;
+  return {
+    dayIndex: idx + 1,
+    ...DAILY_EXERCISES[idx]
+  };
+}
+
 function normalizeSessionItem(item) {
   return {
     date: item.date,
@@ -209,9 +286,11 @@ function loadSessions() {
         sessions = Array.isArray(parsed.sessions)
           ? parsed.sessions.filter(i => i && typeof i.date === 'string').map(normalizeSessionItem)
           : [];
-        const rawDaily = typeof parsed.dailyCoins === 'number' ? parsed.dailyCoins : (Number(parsed.coins) || 0);
-        dailyCoins = Math.max(0, Math.floor(rawDaily / 10) * 10);
-        epicCoins = Math.max(0, Number(parsed.epicCoins) || 0);
+        const baseCoins = Number(parsed.coins) || 0;
+        const legacyDaily = Number(parsed.dailyCoins) || 0;
+        const legacyEpic = Number(parsed.epicCoins) || 0;
+        coins = Math.max(0, baseCoins > 0 ? baseCoins : (legacyDaily + legacyEpic));
+
         streakFreezes = Math.max(0, Math.min(MAX_FREEZES, Number(parsed.streakFreezes) || 0));
         frozenDates = Array.isArray(parsed.frozenDates)
           ? Array.from(new Set(parsed.frozenDates.filter(d => typeof d === 'string')))
@@ -219,19 +298,23 @@ function loadSessions() {
         rewardedDates = Array.isArray(parsed.rewardedDates)
           ? Array.from(new Set(parsed.rewardedDates.filter(d => typeof d === 'string')))
           : [];
-        unlockedEpicPerks = Array.isArray(parsed.unlockedEpicPerks)
-          ? Array.from(new Set(parsed.unlockedEpicPerks.filter(p => typeof p === 'string')))
+        claimedChallengeDates = Array.isArray(parsed.claimedChallengeDates)
+          ? Array.from(new Set(parsed.claimedChallengeDates.filter(d => typeof d === 'string')))
           : [];
+        const perksSource = Array.isArray(parsed.unlockedPerks)
+          ? parsed.unlockedPerks
+          : (Array.isArray(parsed.unlockedEpicPerks) ? parsed.unlockedEpicPerks : []);
+        unlockedPerks = Array.from(new Set(perksSource.filter(p => typeof p === 'string')));
       }
     }
   } catch (e) {
     sessions = [];
-    dailyCoins = 0;
-    epicCoins = 0;
+    coins = 0;
     streakFreezes = 0;
     frozenDates = [];
     rewardedDates = [];
-    unlockedEpicPerks = [];
+    claimedChallengeDates = [];
+    unlockedPerks = [];
   }
 }
 
@@ -239,13 +322,12 @@ function saveSessions() {
   try {
     const payload = {
       sessions,
-      dailyCoins,
-      coins: dailyCoins,
-      epicCoins,
+      coins,
       streakFreezes,
       frozenDates,
       rewardedDates,
-      unlockedEpicPerks
+      claimedChallengeDates,
+      unlockedPerks
     };
     localStorage.setItem(STORAGE_KEY, JSON.stringify(payload));
   } catch (e) {
@@ -297,12 +379,12 @@ function buyStreakFreeze() {
     showToast(`Máximo ${MAX_FREEZES}/${MAX_FREEZES}`);
     return;
   }
-  if (dailyCoins < FREEZE_COST) {
-    showToast(`Faltan ${FREEZE_COST - dailyCoins} monedas diarias`);
+  if (coins < FREEZE_COST) {
+    showToast(`Faltan ${FREEZE_COST - coins} monedas`);
     return;
   }
 
-  dailyCoins -= FREEZE_COST;
+  coins -= FREEZE_COST;
   streakFreezes = Math.min(MAX_FREEZES, streakFreezes + 1);
   saveSessions();
   refreshProgressView();
@@ -310,57 +392,89 @@ function buyStreakFreeze() {
   showToast(`Protector comprado (${streakFreezes}/${MAX_FREEZES})`);
 }
 
-function buyEpicReward(perkId, cost) {
-  if (unlockedEpicPerks.includes(perkId)) {
+function buyReward(perkId, cost) {
+  if (unlockedPerks.includes(perkId)) {
     showToast('Ya desbloqueado');
     return;
   }
-  if (epicCoins < cost) {
-    showToast(`Faltan ${cost - epicCoins} monedas épicas`);
+  if (coins < cost) {
+    showToast(`Faltan ${cost - coins} monedas`);
     return;
   }
 
-  epicCoins -= cost;
-  unlockedEpicPerks.push(perkId);
+  coins -= cost;
+  unlockedPerks.push(perkId);
   saveSessions();
   refreshShopView();
   showToast('Extra desbloqueado');
 }
 
+function claimDailyChallengeBonus() {
+  const todayISO = getTodayISO();
+  if (claimedChallengeDates.includes(todayISO)) {
+    showToast('Ya cobraste el bonus de hoy');
+    return;
+  }
+
+  coins += DAILY_CHALLENGE_BONUS;
+  claimedChallengeDates.push(todayISO);
+  saveSessions();
+  refreshProgressView();
+  refreshShopView();
+  showToast(`+${DAILY_CHALLENGE_BONUS} monedas bonus`);
+}
+
 function refreshShopView() {
-  const dailyEl = document.getElementById('shop-daily-coins');
-  const epicEl = document.getElementById('shop-epic-coins');
+  const coinsEl = document.getElementById('shop-coins');
   const freezeCountEl = document.getElementById('shop-freeze-count');
   const buyBtn = document.getElementById('btn-buy-freeze');
   const buyLabel = document.getElementById('buy-freeze-label');
 
-  if (dailyEl) dailyEl.textContent = dailyCoins;
-  if (epicEl) epicEl.textContent = epicCoins;
+  if (coinsEl) coinsEl.textContent = coins;
   if (freezeCountEl) freezeCountEl.textContent = `${streakFreezes}/${MAX_FREEZES}`;
 
   if (buyBtn && buyLabel) {
     if (streakFreezes >= MAX_FREEZES) {
       buyBtn.disabled = true;
-      buyLabel.textContent = `Máximo (${MAX_FREEZES}/${MAX_FREEZES})`;
-    } else if (dailyCoins < FREEZE_COST) {
+      buyLabel.textContent = `Protector · Máximo (${MAX_FREEZES}/${MAX_FREEZES})`;
+    } else if (coins < FREEZE_COST) {
       buyBtn.disabled = true;
-      buyLabel.textContent = `Protector · ${FREEZE_COST} monedas (faltan ${FREEZE_COST - dailyCoins})`;
+      buyLabel.textContent = `Protector · ${FREEZE_COST} monedas (faltan ${FREEZE_COST - coins})`;
     } else {
       buyBtn.disabled = false;
-      buyLabel.textContent = `Protector · ${FREEZE_COST} monedas`;
+      buyLabel.textContent = `Protector de racha · ${FREEZE_COST} monedas`;
     }
   }
 
   const frameBtn = document.getElementById('btn-buy-epic-frame');
   if (frameBtn) {
-    frameBtn.disabled = unlockedEpicPerks.includes('frame') || epicCoins < 25;
-    frameBtn.textContent = unlockedEpicPerks.includes('frame') ? 'Activo' : '25 Épicas';
+    frameBtn.disabled = unlockedPerks.includes('frame') || coins < 25;
+    frameBtn.textContent = unlockedPerks.includes('frame') ? 'Activo' : '25 Monedas';
   }
 
   const chimeBtn = document.getElementById('btn-buy-epic-chime');
   if (chimeBtn) {
-    chimeBtn.disabled = unlockedEpicPerks.includes('chime') || epicCoins < 30;
-    chimeBtn.textContent = unlockedEpicPerks.includes('chime') ? 'Activo' : '30 Épicas';
+    chimeBtn.disabled = unlockedPerks.includes('chime') || coins < 30;
+    chimeBtn.textContent = unlockedPerks.includes('chime') ? 'Activo' : '30 Monedas';
+  }
+
+  const todayISO = getTodayISO();
+  const challenge = getDailyChallengeForDate(todayISO);
+  const numEl = document.getElementById('daily-challenge-number');
+  const targetEl = document.getElementById('daily-challenge-target');
+  const titleEl = document.getElementById('daily-challenge-title');
+  const descEl = document.getElementById('daily-challenge-desc');
+  const claimBtn = document.getElementById('btn-claim-daily-bonus');
+
+  if (numEl) numEl.textContent = `Ejercicio #${challenge.dayIndex}/${DAILY_EXERCISES.length}`;
+  if (targetEl) targetEl.textContent = challenge.target;
+  if (titleEl) titleEl.textContent = challenge.title;
+  if (descEl) descEl.textContent = challenge.desc;
+
+  if (claimBtn) {
+    const claimed = claimedChallengeDates.includes(todayISO);
+    claimBtn.disabled = claimed;
+    claimBtn.textContent = claimed ? 'Bonus cobrado hoy (+5)' : 'Completar y cobrar +5 monedas';
   }
 }
 
@@ -418,10 +532,6 @@ function updateWakeLockButton(active) {
   const label = document.getElementById('wakelock-label');
   if (!btn || !label) return;
   btn.setAttribute('aria-pressed', active ? 'true' : 'false');
-  btn.classList.toggle('bg-pureblack', active);
-  btn.classList.toggle('text-purewhite', active);
-  btn.classList.toggle('bg-purewhite', !active);
-  btn.classList.toggle('text-pureblack', !active);
   label.textContent = active ? 'Pantalla activa: On' : 'Pantalla activa: Off';
 }
 
@@ -434,7 +544,7 @@ function playSoftFinishAlert() {
     const AudioCtx = window.AudioContext || window.webkitAudioContext;
     if (!AudioCtx) return;
     const ctx = new AudioCtx();
-    const hasExtraChime = unlockedEpicPerks.includes('chime');
+    const hasExtraChime = unlockedPerks.includes('chime');
     const freqs = hasExtraChime ? [440, 554.37, 659.25, 880] : [440, 554.37, 659.25];
     const duration = hasExtraChime ? 0.85 : 0.55;
 
@@ -465,15 +575,6 @@ function updateTimerUI() {
   const pct = Math.max(0, Math.min(100, (timerSecondsLeft / TOTAL_SECONDS) * 100));
   const bar = document.getElementById('timer-progress-bar');
   if (bar) bar.style.width = `${pct}%`;
-
-  const badge = document.getElementById('timer-20m-badge');
-  if (badge) {
-    badge.textContent = completed20MinToday ? '20 min: Listo' : '20 min: Pendiente';
-    badge.classList.toggle('bg-pureblack', completed20MinToday);
-    badge.classList.toggle('text-purewhite', completed20MinToday);
-    badge.classList.toggle('bg-purewhite', !completed20MinToday);
-    badge.classList.toggle('text-pureblack', !completed20MinToday);
-  }
 
   const toggleBtn = document.getElementById('btn-toggle-timer');
   const toggleText = document.getElementById('toggle-timer-text');
@@ -650,27 +751,26 @@ function selectEffort(effort) {
 
 function applySessionRewards(dateISO, rounds, previousBestRounds) {
   const todayISO = getTodayISO();
-  const messages = [];
+  let earned = 0;
 
   if (dateISO === todayISO && completed20MinToday && rounds > 0 && !rewardedDates.includes(todayISO)) {
-    dailyCoins += DAILY_COINS_REWARD;
+    earned += DAILY_COINS_REWARD;
     rewardedDates.push(todayISO);
-    messages.push(`+${DAILY_COINS_REWARD} diarias`);
   }
 
-  let epicEarned = 0;
   if (rounds > previousBestRounds && rounds > 0) {
-    epicEarned += 20;
-  }
-  if ((selectedEffort === 'Fuerte' || selectedEffort === 'A tope') && rounds > 0) {
-    epicEarned += 5;
-  }
-  if (epicEarned > 0) {
-    epicCoins += epicEarned;
-    messages.push(`+${epicEarned} épicas`);
+    earned += 20;
   }
 
-  return messages.length ? ` (${messages.join(', ')})` : '';
+  if ((selectedEffort === 'Fuerte' || selectedEffort === 'A tope') && rounds > 0) {
+    earned += 5;
+  }
+
+  if (earned > 0) {
+    coins += earned;
+    return ` (+${earned} monedas)`;
+  }
+  return '';
 }
 
 function saveTodaySession() {
@@ -1426,13 +1526,10 @@ function refreshProgressView() {
 
   const streakEl = document.getElementById('stat-current-streak');
   const bestEl = document.getElementById('stat-best-rounds');
+  const coinsEl = document.getElementById('stat-coins');
   if (streakEl) streakEl.textContent = `${currentStreak} ${currentStreak === 1 ? 'día' : 'días'}`;
   if (bestEl) bestEl.textContent = bestRounds;
-
-  const coinsEl = document.getElementById('stat-coins');
-  const freezesEl = document.getElementById('stat-freezes');
-  if (coinsEl) coinsEl.textContent = dailyCoins;
-  if (freezesEl) freezesEl.textContent = streakFreezes;
+  if (coinsEl) coinsEl.textContent = coins;
 
   const rowsContainer = document.getElementById('monthly-calendar-rows');
   if (!rowsContainer) return;
@@ -1462,23 +1559,23 @@ function refreshProgressView() {
       const leftPct = (seg.start / 7) * 100;
       const widthPct = ((seg.end - seg.start + 1) / 7) * 100;
       return `
-        <div class="absolute top-1 bottom-1 bg-pureblack pointer-events-none"
-             style="left: calc(${leftPct}% + 2px); width: calc(${widthPct}% - 4px);">
+        <div class="absolute top-0.5 bottom-0.5 bg-pureblack pointer-events-none"
+             style="left: calc(${leftPct}% + 1px); width: calc(${widthPct}% - 2px);">
         </div>
       `;
     }).join('');
 
     const cellsHTML = week.map(cell => {
-      if (!cell) return `<div class="h-11 sm:h-12"></div>`;
+      if (!cell) return `<div class="h-10 sm:h-12"></div>`;
       const isToday = cell.iso === todayISO;
       const isFuture = cell.iso > todayISO;
 
       if (cell.trained) {
         return `
           <button type="button" onclick="openSessionModal('${cell.iso}')"
-            class="relative z-10 h-11 sm:h-12 w-full flex flex-col items-center justify-center text-purewhite btn-press ${isToday ? 'ring-2 ring-pureblack ring-offset-1' : ''}">
-            <span class="text-sm font-bold tabular-nums leading-none">${cell.dayNum}</span>
-            <span class="text-[9px] font-bold tabular-nums text-neutral-300 mt-0.5">${cell.entry.rounds}v</span>
+            class="relative z-10 h-10 sm:h-12 w-full px-0.5 flex flex-col items-center justify-center text-purewhite btn-press ${isToday ? 'ring-2 ring-pureblack ring-inset' : ''}">
+            <span class="text-xs sm:text-sm font-bold tabular-nums leading-none">${cell.dayNum}</span>
+            <span class="text-[8px] sm:text-[9px] font-bold tabular-nums text-neutral-300 leading-none mt-1">${cell.entry.rounds}v</span>
           </button>
         `;
       }
@@ -1486,9 +1583,9 @@ function refreshProgressView() {
       if (cell.protectedDay) {
         return `
           <button type="button" onclick="openSessionModal('${cell.iso}')"
-            class="relative z-10 h-11 sm:h-12 w-full flex flex-col items-center justify-center text-purewhite btn-press">
-            <span class="text-sm font-bold tabular-nums leading-none">${cell.dayNum}</span>
-            <span class="text-[8px] font-bold uppercase tracking-tighter text-neutral-300 mt-0.5">Prot.</span>
+            class="relative z-10 h-10 sm:h-12 w-full px-0.5 flex flex-col items-center justify-center text-purewhite btn-press">
+            <span class="text-xs sm:text-sm font-bold tabular-nums leading-none">${cell.dayNum}</span>
+            <span class="text-[7px] sm:text-[8px] font-bold uppercase tracking-tighter text-neutral-300 leading-none mt-1">Prot</span>
           </button>
         `;
       }
@@ -1496,16 +1593,16 @@ function refreshProgressView() {
       if (isFuture) {
         return `
           <div aria-disabled="true"
-            class="relative z-10 h-11 sm:h-12 w-full flex items-center justify-center text-neutral-300 cursor-not-allowed select-none">
-            <span class="text-sm font-bold tabular-nums leading-none">${cell.dayNum}</span>
+            class="relative z-10 h-10 sm:h-12 w-full px-0.5 flex items-center justify-center text-neutral-300 cursor-not-allowed select-none">
+            <span class="text-xs sm:text-sm font-bold tabular-nums leading-none">${cell.dayNum}</span>
           </div>
         `;
       }
 
       return `
         <button type="button" onclick="openSessionModal('${cell.iso}')"
-          class="relative z-10 h-11 sm:h-12 w-full flex items-center justify-center btn-press ${isToday ? 'border-2 border-pureblack bg-purewhite text-pureblack font-bold' : 'text-neutral-600 hover:border hover:border-pureblack'}">
-          <span class="text-sm font-bold tabular-nums leading-none">${cell.dayNum}</span>
+          class="relative z-10 h-10 sm:h-12 w-full px-0.5 flex items-center justify-center btn-press ${isToday ? 'border-2 border-pureblack bg-purewhite text-pureblack font-bold' : 'text-neutral-700'}">
+          <span class="text-xs sm:text-sm font-bold tabular-nums leading-none">${cell.dayNum}</span>
         </button>
       `;
     }).join('');
@@ -1524,31 +1621,14 @@ function refreshProgressView() {
   }
 }
 
-function isSpecialStreakMilestone(streakDays) {
-  return (
-    streakDays >= 365 ||
-    streakDays >= 270 ||
-    streakDays >= 180 ||
-    streakDays >= 90 ||
-    streakDays >= 30 ||
-    streakDays >= 21 ||
-    streakDays >= 7 ||
-    streakDays >= 3
-  );
-}
-
 function getStreakPalette(streakDays, styleIndex) {
-  const isSpecial = isSpecialStreakMilestone(streakDays);
-  const baseBg = isSpecial ? '#FFFFFF' : '#000000';
-  const baseFg = isSpecial ? '#000000' : '#FFFFFF';
-  const baseMuted = isSpecial ? '#666666' : '#A3A3A3';
-  const hasPerkFrame = unlockedEpicPerks.includes('frame');
+  const hasPerkFrame = unlockedPerks.includes('frame');
 
   if (styleIndex === 1) {
     return {
-      bg: baseFg,
-      fg: baseBg,
-      muted: isSpecial ? '#A3A3A3' : '#666666',
+      bg: '#FFFFFF',
+      fg: '#000000',
+      muted: '#555555',
       framed: true,
       doubleFrame: hasPerkFrame,
       fillCalendar: false
@@ -1557,9 +1637,9 @@ function getStreakPalette(streakDays, styleIndex) {
 
   if (styleIndex === 2) {
     return {
-      bg: baseBg,
-      fg: baseFg,
-      muted: baseMuted,
+      bg: '#000000',
+      fg: '#FFFFFF',
+      muted: '#B5B5B5',
       framed: true,
       doubleFrame: hasPerkFrame,
       fillCalendar: true
@@ -1567,10 +1647,10 @@ function getStreakPalette(streakDays, styleIndex) {
   }
 
   return {
-    bg: baseBg,
-    fg: baseFg,
-    muted: baseMuted,
-    framed: isSpecial || hasPerkFrame,
+    bg: '#FFFFFF',
+    fg: '#000000',
+    muted: '#666666',
+    framed: hasPerkFrame,
     doubleFrame: hasPerkFrame,
     fillCalendar: false
   };
@@ -1650,28 +1730,28 @@ function renderStreakCanvas(canvas, styleIndex = selectedStreakStyleIndex) {
   ctx.textAlign = 'left';
   ctx.textBaseline = 'alphabetic';
   ctx.fillStyle = palette.fg;
-  ctx.font = 'bold 32px Arimo, sans-serif';
+  ctx.font = 'bold 34px Arimo, sans-serif';
   ctx.fillText('AMRAP', 84, 108);
 
-  ctx.fillStyle = palette.muted;
-  ctx.font = '600 22px Arimo, sans-serif';
-  ctx.fillText('araujo-phi.github.io/AMRAP', 84, 142);
+  ctx.fillStyle = palette.fg;
+  ctx.font = 'bold 24px Arimo, sans-serif';
+  ctx.fillText('araujo-phi.github.io/AMRAP', 84, 146);
 
-  const calSize = 310;
-  const calCenterY = 485;
+  const calSize = 300;
+  const calCenterY = 480;
   drawCalendarWithStreakNumber(ctx, canvas.width / 2, calCenterY, calSize, currentStreak, palette);
 
-  ctx.fillStyle = palette.fg;
-  ctx.font = 'bold 42px Arimo, sans-serif';
-  ctx.textAlign = 'center';
-  ctx.fillText(
-    currentStreak === 1 ? 'día de racha' : 'días de racha',
-    canvas.width / 2,
-    calCenterY + calSize / 2 + 72
-  );
+  const streakPhrase = styleIndex === 2
+    ? `${currentStreak} ${currentStreak === 1 ? 'dia de racha entrenando 💪' : 'dias de racha entrenando 💪'}`
+    : `${currentStreak} ${currentStreak === 1 ? 'día de racha' : 'días de racha'}`;
 
-  ctx.fillStyle = palette.muted;
-  ctx.font = '600 26px Arimo, sans-serif';
+  ctx.fillStyle = palette.fg;
+  ctx.font = 'bold 40px Arimo, sans-serif';
+  ctx.textAlign = 'center';
+  ctx.fillText(streakPhrase, canvas.width / 2, calCenterY + calSize / 2 + 74);
+
+  ctx.fillStyle = palette.fg;
+  ctx.font = 'bold 26px Arimo, sans-serif';
   ctx.textAlign = 'left';
   ctx.fillText(formatDisplayDate(todayISO), 84, canvas.height - 72);
 }
@@ -1734,7 +1814,7 @@ async function confirmShareStreakImage() {
     try {
       await navigator.share({
         title: 'AMRAP',
-        text: `${currentStreak} ${currentStreak === 1 ? 'día' : 'días'} de racha`,
+        text: `${currentStreak} dias de racha entrenando 💪`,
         files: [file]
       });
       return;
@@ -1873,13 +1953,12 @@ function confirmDeleteSession(date) {
 function exportProgressJSON() {
   const backupData = {
     sessions,
-    dailyCoins,
-    coins: dailyCoins,
-    epicCoins,
+    coins,
     streakFreezes,
     frozenDates,
     rewardedDates,
-    unlockedEpicPerks
+    claimedChallengeDates,
+    unlockedPerks
   };
   const blob = new Blob([JSON.stringify(backupData, null, 2)], { type: 'application/json' });
   const url = URL.createObjectURL(blob);
@@ -1904,9 +1983,11 @@ function importProgressJSON(event) {
         sessions = imported.filter(item => item && typeof item.date === 'string').map(normalizeSessionItem);
       } else if (imported && typeof imported === 'object' && Array.isArray(imported.sessions)) {
         sessions = imported.sessions.filter(item => item && typeof item.date === 'string').map(normalizeSessionItem);
-        const rawDaily = typeof imported.dailyCoins === 'number' ? imported.dailyCoins : (Number(imported.coins) || 0);
-        dailyCoins = Math.max(0, Math.floor(rawDaily / 10) * 10);
-        epicCoins = Math.max(0, Number(imported.epicCoins) || 0);
+        const baseCoins = Number(imported.coins) || 0;
+        const legacyDaily = Number(imported.dailyCoins) || 0;
+        const legacyEpic = Number(imported.epicCoins) || 0;
+        coins = Math.max(0, baseCoins > 0 ? baseCoins : (legacyDaily + legacyEpic));
+
         streakFreezes = Math.max(0, Math.min(MAX_FREEZES, Number(imported.streakFreezes) || 0));
         frozenDates = Array.isArray(imported.frozenDates)
           ? Array.from(new Set(imported.frozenDates.filter(d => typeof d === 'string')))
@@ -1914,9 +1995,13 @@ function importProgressJSON(event) {
         rewardedDates = Array.isArray(imported.rewardedDates)
           ? Array.from(new Set(imported.rewardedDates.filter(d => typeof d === 'string')))
           : [];
-        unlockedEpicPerks = Array.isArray(imported.unlockedEpicPerks)
-          ? Array.from(new Set(imported.unlockedEpicPerks.filter(p => typeof p === 'string')))
+        claimedChallengeDates = Array.isArray(imported.claimedChallengeDates)
+          ? Array.from(new Set(imported.claimedChallengeDates.filter(d => typeof d === 'string')))
           : [];
+        const perksSource = Array.isArray(imported.unlockedPerks)
+          ? imported.unlockedPerks
+          : (Array.isArray(imported.unlockedEpicPerks) ? imported.unlockedEpicPerks : []);
+        unlockedPerks = Array.from(new Set(perksSource.filter(p => typeof p === 'string')));
       } else {
         throw new Error('Inválido');
       }
