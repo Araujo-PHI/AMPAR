@@ -1529,9 +1529,359 @@ function refreshProgressView() {
     `${trainedDaysCount} ${trainedDaysCount === 1 ? 'día entrenado' : 'días entrenados'}`;
 }
 
+function getStreakMilestone(streakDays) {
+  if (streakDays >= 365) {
+    return {
+      tier: 'year_365',
+      badge: '1 AÑO+ · CAMPEÓN ANUAL',
+      phrase: 'UN AÑO ENTERO SIN SOLTAR EL RITMO',
+      expression: 'legend',
+      pose: 'year_one_master',
+      numberScale: 1.14,
+      doubleFrame: true,
+      rays: true,
+      crown: true
+    };
+  }
+  if (streakDays >= 270) {
+    return {
+      tier: 'months_270',
+      badge: '9 MESES · TRAMO FINAL AL AÑO',
+      phrase: 'NUEVE MESES DE DISCIPLINA SOSTENIDA',
+      expression: 'legend',
+      pose: 'nine_months_titan',
+      numberScale: 1.12,
+      doubleFrame: true,
+      rays: true,
+      crown: false
+    };
+  }
+  if (streakDays >= 180) {
+    return {
+      tier: 'months_180',
+      badge: '6 MESES · MEDIO AÑO DE PODER',
+      phrase: 'MEDIO AÑO CONSTRUYENDO FUERZA REAL',
+      expression: 'legend',
+      pose: 'half_year_power',
+      numberScale: 1.1,
+      doubleFrame: true,
+      rays: true,
+      crown: false
+    };
+  }
+  if (streakDays >= 90) {
+    return {
+      tier: 'legend_90',
+      badge: '3 MESES+ · LEYENDA',
+      phrase: 'TRES MESES DE CONSTANCIA IMPARABLE',
+      expression: 'legend',
+      pose: 'legend_victory',
+      numberScale: 1.08,
+      doubleFrame: true,
+      rays: true,
+      crown: false
+    };
+  }
+  if (streakDays >= 30) {
+    return {
+      tier: 'month_30',
+      badge: '1 MES · CONSTANCIA TOTAL',
+      phrase: 'UN MES ENTERO CUMPLIENDO EL CIRCUITO',
+      expression: 'hyped',
+      pose: 'trophy',
+      numberScale: 1.04,
+      doubleFrame: true,
+      rays: false,
+      crown: false
+    };
+  }
+  if (streakDays >= 21) {
+    return {
+      tier: 'habit_21',
+      badge: '21 DÍAS · HÁBITO ACTIVO',
+      phrase: 'TRES SEMANAS CONSTRUYENDO EL HÁBITO',
+      expression: 'focused',
+      pose: 'ready_stance',
+      numberScale: 1.0,
+      doubleFrame: false,
+      rays: false,
+      crown: false
+    };
+  }
+  if (streakDays >= 7) {
+    return {
+      tier: 'week_7',
+      badge: '7 DÍAS · SEMANA COMPLETA',
+      phrase: 'SIETE DÍAS DÁNDOLE SIN AFLOJAR',
+      expression: 'hyped',
+      pose: 'arms_up',
+      numberScale: 1.0,
+      doubleFrame: false,
+      rays: false,
+      crown: false
+    };
+  }
+  if (streakDays >= 3) {
+    return {
+      tier: 'starter_3',
+      badge: '3 DÍAS · EN MARCHA',
+      phrase: 'PRIMEROS TRES DÍAS DE RITMO FIRME',
+      expression: 'focused',
+      pose: 'flex_power',
+      numberScale: 0.98,
+      doubleFrame: false,
+      rays: false,
+      crown: false
+    };
+  }
+  if (streakDays >= 1) {
+    return {
+      tier: 'day_1',
+      badge: 'DÍA 1+ · ARRANQUE',
+      phrase: 'TÉCNICA LIMPIA ANTES QUE VELOCIDAD',
+      expression: 'calm',
+      pose: 'standing',
+      numberScale: 0.95,
+      doubleFrame: false,
+      rays: false,
+      crown: false
+    };
+  }
+  return {
+    tier: 'zero',
+    badge: 'RACHA EN 0 · HOY SE ARRANCA',
+    phrase: 'TÉCNICA LIMPIA ANTES QUE VELOCIDAD',
+    expression: 'thinking',
+    pose: 'thinking',
+    numberScale: 0.92,
+    doubleFrame: false,
+    rays: false,
+    crown: false
+  };
+}
+
+function drawStickmanMilestone(ctx, cx, bottomY, milestone) {
+  ctx.save();
+  ctx.strokeStyle = '#000000';
+  ctx.fillStyle = '#000000';
+  ctx.lineCap = 'round';
+  ctx.lineJoin = 'round';
+
+  const drawSeg = (x1, y1, x2, y2, w = 8) => {
+    ctx.lineWidth = w;
+    ctx.beginPath();
+    ctx.moveTo(x1, y1);
+    ctx.lineTo(x2, y2);
+    ctx.stroke();
+  };
+
+  drawSeg(cx - 92, bottomY, cx + 92, bottomY, 6);
+
+  if (milestone.rays) {
+    ctx.lineWidth = 4;
+    const rayAngles = [-155, -132, -110, -90, -70, -48, -25];
+    rayAngles.forEach(deg => {
+      const rad = (deg * Math.PI) / 180;
+      const r1 = 132;
+      const r2 = milestone.crown ? 168 : 158;
+      ctx.beginPath();
+      ctx.moveTo(cx + Math.cos(rad) * r1, bottomY - 120 + Math.sin(rad) * r1);
+      ctx.lineTo(cx + Math.cos(rad) * r2, bottomY - 120 + Math.sin(rad) * r2);
+      ctx.stroke();
+    });
+  }
+
+  let hip = { x: cx, y: bottomY - 76 };
+  let shoulder = { x: cx, y: bottomY - 134 };
+  let head = { x: cx, y: bottomY - 166 };
+  let footL = { x: cx - 34, y: bottomY };
+  let footR = { x: cx + 34, y: bottomY };
+  let kneeL = { x: cx - 26, y: bottomY - 38 };
+  let kneeR = { x: cx + 26, y: bottomY - 38 };
+  let handL = { x: cx - 55, y: bottomY - 105 };
+  let handR = { x: cx + 55, y: bottomY - 105 };
+  let elbowL = { x: cx - 36, y: bottomY - 118 };
+  let elbowR = { x: cx + 36, y: bottomY - 118 };
+
+  if (milestone.pose === 'thinking') {
+    hip = { x: cx - 6, y: bottomY - 74 };
+    shoulder = { x: cx + 2, y: bottomY - 130 };
+    head = { x: cx + 8, y: bottomY - 161 };
+    footL = { x: cx - 22, y: bottomY };
+    footR = { x: cx + 24, y: bottomY };
+    kneeL = { x: cx - 18, y: bottomY - 37 };
+    kneeR = { x: cx + 20, y: bottomY - 37 };
+    elbowR = { x: cx + 34, y: bottomY - 112 };
+    handR = { x: cx + 16, y: bottomY - 152 };
+    elbowL = { x: cx - 32, y: bottomY - 106 };
+    handL = { x: cx - 26, y: bottomY - 78 };
+  } else if (milestone.pose === 'flex_power') {
+    footL = { x: cx - 44, y: bottomY };
+    footR = { x: cx + 44, y: bottomY };
+    kneeL = { x: cx - 38, y: bottomY - 38 };
+    kneeR = { x: cx + 38, y: bottomY - 38 };
+    elbowL = { x: cx - 56, y: bottomY - 136 };
+    handL = { x: cx - 36, y: bottomY - 164 };
+    elbowR = { x: cx + 56, y: bottomY - 136 };
+    handR = { x: cx + 36, y: bottomY - 164 };
+  } else if (milestone.pose === 'arms_up') {
+    footL = { x: cx - 38, y: bottomY };
+    footR = { x: cx + 38, y: bottomY };
+    kneeL = { x: cx - 32, y: bottomY - 38 };
+    kneeR = { x: cx + 32, y: bottomY - 38 };
+    elbowL = { x: cx - 42, y: bottomY - 166 };
+    handL = { x: cx - 56, y: bottomY - 196 };
+    elbowR = { x: cx + 42, y: bottomY - 166 };
+    handR = { x: cx + 56, y: bottomY - 196 };
+  } else if (milestone.pose === 'ready_stance') {
+    hip = { x: cx, y: bottomY - 68 };
+    shoulder = { x: cx + 6, y: bottomY - 122 };
+    head = { x: cx + 12, y: bottomY - 154 };
+    footL = { x: cx - 54, y: bottomY };
+    footR = { x: cx + 52, y: bottomY };
+    kneeL = { x: cx - 46, y: bottomY - 34 };
+    kneeR = { x: cx + 36, y: bottomY - 34 };
+    elbowL = { x: cx - 28, y: bottomY - 114 };
+    handL = { x: cx + 14, y: bottomY - 128 };
+    elbowR = { x: cx + 38, y: bottomY - 108 };
+    handR = { x: cx + 32, y: bottomY - 136 };
+  } else if (milestone.pose === 'trophy') {
+    footL = { x: cx - 48, y: bottomY };
+    footR = { x: cx + 48, y: bottomY };
+    kneeL = { x: cx - 40, y: bottomY - 38 };
+    kneeR = { x: cx + 40, y: bottomY - 38 };
+    elbowL = { x: cx - 54, y: bottomY - 158 };
+    handL = { x: cx - 30, y: bottomY - 194 };
+    elbowR = { x: cx + 54, y: bottomY - 158 };
+    handR = { x: cx + 30, y: bottomY - 194 };
+  } else if (milestone.pose === 'legend_victory') {
+    hip = { x: cx, y: bottomY - 72 };
+    shoulder = { x: cx, y: bottomY - 130 };
+    head = { x: cx, y: bottomY - 162 };
+    footL = { x: cx - 58, y: bottomY };
+    footR = { x: cx + 58, y: bottomY };
+    kneeL = { x: cx - 48, y: bottomY - 36 };
+    kneeR = { x: cx + 48, y: bottomY - 36 };
+    elbowL = { x: cx - 64, y: bottomY - 168 };
+    handL = { x: cx - 44, y: bottomY - 204 };
+    elbowR = { x: cx + 64, y: bottomY - 168 };
+    handR = { x: cx + 44, y: bottomY - 204 };
+  } else if (milestone.pose === 'half_year_power') {
+    hip = { x: cx, y: bottomY - 70 };
+    shoulder = { x: cx, y: bottomY - 128 };
+    head = { x: cx, y: bottomY - 160 };
+    footL = { x: cx - 64, y: bottomY };
+    footR = { x: cx + 64, y: bottomY };
+    kneeL = { x: cx - 52, y: bottomY - 35 };
+    kneeR = { x: cx + 52, y: bottomY - 35 };
+    elbowL = { x: cx - 72, y: bottomY - 154 };
+    handL = { x: cx - 62, y: bottomY - 198 };
+    elbowR = { x: cx + 72, y: bottomY - 154 };
+    handR = { x: cx + 62, y: bottomY - 198 };
+  } else if (milestone.pose === 'nine_months_titan') {
+    hip = { x: cx, y: bottomY - 72 };
+    shoulder = { x: cx, y: bottomY - 130 };
+    head = { x: cx, y: bottomY - 162 };
+    footL = { x: cx - 68, y: bottomY };
+    footR = { x: cx + 68, y: bottomY };
+    kneeL = { x: cx - 54, y: bottomY - 36 };
+    kneeR = { x: cx + 54, y: bottomY - 36 };
+    elbowL = { x: cx - 62, y: bottomY - 172 };
+    handL = { x: cx - 38, y: bottomY - 210 };
+    elbowR = { x: cx + 62, y: bottomY - 172 };
+    handR = { x: cx + 38, y: bottomY - 210 };
+  } else if (milestone.pose === 'year_one_master') {
+    hip = { x: cx, y: bottomY - 72 };
+    shoulder = { x: cx, y: bottomY - 130 };
+    head = { x: cx, y: bottomY - 162 };
+    footL = { x: cx - 74, y: bottomY };
+    footR = { x: cx + 74, y: bottomY };
+    kneeL = { x: cx - 58, y: bottomY - 36 };
+    kneeR = { x: cx + 58, y: bottomY - 36 };
+    elbowL = { x: cx - 70, y: bottomY - 178 };
+    handL = { x: cx - 48, y: bottomY - 216 };
+    elbowR = { x: cx + 70, y: bottomY - 178 };
+    handR = { x: cx + 48, y: bottomY - 216 };
+  }
+
+  drawSeg(hip.x, hip.y, kneeL.x, kneeL.y, 8.5);
+  drawSeg(kneeL.x, kneeL.y, footL.x, footL.y, 8.5);
+  drawSeg(hip.x, hip.y, kneeR.x, kneeR.y, 8.5);
+  drawSeg(kneeR.x, kneeR.y, footR.x, footR.y, 8.5);
+  drawSeg(hip.x, hip.y, shoulder.x, shoulder.y, 10.5);
+
+  drawSeg(shoulder.x, shoulder.y, elbowL.x, elbowL.y, 8);
+  drawSeg(elbowL.x, elbowL.y, handL.x, handL.y, 8);
+  drawSeg(shoulder.x, shoulder.y, elbowR.x, elbowR.y, 8);
+  drawSeg(elbowR.x, elbowR.y, handR.x, handR.y, 8);
+
+  if (milestone.crown) {
+    const cy = head.y - 26;
+    ctx.fillStyle = '#000000';
+    ctx.beginPath();
+    ctx.moveTo(head.x - 18, cy);
+    ctx.lineTo(head.x - 14, cy - 16);
+    ctx.lineTo(head.x - 5, cy - 7);
+    ctx.lineTo(head.x, cy - 19);
+    ctx.lineTo(head.x + 5, cy - 7);
+    ctx.lineTo(head.x + 14, cy - 16);
+    ctx.lineTo(head.x + 18, cy);
+    ctx.closePath();
+    ctx.fill();
+  }
+
+  const headR = 24;
+  ctx.fillStyle = '#FFFFFF';
+  ctx.lineWidth = 7;
+  ctx.beginPath();
+  ctx.arc(head.x, head.y, headR, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.stroke();
+
+  ctx.fillStyle = '#000000';
+  ctx.strokeStyle = '#000000';
+  ctx.lineWidth = 3;
+
+  ctx.beginPath();
+  ctx.arc(head.x - 8, head.y - 3, 2.8, 0, Math.PI * 2);
+  ctx.arc(head.x + 8, head.y - 3, 2.8, 0, Math.PI * 2);
+  ctx.fill();
+
+  if (milestone.expression === 'focused' || milestone.expression === 'legend') {
+    ctx.beginPath();
+    ctx.moveTo(head.x - 13, head.y - 10);
+    ctx.lineTo(head.x - 3, head.y - 6);
+    ctx.moveTo(head.x + 13, head.y - 10);
+    ctx.lineTo(head.x + 3, head.y - 6);
+    ctx.stroke();
+  } else if (milestone.expression === 'thinking') {
+    ctx.beginPath();
+    ctx.moveTo(head.x - 13, head.y - 9);
+    ctx.lineTo(head.x - 4, head.y - 11);
+    ctx.moveTo(head.x + 4, head.y - 8);
+    ctx.lineTo(head.x + 13, head.y - 12);
+    ctx.stroke();
+  }
+
+  ctx.beginPath();
+  if (milestone.expression === 'hyped' || milestone.expression === 'legend') {
+    ctx.arc(head.x, head.y + 5, 9, 0, Math.PI);
+  } else if (milestone.expression === 'thinking') {
+    ctx.moveTo(head.x - 6, head.y + 10);
+    ctx.lineTo(head.x + 6, head.y + 8);
+  } else {
+    ctx.moveTo(head.x - 7, head.y + 9);
+    ctx.lineTo(head.x + 7, head.y + 9);
+  }
+  ctx.stroke();
+
+  ctx.restore();
+}
+
 async function shareStreakImage() {
   const { currentStreak, bestStreak, totalTrainedDays } = calculateStreaks();
   const todayISO = getTodayISO();
+  const milestone = getStreakMilestone(currentStreak);
 
   const canvas = document.createElement('canvas');
   canvas.width = 1080;
@@ -1545,6 +1895,11 @@ async function shareStreakImage() {
   ctx.lineWidth = 18;
   ctx.strokeRect(48, 48, canvas.width - 96, canvas.height - 96);
 
+  if (milestone.doubleFrame) {
+    ctx.lineWidth = 6;
+    ctx.strokeRect(66, 66, canvas.width - 132, canvas.height - 132);
+  }
+
   ctx.fillStyle = '#000000';
   ctx.fillRect(96, 104, 28, 28);
   ctx.font = 'bold 36px Arimo, sans-serif';
@@ -1556,20 +1911,54 @@ async function shareStreakImage() {
   ctx.textAlign = 'right';
   ctx.fillText(formatDisplayDate(todayISO), canvas.width - 96, 128);
 
+  const boxX = 96;
+  const boxY = 195;
+  const boxW = canvas.width - 192;
+  const boxH = 560;
+
   ctx.fillStyle = '#000000';
-  ctx.fillRect(96, 210, canvas.width - 192, 540);
+  ctx.fillRect(boxX, boxY, boxW, boxH);
+
+  ctx.fillStyle = '#FFFFFF';
+  ctx.fillRect(boxX + 40, boxY + 28, boxW - 80, 44);
+  ctx.fillStyle = '#000000';
+  ctx.font = 'bold 22px Arimo, sans-serif';
+  ctx.textAlign = 'center';
+  ctx.fillText(milestone.badge, canvas.width / 2, boxY + 58);
+
+  const numCenterX = boxX + 270;
+  const baseFontSize = currentStreak >= 100 ? 155 : 215;
+  const fontSize = Math.round(baseFontSize * milestone.numberScale);
+
+  if (milestone.doubleFrame) {
+    ctx.strokeStyle = '#FFFFFF';
+    ctx.lineWidth = 5;
+    ctx.strokeRect(boxX + 40, boxY + 104, 460, 390);
+  }
+
+  ctx.fillStyle = '#FFFFFF';
+  ctx.font = `bold ${fontSize}px Arimo, sans-serif`;
+  ctx.textAlign = 'center';
+  ctx.fillText(`${currentStreak}`, numCenterX, boxY + 345);
 
   ctx.fillStyle = '#D4D4D4';
   ctx.font = 'bold 30px Arimo, sans-serif';
-  ctx.textAlign = 'center';
-  ctx.fillText('RACHA ACTUAL', canvas.width / 2, 290);
+  ctx.fillText(currentStreak === 1 ? 'DÍA DE RACHA' : 'DÍAS DE RACHA', numCenterX, boxY + 415);
+
+  const stickBoxX = boxX + 525;
+  const stickBoxY = boxY + 104;
+  const stickBoxW = 319;
+  const stickBoxH = 390;
 
   ctx.fillStyle = '#FFFFFF';
-  ctx.font = 'bold 240px Arimo, sans-serif';
-  ctx.fillText(`${currentStreak}`, canvas.width / 2, 540);
+  ctx.fillRect(stickBoxX, stickBoxY, stickBoxW, stickBoxH);
 
-  ctx.font = 'bold 38px Arimo, sans-serif';
-  ctx.fillText(currentStreak === 1 ? 'DÍA CONSECUTIVO' : 'DÍAS CONSECUTIVOS', canvas.width / 2, 630);
+  drawStickmanMilestone(
+    ctx,
+    stickBoxX + stickBoxW / 2,
+    stickBoxY + stickBoxH - 42,
+    milestone
+  );
 
   const stats = [
     { label: 'RÉCORD VUELTAS', value: `${bestStreak}` },
@@ -1579,7 +1968,7 @@ async function shareStreakImage() {
 
   const gap = 24;
   const cardW = (canvas.width - 192 - gap * 2) / 3;
-  const cardY = 800;
+  const cardY = 795;
   const cardH = 230;
 
   stats.forEach((st, idx) => {
@@ -1603,11 +1992,11 @@ async function shareStreakImage() {
   ctx.fillStyle = '#000000';
   ctx.font = 'bold 26px Arimo, sans-serif';
   ctx.textAlign = 'center';
-  ctx.fillText('TÉCNICA LIMPIA ANTES QUE VELOCIDAD', canvas.width / 2, 1140);
+  ctx.fillText(milestone.phrase, canvas.width / 2, 1135);
 
   ctx.fillStyle = '#666666';
   ctx.font = 'bold 22px Arimo, sans-serif';
-  ctx.fillText('araujo-phi.github.io/AMRAP', canvas.width / 2, 1190);
+  ctx.fillText('araujo-phi.github.io/AMRAP', canvas.width / 2, 1185);
 
   const blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/png'));
   if (!blob) {
@@ -1615,14 +2004,14 @@ async function shareStreakImage() {
     return;
   }
 
-  const fileName = `racha-amrap-${todayISO}.png`;
+  const fileName = `racha-amrap-${currentStreak}d-${todayISO}.png`;
   const file = new File([blob], fileName, { type: 'image/png' });
 
   if (navigator.share && navigator.canShare && navigator.canShare({ files: [file] })) {
     try {
       await navigator.share({
         title: 'Mi racha en AMRAP',
-        text: `Racha de ${currentStreak} ${currentStreak === 1 ? 'día' : 'días'} en AMRAP.`,
+        text: `${milestone.badge} · Racha de ${currentStreak} ${currentStreak === 1 ? 'día' : 'días'} en AMRAP.`,
         files: [file]
       });
       showToast('Racha compartida');
