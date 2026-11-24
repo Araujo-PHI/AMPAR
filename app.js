@@ -134,6 +134,7 @@ let checklistState = {};
 let selectedExerciseFilter = 'all';
 let monthOffset = 0; // 0 = mes actual, -1 = mes anterior, etc.
 let wakeLockSentinel = null;
+let selectedStreakStyleIndex = 0;
 
 // Estructura de sesión: { date: 'YYYY-MM-DD', rounds: number, effort: string, notes: string }
 let sessions = [];
@@ -156,7 +157,11 @@ document.addEventListener('DOMContentLoaded', () => {
   updateRoundsUI();
   refreshProgressView();
 
-  // Re-adquirir Wake Lock si el usuario vuelve a la pestaña mientras el reloj corre
+  const manualForm = document.getElementById('manual-session-form');
+  if (manualForm) {
+    manualForm.addEventListener('submit', handleManualSessionSubmit);
+  }
+
   document.addEventListener('visibilitychange', async () => {
     if (document.visibilityState === 'visible' && wakeLockSentinel !== null) {
       await requestWakeLock(true);
@@ -257,7 +262,6 @@ function applyAutomaticStreakFreezes() {
   const sortedTrained = Array.from(trainedDays).sort();
   let consumedCount = 0;
 
-  // Huecos exactos de 1 día entre entrenamientos
   for (let i = 1; i < sortedTrained.length && streakFreezes > 0; i++) {
     const prevDay = isoToDayNumber(sortedTrained[i - 1]);
     const currDay = isoToDayNumber(sortedTrained[i]);
@@ -271,7 +275,6 @@ function applyAutomaticStreakFreezes() {
     }
   }
 
-  // Si ayer quedó sin entrenar y la última sesión fue anteayer
   const todayDay = isoToDayNumber(getTodayISO());
   const lastTrainedDay = isoToDayNumber(sortedTrained[sortedTrained.length - 1]);
   if (todayDay - lastTrainedDay === 2 && streakFreezes > 0) {
@@ -319,6 +322,7 @@ function switchView(viewName) {
   views.forEach(v => {
     const section = document.getElementById(`view-${v}`);
     const btn = document.getElementById(`nav-${v}`);
+    if (!section || !btn) return;
     if (v === viewName) {
       section.classList.remove('hidden');
       btn.classList.remove('bg-purewhite', 'text-pureblack');
@@ -380,6 +384,7 @@ async function requestWakeLock(silent) {
 function updateWakeLockButton(active) {
   const btn = document.getElementById('btn-wakelock');
   const label = document.getElementById('wakelock-label');
+  if (!btn || !label) return;
   btn.setAttribute('aria-pressed', active ? 'true' : 'false');
   if (active) {
     btn.classList.remove('bg-purewhite', 'text-pureblack');
@@ -426,11 +431,16 @@ function playSoftFinishAlert() {
 function updateTimerUI() {
   const mins = Math.floor(timerSecondsLeft / 60);
   const secs = timerSecondsLeft % 60;
-  document.getElementById('timer-display').textContent =
-    `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
+  const display = document.getElementById('timer-display');
+  if (display) {
+    display.textContent = `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
+  }
 
   const pct = Math.max(0, Math.min(100, (timerSecondsLeft / TOTAL_SECONDS) * 100));
-  document.getElementById('timer-progress-bar').style.width = `${pct}%`;
+  const bar = document.getElementById('timer-progress-bar');
+  if (bar) {
+    bar.style.width = `${pct}%`;
+  }
 
   const badge = document.getElementById('timer-20m-badge');
   if (badge) {
@@ -449,16 +459,18 @@ function updateTimerUI() {
   const toggleText = document.getElementById('toggle-timer-text');
   const toggleIcon = document.getElementById('toggle-timer-icon');
 
-  if (isTimerRunning) {
-    toggleBtn.classList.remove('bg-pureblack', 'text-purewhite');
-    toggleBtn.classList.add('bg-purewhite', 'text-pureblack');
-    toggleText.textContent = 'Pausar';
-    toggleIcon.innerHTML = '<rect x="6" y="4" width="4" height="16"></rect><rect x="14" y="4" width="4" height="16"></rect>';
-  } else {
-    toggleBtn.classList.remove('bg-purewhite', 'text-pureblack');
-    toggleBtn.classList.add('bg-pureblack', 'text-purewhite');
-    toggleText.textContent = timerSecondsLeft === TOTAL_SECONDS ? 'Iniciar' : 'Reanudar';
-    toggleIcon.innerHTML = '<polygon points="5 3 19 12 5 21 5 3"></polygon>';
+  if (toggleBtn && toggleText && toggleIcon) {
+    if (isTimerRunning) {
+      toggleBtn.classList.remove('bg-pureblack', 'text-purewhite');
+      toggleBtn.classList.add('bg-purewhite', 'text-pureblack');
+      toggleText.textContent = 'Pausar';
+      toggleIcon.innerHTML = '<rect x="6" y="4" width="4" height="16"></rect><rect x="14" y="4" width="4" height="16"></rect>';
+    } else {
+      toggleBtn.classList.remove('bg-purewhite', 'text-pureblack');
+      toggleBtn.classList.add('bg-pureblack', 'text-purewhite');
+      toggleText.textContent = timerSecondsLeft === TOTAL_SECONDS ? 'Iniciar' : 'Reanudar';
+      toggleIcon.innerHTML = '<polygon points="5 3 19 12 5 21 5 3"></polygon>';
+    }
   }
 }
 
@@ -490,7 +502,10 @@ function startTimer() {
       pauseTimer();
       completed20MinToday = true;
       updateTimerUI();
-      document.getElementById('timer-subtext').textContent = '¡20 minutos cumplidos! Guarda tu sesión abajo.';
+      const sub = document.getElementById('timer-subtext');
+      if (sub) {
+        sub.textContent = '¡20 minutos cumplidos! Guarda tu sesión abajo.';
+      }
       playSoftFinishAlert();
       showToast('¡20 minutos completados! Guarda tu sesión hoy.');
     }
@@ -514,6 +529,7 @@ function handleResetTimerTap() {
 
   const resetBtn = document.getElementById('btn-reset-timer');
   const resetText = document.getElementById('reset-timer-text');
+  if (!resetBtn || !resetText) return;
 
   if (!resetConfirmPending) {
     resetConfirmPending = true;
@@ -536,7 +552,10 @@ function handleResetTimerTap() {
 
     pauseTimer();
     timerSecondsLeft = TOTAL_SECONDS;
-    document.getElementById('timer-subtext').textContent = 'Técnica limpia antes que velocidad';
+    const sub = document.getElementById('timer-subtext');
+    if (sub) {
+      sub.textContent = 'Técnica limpia antes que velocidad';
+    }
     updateTimerUI();
     showToast('Reloj reiniciado a 20:00');
   }
@@ -558,21 +577,25 @@ function changeRounds(delta) {
 }
 
 function updateRoundsUI() {
-  document.getElementById('rounds-display').textContent = currentRounds;
+  const disp = document.getElementById('rounds-display');
+  if (disp) disp.textContent = currentRounds;
   const doneCount = EXERCISES.filter(ex => checklistState[ex.id]).length;
   const hint = document.getElementById('round-status-hint');
-  hint.textContent = `${doneCount}/6 est.`;
+  if (hint) hint.textContent = `${doneCount}/6 est.`;
 }
 
 function renderQuickChecklist() {
   const container = document.getElementById('quick-circuit-list');
+  if (!container) return;
   const allDone = EXERCISES.every(ex => checklistState[ex.id]);
 
   const addRoundBtn = document.getElementById('btn-add-round');
-  if (allDone) {
-    addRoundBtn.classList.add('ring-4', 'ring-black/25');
-  } else {
-    addRoundBtn.classList.remove('ring-4', 'ring-black/25');
+  if (addRoundBtn) {
+    if (allDone) {
+      addRoundBtn.classList.add('ring-4', 'ring-black/25');
+    } else {
+      addRoundBtn.classList.remove('ring-4', 'ring-black/25');
+    }
   }
 
   container.innerHTML = EXERCISES.map(ex => {
@@ -683,6 +706,7 @@ function saveTodaySession() {
 // =========================================================================
 function renderExerciseTabs() {
   const container = document.getElementById('exercise-filter-tabs');
+  if (!container) return;
   const items = [
     { id: 'all', label: 'Todos' },
     ...EXERCISES.map(ex => ({ id: ex.id, label: ex.number }))
@@ -706,6 +730,7 @@ function filterExercises(id) {
 
 function renderExercisesGrid() {
   const grid = document.getElementById('exercises-grid');
+  if (!grid) return;
   const filtered = selectedExerciseFilter === 'all'
     ? EXERCISES
     : EXERCISES.filter(ex => ex.id === selectedExerciseFilter);
@@ -1400,17 +1425,19 @@ function refreshProgressView() {
     'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'
   ];
 
-  document.getElementById('month-selector-title').textContent = `${monthNames[monthIndex]} ${year}`;
+  const monthTitle = document.getElementById('month-selector-title');
+  if (monthTitle) monthTitle.textContent = `${monthNames[monthIndex]} ${year}`;
 
   const nextBtn = document.getElementById('btn-next-month');
-  nextBtn.disabled = monthOffset >= 0;
+  if (nextBtn) nextBtn.disabled = monthOffset >= 0;
 
   const bestRounds = sessions.reduce((max, s) => Math.max(max, Number(s.rounds) || 0), 0);
   const { currentStreak } = calculateStreaks();
 
-  document.getElementById('stat-current-streak').textContent =
-    `${currentStreak} ${currentStreak === 1 ? 'día' : 'días'}`;
-  document.getElementById('stat-best-rounds').textContent = bestRounds;
+  const streakEl = document.getElementById('stat-current-streak');
+  const bestEl = document.getElementById('stat-best-rounds');
+  if (streakEl) streakEl.textContent = `${currentStreak} ${currentStreak === 1 ? 'día' : 'días'}`;
+  if (bestEl) bestEl.textContent = bestRounds;
 
   const coinsEl = document.getElementById('stat-coins');
   const freezesEl = document.getElementById('stat-freezes');
@@ -1432,10 +1459,12 @@ function refreshProgressView() {
     }
   }
 
+  const rowsContainer = document.getElementById('monthly-calendar-rows');
+  if (!rowsContainer) return;
+
   const weeks = buildMonthWeeks(year, monthIndex);
   let trainedDaysCount = 0;
 
-  const rowsContainer = document.getElementById('monthly-calendar-rows');
   rowsContainer.innerHTML = weeks.map(week => {
     const segments = [];
     let segStart = null;
@@ -1525,11 +1554,11 @@ function refreshProgressView() {
     `;
   }).join('');
 
-  document.getElementById('month-summary-subtitle').textContent =
-    `${trainedDaysCount} ${trainedDaysCount === 1 ? 'día entrenado' : 'días entrenados'}`;
+  const summaryEl = document.getElementById('month-summary-subtitle');
+  if (summaryEl) {
+    summaryEl.textContent = `${trainedDaysCount} ${trainedDaysCount === 1 ? 'día entrenado' : 'días entrenados'}`;
+  }
 }
-
-let selectedStreakStyleIndex = 0;
 
 function isSpecialStreakMilestone(streakDays) {
   return (
@@ -1546,16 +1575,11 @@ function isSpecialStreakMilestone(streakDays) {
 
 function getStreakPalette(streakDays, styleIndex) {
   const isSpecial = isSpecialStreakMilestone(streakDays);
-
-  // Colores invertidos respecto a la versión anterior:
-  // Normal: fondo negro (#000000), texto/ícono blanco (#FFFFFF)
-  // Especial: fondo blanco (#FFFFFF), texto/ícono negro (#000000)
   const baseBg = isSpecial ? '#FFFFFF' : '#000000';
   const baseFg = isSpecial ? '#000000' : '#FFFFFF';
   const baseMuted = isSpecial ? '#666666' : '#A3A3A3';
 
   if (styleIndex === 1) {
-    // Estilo 2: invertido respecto al base
     return {
       bg: baseFg,
       fg: baseBg,
@@ -1566,7 +1590,6 @@ function getStreakPalette(streakDays, styleIndex) {
   }
 
   if (styleIndex === 2) {
-    // Estilo 3: calendario relleno sólido con número contrastado
     return {
       bg: baseBg,
       fg: baseFg,
@@ -1576,7 +1599,6 @@ function getStreakPalette(streakDays, styleIndex) {
     };
   }
 
-  // Estilo 1: limpio clásico
   return {
     bg: baseBg,
     fg: baseFg,
@@ -1595,7 +1617,6 @@ function drawCalendarWithStreakNumber(ctx, cx, cy, size, streakNumber, palette) 
   ctx.lineCap = 'round';
   ctx.lineJoin = 'round';
 
-  // Cuerpo del calendario
   if (palette.fillCalendar) {
     ctx.fillStyle = palette.fg;
     ctx.fillRect(x, y, size, size);
@@ -1607,12 +1628,10 @@ function drawCalendarWithStreakNumber(ctx, cx, cy, size, streakNumber, palette) 
     ctx.strokeRect(x, y, size, size);
   }
 
-  // Franja superior del calendario
   const stripColor = palette.fillCalendar ? palette.bg : palette.fg;
   ctx.fillStyle = stripColor;
   ctx.fillRect(x, y, size, headerH);
 
-  // Dos argollas superiores
   ctx.strokeStyle = palette.fg;
   ctx.lineWidth = 9;
   ctx.beginPath();
@@ -1622,7 +1641,6 @@ function drawCalendarWithStreakNumber(ctx, cx, cy, size, streakNumber, palette) 
   ctx.lineTo(x + size * 0.73, y + 6);
   ctx.stroke();
 
-  // Número de racha adentro del cuerpo del calendario
   const bodyTop = y + headerH;
   const bodyCenterY = bodyTop + (size - headerH) * 0.54;
   const digits = String(streakNumber);
@@ -1657,7 +1675,6 @@ function renderStreakCanvas(canvas, styleIndex = selectedStreakStyleIndex) {
     ctx.strokeRect(36, 36, canvas.width - 72, canvas.height - 72);
   }
 
-  // Arriba un poco chico: "AMRAP" y abajo el link de la web
   ctx.textAlign = 'left';
   ctx.textBaseline = 'alphabetic';
   ctx.fillStyle = palette.fg;
@@ -1668,7 +1685,6 @@ function renderStreakCanvas(canvas, styleIndex = selectedStreakStyleIndex) {
   ctx.font = '600 22px Arimo, sans-serif';
   ctx.fillText('araujo-phi.github.io/AMRAP', 84, 142);
 
-  // Centro: número adentro del ícono de calendario y debajo "días de racha"
   const calSize = 310;
   const calCenterY = 485;
   drawCalendarWithStreakNumber(ctx, canvas.width / 2, calCenterY, calSize, currentStreak, palette);
@@ -1682,7 +1698,6 @@ function renderStreakCanvas(canvas, styleIndex = selectedStreakStyleIndex) {
     calCenterY + calSize / 2 + 72
   );
 
-  // Abajo en la esquina, más clarito: la fecha
   ctx.fillStyle = palette.muted;
   ctx.font = '600 26px Arimo, sans-serif';
   ctx.textAlign = 'left';
@@ -1700,21 +1715,6 @@ function selectStreakStyle(styleIndex) {
   });
   const previewCanvas = document.getElementById('streak-preview-canvas');
   renderStreakCanvas(previewCanvas, selectedStreakStyleIndex);
-}
-
-function shareStreakImage() {
-  const modal = document.getElementById('share-streak-modal');
-  if (!modal) return;
-  selectStreakStyle(selectedStreakStyleIndex);
-  modal.classList.remove('hidden');
-  modal.classList.add('flex');
-}
-
-function closeShareStreakModal() {
-  const modal = document.getElementById('share-streak-modal');
-  if (!modal) return;
-  modal.classList.add('hidden');
-  modal.classList.remove('flex');
 }
 
 async function getStreakImageBlob() {
@@ -1775,86 +1775,22 @@ async function confirmShareStreakImage() {
   await downloadStreakPreviewImage();
 }
 
-  ctx.textAlign = 'left';
-  ctx.fillStyle = fgColor;
-  ctx.font = 'bold 34px Arimo, sans-serif';
-  ctx.fillText('AMRAP', 96, 118);
-
-  ctx.fillStyle = mutedColor;
-  ctx.font = '600 24px Arimo, sans-serif';
-  ctx.fillText('araujo-phi.github.io/AMRAP', 96, 156);
-
-  const digitsLen = String(currentStreak).length;
-  const numFontSize = digitsLen >= 3 ? 175 : digitsLen === 2 ? 210 : 230;
-  const iconSize = 112;
-  const gapIconNum = 34;
-
-  ctx.font = `bold ${numFontSize}px Arimo, sans-serif`;
-  const numWidth = ctx.measureText(`${currentStreak}`).width;
-  const groupWidth = iconSize + gapIconNum + numWidth;
-  const groupStartX = (canvas.width - groupWidth) / 2;
-  const centerY = 520;
-
-  drawSimpleStreakIcon(
-    ctx,
-    groupStartX,
-    centerY - iconSize * 0.62,
-    iconSize,
-    fgColor
-  );
-
-  ctx.fillStyle = fgColor;
-  ctx.textAlign = 'left';
-  ctx.textBaseline = 'middle';
-  ctx.fillText(`${currentStreak}`, groupStartX + iconSize + gapIconNum, centerY);
-  ctx.textBaseline = 'alphabetic';
-
-  ctx.fillStyle = fgColor;
-  ctx.font = 'bold 42px Arimo, sans-serif';
-  ctx.textAlign = 'center';
-  ctx.fillText(
-    currentStreak === 1 ? 'día de racha' : 'días de racha',
-    canvas.width / 2,
-    centerY + 135
-  );
-
-  ctx.fillStyle = mutedColor;
-  ctx.font = '600 28px Arimo, sans-serif';
-  ctx.textAlign = 'center';
-  ctx.fillText(formatDisplayDate(todayISO), canvas.width / 2, 950);
-
-  const blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/png'));
-  if (!blob) {
-    showToast('No se pudo generar la imagen');
+function shareStreakImage() {
+  const modal = document.getElementById('share-streak-modal');
+  if (!modal) {
+    confirmShareStreakImage();
     return;
   }
+  selectStreakStyle(selectedStreakStyleIndex);
+  modal.classList.remove('hidden');
+  modal.classList.add('flex');
+}
 
-  const fileName = `racha-amrap-${currentStreak}d-${todayISO}.png`;
-  const file = new File([blob], fileName, { type: 'image/png' });
-
-  if (navigator.share && navigator.canShare && navigator.canShare({ files: [file] })) {
-    try {
-      await navigator.share({
-        title: 'Mi racha en AMRAP',
-        text: `${currentStreak} ${currentStreak === 1 ? 'día' : 'días'} de racha en AMRAP.`,
-        files: [file]
-      });
-      showToast('Racha compartida');
-      return;
-    } catch (err) {
-      if (err && err.name === 'AbortError') return;
-    }
-  }
-
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url;
-  a.download = fileName;
-  document.body.appendChild(a);
-  a.click();
-  document.body.removeChild(a);
-  URL.revokeObjectURL(url);
-  showToast('Imagen PNG descargada');
+function closeShareStreakModal() {
+  const modal = document.getElementById('share-streak-modal');
+  if (!modal) return;
+  modal.classList.add('hidden');
+  modal.classList.remove('flex');
 }
 
 // =========================================================================
@@ -1876,6 +1812,8 @@ function openSessionModal(prefillDate) {
   const notesInput = document.getElementById('modal-notes');
   const deleteWrap = document.getElementById('modal-delete-wrapper');
   const deleteBtn = document.getElementById('modal-delete-btn');
+  const titleEl = document.getElementById('session-modal-title');
+  if (!modal || !dateInput || !roundsInput) return;
 
   const existing = sessions.find(s => s.date === targetDate);
 
@@ -1883,21 +1821,23 @@ function openSessionModal(prefillDate) {
   dateInput.value = targetDate;
 
   if (existing) {
-    document.getElementById('session-modal-title').textContent = `Editar Día (${formatDisplayDate(targetDate)})`;
+    if (titleEl) titleEl.textContent = `Editar Día (${formatDisplayDate(targetDate)})`;
     roundsInput.value = existing.rounds;
-    effortInput.value = existing.effort || 'Normal';
-    notesInput.value = existing.notes || '';
-    deleteWrap.classList.remove('hidden');
-    deleteBtn.onclick = () => {
-      closeSessionModal();
-      confirmDeleteSession(targetDate);
-    };
+    if (effortInput) effortInput.value = existing.effort || 'Normal';
+    if (notesInput) notesInput.value = existing.notes || '';
+    if (deleteWrap) deleteWrap.classList.remove('hidden');
+    if (deleteBtn) {
+      deleteBtn.onclick = () => {
+        closeSessionModal();
+        confirmDeleteSession(targetDate);
+      };
+    }
   } else {
-    document.getElementById('session-modal-title').textContent = `Anotar Día (${formatDisplayDate(targetDate)})`;
+    if (titleEl) titleEl.textContent = `Anotar Día (${formatDisplayDate(targetDate)})`;
     roundsInput.value = currentRounds > 0 ? currentRounds : 3;
-    effortInput.value = 'Normal';
-    notesInput.value = '';
-    deleteWrap.classList.add('hidden');
+    if (effortInput) effortInput.value = 'Normal';
+    if (notesInput) notesInput.value = '';
+    if (deleteWrap) deleteWrap.classList.add('hidden');
   }
 
   modal.classList.remove('hidden');
@@ -1906,23 +1846,31 @@ function openSessionModal(prefillDate) {
 
 function closeSessionModal() {
   const modal = document.getElementById('session-modal');
+  if (!modal) return;
   modal.classList.add('hidden');
   modal.classList.remove('flex');
 }
 
 function adjustModalRounds(delta) {
   const input = document.getElementById('modal-rounds');
+  if (!input) return;
   const val = Math.max(0, (parseInt(input.value, 10) || 0) + delta);
   input.value = val;
 }
 
-document.getElementById('manual-session-form').addEventListener('submit', (e) => {
+function handleManualSessionSubmit(e) {
   e.preventDefault();
   const todayISO = getTodayISO();
-  const date = document.getElementById('modal-date').value;
-  const rounds = Math.max(0, parseInt(document.getElementById('modal-rounds').value, 10) || 0);
-  const effort = document.getElementById('modal-effort').value;
-  const notes = document.getElementById('modal-notes').value.trim();
+  const dateEl = document.getElementById('modal-date');
+  const roundsEl = document.getElementById('modal-rounds');
+  const effortEl = document.getElementById('modal-effort');
+  const notesEl = document.getElementById('modal-notes');
+  if (!dateEl || !roundsEl) return;
+
+  const date = dateEl.value;
+  const rounds = Math.max(0, parseInt(roundsEl.value, 10) || 0);
+  const effort = effortEl ? effortEl.value : 'Normal';
+  const notes = notesEl ? notesEl.value.trim() : '';
 
   if (!date) return;
 
@@ -1946,7 +1894,7 @@ document.getElementById('manual-session-form').addEventListener('submit', (e) =>
   closeSessionModal();
   refreshProgressView();
   showToast(`Guardado: ${formatDisplayDate(date)}${earnedMsg}`);
-});
+}
 
 function confirmDeleteSession(date) {
   openConfirmModal(
@@ -2025,22 +1973,29 @@ function importProgressJSON(event) {
 let toastTimeout = null;
 function showToast(msg) {
   const banner = document.getElementById('toast-banner');
-  document.getElementById('toast-message').textContent = msg;
+  const msgEl = document.getElementById('toast-message');
+  if (!banner || !msgEl) return;
+  msgEl.textContent = msg;
   banner.classList.remove('hidden');
   if (toastTimeout) clearTimeout(toastTimeout);
   toastTimeout = setTimeout(hideToast, 3200);
 }
 
 function hideToast() {
-  document.getElementById('toast-banner').classList.add('hidden');
+  const banner = document.getElementById('toast-banner');
+  if (banner) banner.classList.add('hidden');
 }
 
 function openConfirmModal(title, text, onConfirm) {
   const modal = document.getElementById('confirm-modal');
-  document.getElementById('confirm-title').textContent = title;
-  document.getElementById('confirm-text').textContent = text;
-
+  const titleEl = document.getElementById('confirm-title');
+  const textEl = document.getElementById('confirm-text');
   const acceptBtn = document.getElementById('confirm-accept-btn');
+  if (!modal || !acceptBtn) return;
+
+  if (titleEl) titleEl.textContent = title;
+  if (textEl) textEl.textContent = text;
+
   const newBtn = acceptBtn.cloneNode(true);
   acceptBtn.parentNode.replaceChild(newBtn, acceptBtn);
 
@@ -2055,6 +2010,7 @@ function openConfirmModal(title, text, onConfirm) {
 
 function closeConfirmModal() {
   const modal = document.getElementById('confirm-modal');
+  if (!modal) return;
   modal.classList.add('hidden');
   modal.classList.remove('flex');
 }
