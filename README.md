@@ -1,4 +1,4 @@
-# AMRAP
+# KORA
 
 ![AMRAP Banner](https://github.com/user-attachments/assets/642ae1ef-d6d9-4dea-a9da-6b21452fbe3e)
 
