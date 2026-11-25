@@ -169,9 +169,6 @@ const DAILY_COINS_REWARD = 10;
 const DAILY_CHALLENGE_BONUS = 5;
 const FREEZE_COST = 100;
 const MAX_FREEZES = 2;
-const DOUBLE_COINS_COST = 80;
-const RECORD_CONTRACT_COST = 50;
-const RECORD_CONTRACT_PAYOUT = 80;
 
 let currentViewName = 'timer';
 let timerSecondsLeft = TOTAL_SECONDS;
@@ -191,8 +188,7 @@ let selectedStreakStyleIndex = 0;
 let sessions = [];
 let coins = 0;
 let streakFreezes = 0;
-let doubleCoinsArmed = false;
-let recordContractArmed = false;
+let lastFreezePurchaseDate = null;
 let frozenDates = [];
 let rewardedDates = [];
 let claimedChallengeDates = [];
@@ -382,8 +378,7 @@ function loadSessions() {
         coins = Math.max(0, baseCoins > 0 ? baseCoins : (legacyDaily + legacyEpic));
 
         streakFreezes = Math.max(0, Math.min(MAX_FREEZES, Number(parsed.streakFreezes) || 0));
-        doubleCoinsArmed = Boolean(parsed.doubleCoinsArmed);
-        recordContractArmed = Boolean(parsed.recordContractArmed);
+        lastFreezePurchaseDate = typeof parsed.lastFreezePurchaseDate === 'string' ? parsed.lastFreezePurchaseDate : null;
         frozenDates = Array.isArray(parsed.frozenDates)
           ? Array.from(new Set(parsed.frozenDates.filter(d => typeof d === 'string')))
           : [];
@@ -406,8 +401,7 @@ function loadSessions() {
     sessions = [];
     coins = 0;
     streakFreezes = 0;
-    doubleCoinsArmed = false;
-    recordContractArmed = false;
+    lastFreezePurchaseDate = null;
     frozenDates = [];
     rewardedDates = [];
     claimedChallengeDates = [];
@@ -421,8 +415,7 @@ function buildStatePayload() {
     sessions,
     coins,
     streakFreezes,
-    doubleCoinsArmed,
-    recordContractArmed,
+    lastFreezePurchaseDate,
     frozenDates,
     rewardedDates,
     claimedChallengeDates,
@@ -479,8 +472,14 @@ function applyAutomaticStreakFreezes() {
 }
 
 function buyStreakFreeze() {
+  const todayISO = getTodayISO();
+
   if (streakFreezes >= MAX_FREEZES) {
-    showToast(`Máximo ${MAX_FREEZES}/${MAX_FREEZES}`);
+    showToast(`Bloqueado: ya tenés ${MAX_FREEZES}/${MAX_FREEZES}`);
+    return;
+  }
+  if (lastFreezePurchaseDate === todayISO) {
+    showToast('Solo 1 protector por día');
     return;
   }
   if (coins < FREEZE_COST) {
@@ -490,44 +489,11 @@ function buyStreakFreeze() {
 
   coins -= FREEZE_COST;
   streakFreezes = Math.min(MAX_FREEZES, streakFreezes + 1);
+  lastFreezePurchaseDate = todayISO;
   saveSessions();
   refreshProgressView();
   refreshShopView();
   showToast(`Protector comprado (${streakFreezes}/${MAX_FREEZES})`);
-}
-
-function buyDoubleCoins() {
-  if (doubleCoinsArmed) {
-    showToast('Ya tenés doble moneda activa');
-    return;
-  }
-  if (coins < DOUBLE_COINS_COST) {
-    showToast(`Faltan ${DOUBLE_COINS_COST - coins} monedas`);
-    return;
-  }
-
-  coins -= DOUBLE_COINS_COST;
-  doubleCoinsArmed = true;
-  saveSessions();
-  refreshShopView();
-  showToast('Doble moneda lista para tu próximo entreno');
-}
-
-function buyRecordContract() {
-  if (recordContractArmed) {
-    showToast('Ya tenés el contrato activo');
-    return;
-  }
-  if (coins < RECORD_CONTRACT_COST) {
-    showToast(`Faltan ${RECORD_CONTRACT_COST - coins} monedas`);
-    return;
-  }
-
-  coins -= RECORD_CONTRACT_COST;
-  recordContractArmed = true;
-  saveSessions();
-  refreshShopView();
-  showToast('Contrato activo: superá tu récord de vueltas');
 }
 
 function claimDailyChallengeBonus() {
@@ -546,6 +512,7 @@ function claimDailyChallengeBonus() {
 }
 
 function refreshShopView() {
+  const todayISO = getTodayISO();
   const coinsEl = document.getElementById('shop-coins');
   const freezeCountEl = document.getElementById('shop-freeze-count');
   const buyFreezeBtn = document.getElementById('btn-buy-freeze');
@@ -557,7 +524,10 @@ function refreshShopView() {
   if (buyFreezeBtn && buyFreezeLabel) {
     if (streakFreezes >= MAX_FREEZES) {
       buyFreezeBtn.disabled = true;
-      buyFreezeLabel.textContent = `Protector de racha · Máximo (${MAX_FREEZES}/${MAX_FREEZES})`;
+      buyFreezeLabel.textContent = `Protector de racha · Bloqueado (${MAX_FREEZES}/${MAX_FREEZES})`;
+    } else if (lastFreezePurchaseDate === todayISO) {
+      buyFreezeBtn.disabled = true;
+      buyFreezeLabel.textContent = 'Protector de racha · Límite 1 por día alcanzado';
     } else if (coins < FREEZE_COST) {
       buyFreezeBtn.disabled = true;
       buyFreezeLabel.textContent = `Protector de racha · ${FREEZE_COST} monedas (faltan ${FREEZE_COST - coins})`;
@@ -567,41 +537,6 @@ function refreshShopView() {
     }
   }
 
-  const doubleBtn = document.getElementById('btn-buy-double-coins');
-  const doubleLabel = document.getElementById('buy-double-coins-label');
-  const doubleStatus = document.getElementById('shop-double-coins-status');
-  if (doubleStatus) doubleStatus.textContent = doubleCoinsArmed ? 'ON' : 'OFF';
-  if (doubleBtn && doubleLabel) {
-    if (doubleCoinsArmed) {
-      doubleBtn.disabled = true;
-      doubleLabel.textContent = 'Doble moneda (próximo entreno) · Activo';
-    } else if (coins < DOUBLE_COINS_COST) {
-      doubleBtn.disabled = true;
-      doubleLabel.textContent = `Doble moneda (próximo entreno) · ${DOUBLE_COINS_COST} monedas (faltan ${DOUBLE_COINS_COST - coins})`;
-    } else {
-      doubleBtn.disabled = false;
-      doubleLabel.textContent = `Doble moneda (próximo entreno) · ${DOUBLE_COINS_COST} monedas`;
-    }
-  }
-
-  const contractBtn = document.getElementById('btn-buy-record-contract');
-  const contractLabel = document.getElementById('buy-record-contract-label');
-  const contractStatus = document.getElementById('shop-record-contract-status');
-  if (contractStatus) contractStatus.textContent = recordContractArmed ? 'ON' : 'OFF';
-  if (contractBtn && contractLabel) {
-    if (recordContractArmed) {
-      contractBtn.disabled = true;
-      contractLabel.textContent = `Contrato de récord (+${RECORD_CONTRACT_PAYOUT}) · Activo`;
-    } else if (coins < RECORD_CONTRACT_COST) {
-      contractBtn.disabled = true;
-      contractLabel.textContent = `Contrato de récord (+${RECORD_CONTRACT_PAYOUT}) · ${RECORD_CONTRACT_COST} monedas (faltan ${RECORD_CONTRACT_COST - coins})`;
-    } else {
-      contractBtn.disabled = false;
-      contractLabel.textContent = `Contrato de récord (+${RECORD_CONTRACT_PAYOUT}) · ${RECORD_CONTRACT_COST} monedas`;
-    }
-  }
-
-  const todayISO = getTodayISO();
   const challenge = getDailyChallengeForDate(todayISO);
   const numEl = document.getElementById('daily-challenge-number');
   const targetEl = document.getElementById('daily-challenge-target');
@@ -909,34 +844,18 @@ function selectEffort(effort) {
   });
 }
 
-function applySessionRewards(dateISO, rounds, previousBestRounds) {
+function applySessionRewards(dateISO, rounds) {
   const todayISO = getTodayISO();
-  let earned = 0;
-
   if (dateISO === todayISO && rounds > 0 && !rewardedDates.includes(todayISO)) {
-    const baseReward = doubleCoinsArmed ? DAILY_COINS_REWARD * 2 : DAILY_COINS_REWARD;
-    earned += baseReward;
-    doubleCoinsArmed = false;
+    coins += DAILY_COINS_REWARD;
     rewardedDates.push(todayISO);
-  }
-
-  if (recordContractArmed && rounds > 0) {
-    if (rounds > previousBestRounds) {
-      earned += RECORD_CONTRACT_PAYOUT;
-    }
-    recordContractArmed = false;
-  }
-
-  if (earned > 0) {
-    coins += earned;
-    return ` (+${earned} monedas)`;
+    return ` (+${DAILY_COINS_REWARD} monedas)`;
   }
   return '';
 }
 
 function saveTodaySession() {
   const today = getTodayISO();
-  const previousBestRounds = sessions.reduce((max, s) => Math.max(max, Number(s.rounds) || 0), 0);
   const idx = sessions.findIndex(s => s.date === today);
   const record = {
     date: today,
@@ -949,7 +868,7 @@ function saveTodaySession() {
     if (idx >= 0) sessions[idx] = record;
     else sessions.push(record);
 
-    const rewardMsg = applySessionRewards(today, currentRounds, previousBestRounds);
+    const rewardMsg = applySessionRewards(today, currentRounds);
     saveSessions();
     refreshProgressView();
     refreshShopView();
@@ -2086,7 +2005,6 @@ function adjustModalRounds(delta) {
 function handleManualSessionSubmit(e) {
   e.preventDefault();
   const todayISO = getTodayISO();
-  const previousBestRounds = sessions.reduce((max, s) => Math.max(max, Number(s.rounds) || 0), 0);
   const dateEl = document.getElementById('modal-date');
   const roundsEl = document.getElementById('modal-rounds');
   const effortEl = document.getElementById('modal-effort');
@@ -2106,7 +2024,7 @@ function handleManualSessionSubmit(e) {
   if (idx >= 0) sessions[idx] = record;
   else sessions.push(record);
 
-  const rewardMsg = applySessionRewards(date, rounds, previousBestRounds);
+  const rewardMsg = applySessionRewards(date, rounds);
   saveSessions();
   closeSessionModal();
   refreshProgressView();
@@ -2158,8 +2076,7 @@ function importProgressJSON(event) {
         coins = Math.max(0, baseCoins > 0 ? baseCoins : (legacyDaily + legacyEpic));
 
         streakFreezes = Math.max(0, Math.min(MAX_FREEZES, Number(imported.streakFreezes) || 0));
-        doubleCoinsArmed = Boolean(imported.doubleCoinsArmed);
-        recordContractArmed = Boolean(imported.recordContractArmed);
+        lastFreezePurchaseDate = typeof imported.lastFreezePurchaseDate === 'string' ? imported.lastFreezePurchaseDate : null;
         frozenDates = Array.isArray(imported.frozenDates)
           ? Array.from(new Set(imported.frozenDates.filter(d => typeof d === 'string')))
           : [];
