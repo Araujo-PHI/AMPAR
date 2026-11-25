@@ -1,6 +1,6 @@
 # KORA
 
-![AMRAP Banner](https://github.com/user-attachments/assets/642ae1ef-d6d9-4dea-a9da-6b21452fbe3e)
+![AMRAP Banner](https://github.com/user-attachments/assets/ffb1cdc7-d8aa-4733-b138-17a22b00921e)
 
 **AMRAP** (*As Many Rounds As Possible* / *As Many Reps As Possible*) significa **"tantas rondas como sea posible"** o **"tantas repeticiones como sea posible"**.
 
