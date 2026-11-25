@@ -163,7 +163,7 @@ const DAILY_EXERCISES = [
 ];
 
 const VIEWS_ORDER = ['timer', 'exercises', 'progress', 'shop'];
-const STORAGE_KEY = 'amrap_13yo_mobile_v2';
+const STORAGE_KEY = 'kora_13yo_mobile_v2';
 const TOTAL_SECONDS = 20 * 60;
 const DAILY_COINS_REWARD = 10;
 const DAILY_CHALLENGE_BONUS = 5;
@@ -364,7 +364,7 @@ function normalizeSessionItem(item) {
 
 function loadSessions() {
   try {
-    const raw = localStorage.getItem(STORAGE_KEY) || localStorage.getItem('amrap_13yo_progress_v1');
+    const raw = localStorage.getItem(STORAGE_KEY) || localStorage.getItem('kora_13yo_progress_v1');
     if (raw) {
       const parsed = JSON.parse(raw);
       if (Array.isArray(parsed)) {
@@ -1827,11 +1827,11 @@ function renderStreakCanvas(canvas, styleIndex = selectedStreakStyleIndex) {
   ctx.textBaseline = 'alphabetic';
   ctx.fillStyle = palette.fg;
   ctx.font = 'bold 34px Arimo, sans-serif';
-  ctx.fillText('AMRAP', 88, 114);
+  ctx.fillText('KORA', 88, 114);
 
   ctx.fillStyle = palette.fg;
   ctx.font = 'bold 24px Arimo, sans-serif';
-  ctx.fillText('araujo-phi.github.io/AMRAP', 88, 152);
+  ctx.fillText('araujo-phi.github.io/KORA', 88, 152);
 
   const calSize = 310;
   const calCenterY = 495;
@@ -1882,7 +1882,7 @@ function downloadStreakPreviewImage() {
       return;
     }
 
-    const fileName = `racha-amrap-${currentStreak}d-e${selectedStreakStyleIndex + 1}-${todayISO}.png`;
+    const fileName = `racha-kora-${currentStreak}d-e${selectedStreakStyleIndex + 1}-${todayISO}.png`;
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
@@ -1905,14 +1905,14 @@ function confirmShareStreakImage() {
       return;
     }
 
-    const fileName = `racha-amrap-${currentStreak}d-e${selectedStreakStyleIndex + 1}-${todayISO}.png`;
+    const fileName = `racha-kora-${currentStreak}d-e${selectedStreakStyleIndex + 1}-${todayISO}.png`;
     const daysWord = currentStreak === 1 ? 'día' : 'días';
     const shareText =
-      `¡Sumate a entrenar con *AMRAP*!\n` +
+      `¡Sumate a entrenar con *KORA*!\n` +
       `Ya van *${currentStreak} ${daysWord}* de racha con bloques de *20 minutos*,\n` +
       `contador de vueltas, guía de ejercicios y seguimiento diario.\n` +
       `Probá la app acá:\n` +
-      `https://araujo-phi.github.io/AMRAP`;
+      `https://araujo-phi.github.io/KORA`;
 
     let canShareFile = false;
     let file = null;
@@ -1930,7 +1930,7 @@ function confirmShareStreakImage() {
 
     if (canShareFile && file) {
       navigator.share({
-        title: 'AMRAP',
+        title: 'KORA',
         text: shareText,
         files: [file]
       }).catch(err => {
@@ -2073,7 +2073,7 @@ function exportProgressJSON() {
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
   a.href = url;
-  a.download = `progreso-amrap-${getTodayISO()}.json`;
+  a.download = `progreso-kora-${getTodayISO()}.json`;
   document.body.appendChild(a);
   a.click();
   document.body.removeChild(a);
