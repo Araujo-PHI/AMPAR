@@ -9,6 +9,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Arimo:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet" />
   <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script>
     tailwind.config = {
       theme: {
@@ -58,8 +59,15 @@
 <body class="bg-purewhite text-pureblack min-h-screen pb-24">
 
   <header class="sticky top-0 z-30 bg-purewhite border-b-2 border-pureblack">
-    <div class="max-w-xl mx-auto px-4 h-14 flex items-center justify-center sm:justify-between">
-      <span class="px-2.5 py-1 bg-pureblack text-purewhite text-xs font-bold uppercase tracking-wider">AMRAP</span>
+    <div class="max-w-xl mx-auto px-4 h-14 flex items-center justify-between gap-2">
+      <span class="px-2.5 py-1 bg-pureblack text-purewhite text-xs font-bold uppercase tracking-wider shrink-0">AMRAP</span>
+      <div class="flex items-center gap-2 min-w-0">
+        <span id="auth-status-label" class="text-[11px] font-bold uppercase text-neutral-600 truncate">Local</span>
+        <button id="btn-auth-action" type="button" onclick="handleAuthButtonClick()"
+          class="min-h-[34px] px-2.5 border-2 border-pureblack bg-purewhite text-pureblack text-[11px] font-bold uppercase whitespace-nowrap shrink-0 btn-press">
+          Google
+        </button>
+      </div>
     </div>
   </header>
 
@@ -112,9 +120,9 @@
           <span id="round-status-hint" class="px-2.5 py-0.5 border border-pureblack text-xs font-bold tabular-nums">0/6</span>
         </div>
 
-        <div class="flex items-center justify-between gap-2 sm:gap-3">
+        <div class="flex items-center justify-between gap-3">
           <button type="button" onclick="changeRounds(-1)" aria-label="Restar vuelta"
-            class="w-14 sm:w-16 h-14 sm:h-16 border-2 border-pureblack bg-purewhite text-pureblack text-3xl font-bold flex items-center justify-center shrink-0 btn-press">
+            class="w-16 h-16 border-2 border-pureblack bg-purewhite text-pureblack text-3xl font-bold flex items-center justify-center shrink-0 btn-press">
             -
           </button>
 
@@ -123,8 +131,8 @@
           </div>
 
           <button id="btn-add-round" type="button" onclick="changeRounds(1)" aria-label="Sumar vuelta"
-            class="min-h-[56px] sm:min-h-[64px] px-3 sm:px-4 border-2 border-pureblack bg-pureblack text-purewhite text-xs sm:text-sm font-bold uppercase tracking-wide whitespace-nowrap flex items-center justify-center shrink-0 btn-press">
-            +1 Vuelta
+            class="w-16 h-16 border-2 border-pureblack bg-pureblack text-purewhite text-3xl font-bold flex items-center justify-center shrink-0 btn-press">
+            +
           </button>
         </div>
 
