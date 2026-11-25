@@ -163,12 +163,15 @@ const DAILY_EXERCISES = [
 ];
 
 const VIEWS_ORDER = ['timer', 'exercises', 'progress', 'shop'];
-const STORAGE_KEY = 'kora_13yo_mobile_v2';
+const STORAGE_KEY = 'amrap_13yo_mobile_v2';
 const TOTAL_SECONDS = 20 * 60;
 const DAILY_COINS_REWARD = 10;
 const DAILY_CHALLENGE_BONUS = 5;
 const FREEZE_COST = 100;
 const MAX_FREEZES = 2;
+const STREAK_BOOST_COST = 60;
+const SESSION_BONUS_COST = 25;
+const SESSION_BONUS_REWARD = 15;
 
 let currentViewName = 'timer';
 let timerSecondsLeft = TOTAL_SECONDS;
@@ -189,10 +192,11 @@ let selectedStreakStyleIndex = 0;
 let sessions = [];
 let coins = 0;
 let streakFreezes = 0;
+let streakBoostDays = 0;
+let sessionBonusArmed = false;
 let frozenDates = [];
 let rewardedDates = [];
 let claimedChallengeDates = [];
-let unlockedPerks = [];
 let challengeQueue = [];
 let challengeAssignments = {};
 
@@ -364,7 +368,7 @@ function normalizeSessionItem(item) {
 
 function loadSessions() {
   try {
-    const raw = localStorage.getItem(STORAGE_KEY) || localStorage.getItem('kora_13yo_progress_v1');
+    const raw = localStorage.getItem(STORAGE_KEY) || localStorage.getItem('amrap_13yo_progress_v1');
     if (raw) {
       const parsed = JSON.parse(raw);
       if (Array.isArray(parsed)) {
@@ -379,6 +383,8 @@ function loadSessions() {
         coins = Math.max(0, baseCoins > 0 ? baseCoins : (legacyDaily + legacyEpic));
 
         streakFreezes = Math.max(0, Math.min(MAX_FREEZES, Number(parsed.streakFreezes) || 0));
+        streakBoostDays = Math.max(0, Number(parsed.streakBoostDays) || 0);
+        sessionBonusArmed = Boolean(parsed.sessionBonusArmed);
         frozenDates = Array.isArray(parsed.frozenDates)
           ? Array.from(new Set(parsed.frozenDates.filter(d => typeof d === 'string')))
           : [];
@@ -388,10 +394,6 @@ function loadSessions() {
         claimedChallengeDates = Array.isArray(parsed.claimedChallengeDates)
           ? Array.from(new Set(parsed.claimedChallengeDates.filter(d => typeof d === 'string')))
           : [];
-        const perksSource = Array.isArray(parsed.unlockedPerks)
-          ? parsed.unlockedPerks
-          : (Array.isArray(parsed.unlockedEpicPerks) ? parsed.unlockedEpicPerks : []);
-        unlockedPerks = Array.from(new Set(perksSource.filter(p => typeof p === 'string' && p !== 'frame')));
 
         challengeQueue = Array.isArray(parsed.challengeQueue)
           ? parsed.challengeQueue.filter(id => DAILY_EXERCISES.some(ex => ex.id === id))
@@ -405,10 +407,11 @@ function loadSessions() {
     sessions = [];
     coins = 0;
     streakFreezes = 0;
+    streakBoostDays = 0;
+    sessionBonusArmed = false;
     frozenDates = [];
     rewardedDates = [];
     claimedChallengeDates = [];
-    unlockedPerks = [];
     challengeQueue = [];
     challengeAssignments = {};
   }
@@ -419,10 +422,11 @@ function buildStatePayload() {
     sessions,
     coins,
     streakFreezes,
+    streakBoostDays,
+    sessionBonusArmed,
     frozenDates,
     rewardedDates,
     claimedChallengeDates,
-    unlockedPerks,
     challengeQueue,
     challengeAssignments
   };
@@ -493,21 +497,35 @@ function buyStreakFreeze() {
   showToast(`Protector comprado (${streakFreezes}/${MAX_FREEZES})`);
 }
 
-function buyReward(perkId, cost) {
-  if (unlockedPerks.includes(perkId)) {
-    showToast('Ya desbloqueado');
-    return;
-  }
-  if (coins < cost) {
-    showToast(`Faltan ${cost - coins} monedas`);
+function buyStreakBoost() {
+  if (coins < STREAK_BOOST_COST) {
+    showToast(`Faltan ${STREAK_BOOST_COST - coins} monedas`);
     return;
   }
 
-  coins -= cost;
-  unlockedPerks.push(perkId);
+  coins -= STREAK_BOOST_COST;
+  streakBoostDays += 1;
+  saveSessions();
+  refreshProgressView();
+  refreshShopView();
+  showToast('+1 día sumado a tu racha');
+}
+
+function buySessionBonus() {
+  if (sessionBonusArmed) {
+    showToast('Ya tenés el bonus activo');
+    return;
+  }
+  if (coins < SESSION_BONUS_COST) {
+    showToast(`Faltan ${SESSION_BONUS_COST - coins} monedas`);
+    return;
+  }
+
+  coins -= SESSION_BONUS_COST;
+  sessionBonusArmed = true;
   saveSessions();
   refreshShopView();
-  showToast('Extra desbloqueado');
+  showToast(`Bonus +${SESSION_BONUS_REWARD} listo para tu próxima sesión`);
 }
 
 function claimDailyChallengeBonus() {
@@ -528,29 +546,54 @@ function claimDailyChallengeBonus() {
 function refreshShopView() {
   const coinsEl = document.getElementById('shop-coins');
   const freezeCountEl = document.getElementById('shop-freeze-count');
-  const buyBtn = document.getElementById('btn-buy-freeze');
-  const buyLabel = document.getElementById('buy-freeze-label');
+  const buyFreezeBtn = document.getElementById('btn-buy-freeze');
+  const buyFreezeLabel = document.getElementById('buy-freeze-label');
 
   if (coinsEl) coinsEl.textContent = coins;
   if (freezeCountEl) freezeCountEl.textContent = `${streakFreezes}/${MAX_FREEZES}`;
 
-  if (buyBtn && buyLabel) {
+  if (buyFreezeBtn && buyFreezeLabel) {
     if (streakFreezes >= MAX_FREEZES) {
-      buyBtn.disabled = true;
-      buyLabel.textContent = `Protector · Máximo (${MAX_FREEZES}/${MAX_FREEZES})`;
+      buyFreezeBtn.disabled = true;
+      buyFreezeLabel.textContent = `Protector de racha · Máximo (${MAX_FREEZES}/${MAX_FREEZES})`;
     } else if (coins < FREEZE_COST) {
-      buyBtn.disabled = true;
-      buyLabel.textContent = `Protector · ${FREEZE_COST} monedas (faltan ${FREEZE_COST - coins})`;
+      buyFreezeBtn.disabled = true;
+      buyFreezeLabel.textContent = `Protector de racha · ${FREEZE_COST} monedas (faltan ${FREEZE_COST - coins})`;
     } else {
-      buyBtn.disabled = false;
-      buyLabel.textContent = `Protector de racha · ${FREEZE_COST} monedas`;
+      buyFreezeBtn.disabled = false;
+      buyFreezeLabel.textContent = `Protector de racha · ${FREEZE_COST} monedas`;
     }
   }
 
-  const chimeBtn = document.getElementById('btn-buy-epic-chime');
-  if (chimeBtn) {
-    chimeBtn.disabled = unlockedPerks.includes('chime') || coins < 30;
-    chimeBtn.textContent = unlockedPerks.includes('chime') ? 'Activo' : '30 Monedas';
+  const boostBtn = document.getElementById('btn-buy-streak-boost');
+  const boostLabel = document.getElementById('buy-streak-boost-label');
+  const boostCount = document.getElementById('shop-streak-boost-count');
+  if (boostCount) boostCount.textContent = `+${streakBoostDays}d`;
+  if (boostBtn && boostLabel) {
+    if (coins < STREAK_BOOST_COST) {
+      boostBtn.disabled = true;
+      boostLabel.textContent = `Impulso de racha (+1 día) · ${STREAK_BOOST_COST} monedas (faltan ${STREAK_BOOST_COST - coins})`;
+    } else {
+      boostBtn.disabled = false;
+      boostLabel.textContent = `Impulso de racha (+1 día) · ${STREAK_BOOST_COST} monedas`;
+    }
+  }
+
+  const bonusBtn = document.getElementById('btn-buy-session-bonus');
+  const bonusLabel = document.getElementById('buy-session-bonus-label');
+  const bonusStatus = document.getElementById('shop-session-bonus-status');
+  if (bonusStatus) bonusStatus.textContent = sessionBonusArmed ? 'ON' : 'OFF';
+  if (bonusBtn && bonusLabel) {
+    if (sessionBonusArmed) {
+      bonusBtn.disabled = true;
+      bonusLabel.textContent = `Bonus próxima sesión (+${SESSION_BONUS_REWARD}) · Activo`;
+    } else if (coins < SESSION_BONUS_COST) {
+      bonusBtn.disabled = true;
+      bonusLabel.textContent = `Bonus próxima sesión (+${SESSION_BONUS_REWARD}) · ${SESSION_BONUS_COST} monedas (faltan ${SESSION_BONUS_COST - coins})`;
+    } else {
+      bonusBtn.disabled = false;
+      bonusLabel.textContent = `Bonus próxima sesión (+${SESSION_BONUS_REWARD}) · ${SESSION_BONUS_COST} monedas`;
+    }
   }
 
   const todayISO = getTodayISO();
@@ -658,9 +701,8 @@ function playSoftFinishAlert() {
     const AudioCtx = window.AudioContext || window.webkitAudioContext;
     if (!AudioCtx) return;
     const ctx = new AudioCtx();
-    const hasExtraChime = unlockedPerks.includes('chime');
-    const freqs = hasExtraChime ? [440, 554.37, 659.25, 880] : [440, 554.37, 659.25];
-    const duration = hasExtraChime ? 0.85 : 0.55;
+    const freqs = [440, 554.37, 659.25];
+    const duration = 0.55;
 
     freqs.forEach((f, i) => {
       const osc = ctx.createOscillator();
@@ -878,6 +920,11 @@ function applySessionRewards(dateISO, rounds, previousBestRounds) {
 
   if ((selectedEffort === 'Fuerte' || selectedEffort === 'A tope') && rounds > 0) {
     earned += 5;
+  }
+
+  if (sessionBonusArmed && rounds > 0) {
+    earned += SESSION_BONUS_REWARD;
+    sessionBonusArmed = false;
   }
 
   if (earned > 0) {
@@ -1553,7 +1600,11 @@ function calculateStreaks() {
   const activeSet = new Set([...trainedSet, ...frozenSet]);
 
   if (activeSet.size === 0) {
-    return { currentStreak: 0, bestStreak: 0, totalTrainedDays: trainedSet.size };
+    return {
+      currentStreak: streakBoostDays,
+      bestStreak: streakBoostDays,
+      totalTrainedDays: trainedSet.size
+    };
   }
 
   const sortedDays = Array.from(activeSet).map(isoToDayNumber).sort((a, b) => a - b);
@@ -1585,7 +1636,11 @@ function calculateStreaks() {
     }
   }
 
-  return { currentStreak, bestStreak, totalTrainedDays: trainedSet.size };
+  return {
+    currentStreak: currentStreak + streakBoostDays,
+    bestStreak: bestStreak + streakBoostDays,
+    totalTrainedDays: trainedSet.size
+  };
 }
 
 function buildMonthWeeks(year, monthIndex) {
@@ -1743,16 +1798,20 @@ function getStreakPalette(styleIndex) {
     return {
       bg: '#000000',
       fg: '#FFFFFF',
-      framed: true,
-      fillCalendar: true
+      calendarBg: '#121212',
+      calendarHeader: '#383838',
+      calendarText: '#FFFFFF',
+      framed: true
     };
   }
 
   return {
     bg: '#FFFFFF',
     fg: '#000000',
-    framed: true,
-    fillCalendar: false
+    calendarBg: '#FFFFFF',
+    calendarHeader: '#000000',
+    calendarText: '#000000',
+    framed: true
   };
 }
 
@@ -1765,40 +1824,50 @@ function drawCalendarWithStreakNumber(ctx, cx, cy, size, streakNumber, palette) 
   ctx.lineCap = 'round';
   ctx.lineJoin = 'round';
 
-  if (palette.fillCalendar) {
-    ctx.fillStyle = palette.fg;
-    ctx.fillRect(x, y, size, size);
-  } else {
-    ctx.fillStyle = palette.bg;
-    ctx.fillRect(x, y, size, size);
-    ctx.strokeStyle = palette.fg;
-    ctx.lineWidth = 10;
-    ctx.strokeRect(x, y, size, size);
-  }
+  ctx.fillStyle = palette.calendarBg;
+  ctx.fillRect(x, y, size, size);
 
-  const stripColor = palette.fillCalendar ? palette.bg : palette.fg;
-  ctx.fillStyle = stripColor;
+  ctx.fillStyle = palette.calendarHeader;
   ctx.fillRect(x, y, size, headerH);
 
   ctx.strokeStyle = palette.fg;
   ctx.lineWidth = 10;
+  ctx.strokeRect(x, y, size, size);
+
   ctx.beginPath();
-  ctx.moveTo(x + size * 0.28, y - 22);
-  ctx.lineTo(x + size * 0.28, y + 6);
-  ctx.moveTo(x + size * 0.72, y - 22);
-  ctx.lineTo(x + size * 0.72, y + 6);
+  ctx.moveTo(x, y + headerH);
+  ctx.lineTo(x + size, y + headerH);
+  ctx.stroke();
+
+  ctx.fillStyle = palette.bg;
+  ctx.beginPath();
+  ctx.moveTo(x + size * 0.28 - 5, y - 22);
+  ctx.lineTo(x + size * 0.28 + 5, y - 22);
+  ctx.lineTo(x + size * 0.28 + 5, y + 6);
+  ctx.lineTo(x + size * 0.28 - 5, y + 6);
+  ctx.closePath();
+  ctx.fill();
+  ctx.stroke();
+
+  ctx.beginPath();
+  ctx.moveTo(x + size * 0.72 - 5, y - 22);
+  ctx.lineTo(x + size * 0.72 + 5, y - 22);
+  ctx.lineTo(x + size * 0.72 + 5, y + 6);
+  ctx.lineTo(x + size * 0.72 - 5, y + 6);
+  ctx.closePath();
+  ctx.fill();
   ctx.stroke();
 
   const bodyTop = y + headerH;
   const bodyCenterY = bodyTop + (size - headerH) * 0.54;
   const digits = String(streakNumber);
   const numSize =
-    digits.length >= 4 ? Math.round(size * 0.28) :
-    digits.length === 3 ? Math.round(size * 0.34) :
-    digits.length === 2 ? Math.round(size * 0.42) :
-    Math.round(size * 0.48);
+    digits.length >= 4 ? Math.round(size * 0.26) :
+    digits.length === 3 ? Math.round(size * 0.32) :
+    digits.length === 2 ? Math.round(size * 0.40) :
+    Math.round(size * 0.46);
 
-  ctx.fillStyle = palette.fillCalendar ? palette.bg : palette.fg;
+  ctx.fillStyle = palette.calendarText;
   ctx.font = `bold ${numSize}px Arimo, sans-serif`;
   ctx.textAlign = 'center';
   ctx.textBaseline = 'middle';
@@ -1827,19 +1896,18 @@ function renderStreakCanvas(canvas, styleIndex = selectedStreakStyleIndex) {
   ctx.textBaseline = 'alphabetic';
   ctx.fillStyle = palette.fg;
   ctx.font = 'bold 34px Arimo, sans-serif';
-  ctx.fillText('KORA', 88, 114);
+  ctx.fillText('KORA', 96, 122);
 
-  ctx.fillStyle = palette.fg;
   ctx.font = 'bold 24px Arimo, sans-serif';
-  ctx.fillText('araujo-phi.github.io/KORA', 88, 152);
+  ctx.fillText('araujo-phi.github.io/KORA', 96, 160);
 
   const calSize = 310;
   const calCenterY = 495;
   drawCalendarWithStreakNumber(ctx, canvas.width / 2, calCenterY, calSize, currentStreak, palette);
 
   const streakPhrase = currentStreak === 1
-    ? '1 dia de racha entrenando'
-    : `${currentStreak} dias de racha entrenando`;
+    ? '1 día de racha entrenando'
+    : `${currentStreak} días de racha entrenando`;
 
   ctx.fillStyle = palette.fg;
   ctx.font = 'bold 42px Arimo, sans-serif';
@@ -1849,7 +1917,7 @@ function renderStreakCanvas(canvas, styleIndex = selectedStreakStyleIndex) {
   ctx.fillStyle = palette.fg;
   ctx.font = 'bold 26px Arimo, sans-serif';
   ctx.textAlign = 'left';
-  ctx.fillText(formatDisplayDate(todayISO), 88, canvas.height - 82);
+  ctx.fillText(formatDisplayDate(todayISO), 96, canvas.height - 92);
 }
 
 function selectStreakStyle(styleIndex) {
@@ -2098,6 +2166,8 @@ function importProgressJSON(event) {
         coins = Math.max(0, baseCoins > 0 ? baseCoins : (legacyDaily + legacyEpic));
 
         streakFreezes = Math.max(0, Math.min(MAX_FREEZES, Number(imported.streakFreezes) || 0));
+        streakBoostDays = Math.max(0, Number(imported.streakBoostDays) || 0);
+        sessionBonusArmed = Boolean(imported.sessionBonusArmed);
         frozenDates = Array.isArray(imported.frozenDates)
           ? Array.from(new Set(imported.frozenDates.filter(d => typeof d === 'string')))
           : [];
@@ -2107,10 +2177,6 @@ function importProgressJSON(event) {
         claimedChallengeDates = Array.isArray(imported.claimedChallengeDates)
           ? Array.from(new Set(imported.claimedChallengeDates.filter(d => typeof d === 'string')))
           : [];
-        const perksSource = Array.isArray(imported.unlockedPerks)
-          ? imported.unlockedPerks
-          : (Array.isArray(imported.unlockedEpicPerks) ? imported.unlockedEpicPerks : []);
-        unlockedPerks = Array.from(new Set(perksSource.filter(p => typeof p === 'string' && p !== 'frame')));
 
         challengeQueue = Array.isArray(imported.challengeQueue)
           ? imported.challengeQueue.filter(id => DAILY_EXERCISES.some(ex => ex.id === id))
