@@ -109,70 +109,58 @@ const EXERCISES = [
   }
 ];
 
-// Más de 60 ejercicios diarios diferentes con su animación de referencia
+// Exactamente 50 ejercicios bonus diarios
 const DAILY_EXERCISES = [
-  { anim: 'squat', title: 'Sentadilla con pausa abajo', target: '3 x 10 reps', desc: 'Bajá en 3 segundos, quedate 1 segundo abajo y subí firme.' },
-  { anim: 'pushup', title: 'Flexiones cerradas', target: '3 x 6 reps', desc: 'Manos más juntas que los hombros y codos cerca del cuerpo.' },
-  { anim: 'russian_twist', title: 'Toques de talón en suelo', target: '3 x 20 toques', desc: 'Acostado boca arriba con rodillas flexionadas, tocá un talón y el otro.' },
-  { anim: 'shoulder_press', title: 'Press lento con 1 kg', target: '3 x 12 reps', desc: 'Subí las mancuernas en 2 segundos y bajalas en 3 segundos.' },
-  { anim: 'pushup', title: 'Plancha frontal firme', target: '3 x 30 seg', desc: 'Apoyá antebrazos y puntas de pie con abdomen y glúteos apretados.' },
-  { anim: 'soccer_zigzag', title: 'Slalom corto con pelota', target: '6 pasadas', desc: 'Toques cortos alternando borde interno y externo.' },
-  { anim: 'squat', title: 'Zancadas alternas al frente', target: '3 x 8 por pierna', desc: 'Paso al frente, bajá controlado y volvé empujando.' },
-  { anim: 'russian_twist', title: 'Puente de glúteos', target: '3 x 15 reps', desc: 'Boca arriba con pies apoyados, subí la cadera y apretá arriba.' },
-  { anim: 'shoulder_press', title: 'Elevación lateral con 1 kg', target: '3 x 12 reps', desc: 'Subí los brazos hasta los hombros sin encoger el cuello.' },
-  { anim: 'pushup', title: 'Escaladores controlados', target: '3 x 20 pasos', desc: 'En plancha alta, llevá una rodilla al pecho y luego la otra.' },
-  { anim: 'squat', title: 'Zancada atrás alterna', target: '3 x 8 por lado', desc: 'Llevá un pie atrás y bajá vertical manteniendo el torso estable.' },
-  { anim: 'pushup', title: 'Flexiones con rodillas apoyadas', target: '3 x 10 reps', desc: 'Cuerpo alineado de rodillas a cabeza, pecho cerca del piso.' },
-  { anim: 'bird_dog', title: 'Bicho muerto (Dead Bug)', target: '3 x 8 por lado', desc: 'Boca arriba, extendé brazo y pierna contrarios sin arquear.' },
-  { anim: 'soccer_zigzag', title: 'Pases rápidos entre pies', target: '3 x 30 seg', desc: 'Pasá la pelota de un pie al otro manteniendo el ritmo.' },
-  { anim: 'squat', title: 'Sentadilla sumo abierta', target: '3 x 12 reps', desc: 'Pies bien separados con puntas afuera, bajá recto.' },
-  { anim: 'pushup', title: 'Fondos en borde de silla', target: '3 x 8 reps', desc: 'Manos en el borde, bajá flexionando codos y empujá.' },
-  { anim: 'bird_dog', title: 'Plancha lateral por lado', target: '3 x 20 seg/lado', desc: 'Cadera arriba formando una línea recta con el tronco.' },
-  { anim: 'shoulder_press', title: 'Vuelos frontales con 1 kg', target: '3 x 12 reps', desc: 'Subí las mancuernas al frente hasta la altura de los hombros.' },
-  { anim: 'squat', title: 'Saltos suaves en el lugar', target: '4 x 25 saltos', desc: 'Caé suave en punta de pie amortiguando con rodillas.' },
-  { anim: 'soccer_zigzag', title: 'Pisa-pelota alterno', target: '3 x 20 toques', desc: 'Tocá arriba de la pelota alternando plantas de pie.' },
-  { anim: 'squat', title: 'Sentadilla en pared', target: '3 x 35 seg', desc: 'Espalda apoyada en la pared y muslos paralelos al suelo.' },
-  { anim: 'pushup', title: 'Flexiones con pausa abajo', target: '3 x 6 reps', desc: 'Sostené 1 segundo abajo antes de empujar arriba.' },
-  { anim: 'russian_twist', title: 'Crunches cortos', target: '3 x 15 reps', desc: 'Despegá apenas los omóplatos sin tirar del cuello.' },
-  { anim: 'shoulder_press', title: 'Press rotado con 1 kg', target: '3 x 10 reps', desc: 'Rotá las palmas al empujar arriba y volvé al inicio.' },
-  { anim: 'bird_dog', title: 'Perro pájaro con pausa', target: '3 x 5 por lado', desc: 'Sostené 2 segundos brazo y pierna extendidos sin girar.' },
-  { anim: 'soccer_zigzag', title: 'Conducción pie izquierdo', target: '4 idas y vueltas', desc: 'Llevá y traé la pelota usando solo el pie izquierdo.' },
-  { anim: 'soccer_zigzag', title: 'Conducción pie derecho', target: '4 idas y vueltas', desc: 'Llevá y traé la pelota usando solo el pie derecho.' },
-  { anim: 'squat', title: 'Sentadilla + puntas de pie', target: '3 x 10 reps', desc: 'Al subir de la sentadilla, elevá talones.' },
-  { anim: 'pushup', title: 'Flexiones pies elevados', target: '3 x 6 reps', desc: 'Pies sobre un escalón bajo con abdomen firme.' },
-  { anim: 'russian_twist', title: 'Giros rusos con pausa', target: '3 x 12 giros', desc: 'Marcá 1 segundo a cada lado manteniendo el giro.' },
-  { anim: 'shoulder_press', title: 'Remo inclinado con 1 kg', target: '3 x 12 reps', desc: 'Torso inclinado con espalda recta, llevá codos atrás.' },
-  { anim: 'squat', title: 'Rodillas altas en el lugar', target: '4 x 20 seg', desc: 'Subí rodillas a la altura de la cadera con braceo.' },
-  { anim: 'soccer_zigzag', title: 'Control con muslo y pie', target: '3 x 10 toques', desc: 'Elevá la pelota suave con el muslo y controlá.' },
-  { anim: 'squat', title: 'Sentadilla bajada lenta', target: '3 x 8 reps', desc: 'Bajá contando 4 segundos y subí en 1 segundo.' },
-  { anim: 'pushup', title: 'Plancha con toque de hombro', target: '3 x 12 toques', desc: 'En plancha alta, tocá el hombro contrario sin mover cadera.' },
-  { anim: 'russian_twist', title: 'Elevación de piernas', target: '3 x 10 reps', desc: 'Acostado, subí y bajá piernas sin tocar el suelo.' },
-  { anim: 'shoulder_press', title: 'Press alterno a un brazo', target: '3 x 10 por brazo', desc: 'Empujá un brazo a la vez manteniendo el tronco recto.' },
-  { anim: 'squat', title: 'Puente a una pierna', target: '3 x 8 por pierna', desc: 'Subí la cadera impulsando con un solo pie apoyado.' },
-  { anim: 'soccer_zigzag', title: 'Zigzag con cambio de ritmo', target: '4 pasadas', desc: 'Despacio en los conos y rápido en el tramo recto.' },
-  { anim: 'squat', title: 'Sentadilla con rebote corto', target: '3 x 10 reps', desc: 'Abajo hacé un pequeño rebote controlado y subí.' },
-  { anim: 'pushup', title: 'Flexiones amplias', target: '3 x 8 reps', desc: 'Manos más abiertas que los hombros, pecho firme.' },
-  { anim: 'russian_twist', title: 'Bicicleta abdominal lenta', target: '3 x 16 giros', desc: 'Acercá codo a la rodilla contraria de forma controlada.' },
-  { anim: 'shoulder_press', title: 'Círculos con mancuernas', target: '3 x 15 seg/sentido', desc: 'Brazos abiertos a los costados haciendo círculos cortos.' },
-  { anim: 'squat', title: 'Paso lateral en sentadilla', target: '3 x 8 por lado', desc: 'Desplazate de lado sin subir la cadera en los pasos.' },
-  { anim: 'soccer_zigzag', title: 'Freno con planta del pie', target: '3 x 15 frenos', desc: 'Rodá la pelota suave y frenala pisándola.' },
-  { anim: 'pushup', title: 'Plancha con balanceo', target: '3 x 20 seg', desc: 'Balanceo corto adelante y atrás desde los hombros.' },
-  { anim: 'squat', title: 'Sentadilla + salto suave', target: '3 x 8 reps', desc: 'Bajá controlado y saltá suave cayendo blando.' },
-  { anim: 'pushup', title: 'Flexiones a 90 grados', target: '3 x 8 reps', desc: 'Bajá hasta doblar codos a 90° y subí con control.' },
-  { anim: 'bird_dog', title: 'Superman suave', target: '3 x 10 reps', desc: 'Boca abajo, despegá apenas pecho y piernas sin forzar cuello.' },
-  { anim: 'shoulder_press', title: 'Aguante arriba con 1 kg', target: '3 x 20 seg', desc: 'Sostené las mancuernas arriba con brazos casi extendidos.' },
-  { anim: 'soccer_zigzag', title: 'Conducción en 8', target: '4 vueltas', desc: 'Dibujá el 8 completo rodeando ambos conos.' },
-  { anim: 'squat', title: 'Sentadilla manos en nuca', target: '3 x 10 reps', desc: 'Mantené el pecho alto y la espalda bien derecha.' },
-  { anim: 'bird_dog', title: 'Plancha lateral + pierna', target: '3 x 8 por lado', desc: 'Subí y bajá la pierna de arriba sin bajar la cadera.' },
-  { anim: 'squat', title: 'Toques rápidos de punta', target: '4 x 20 seg', desc: 'Ritmo ágil alternando puntas de pie en el lugar.' },
-  { anim: 'russian_twist', title: 'Giros rusos pies elevados', target: '3 x 10 giros', desc: 'Mantené los pies apenas despegados del suelo si podés.' },
-  { anim: 'pushup', title: 'Flexión + carpa', target: '3 x 6 reps', desc: 'Hacé 1 flexión y llevá la cadera arriba y atrás.' },
-  { anim: 'shoulder_press', title: 'Press sentado con 1 kg', target: '3 x 12 reps', desc: 'Sentado con espalda recta, empujá las mancuernas arriba.' },
-  { anim: 'squat', title: 'Zancada cruzada atrás', target: '3 x 8 por lado', desc: 'Llevá el pie atrás en diagonal y bajá controlado.' },
-  { anim: 'soccer_zigzag', title: 'Toques con borde externo', target: '4 pasadas', desc: 'Conducí girando con el exterior de cada pie.' },
-  { anim: 'russian_twist', title: 'Abdominales en V cortos', target: '3 x 10 reps', desc: 'Acercá rodillas y pecho al mismo tiempo con control.' },
-  { anim: 'bird_dog', title: 'Equilibrio en un pie', target: '3 x 25 seg/pie', desc: 'Mantené el equilibrio en un pie con rodilla semiflexionada.' },
-  { anim: 'pushup', title: 'Flexiones bajada en 3 seg', target: '3 x 6 reps', desc: 'Bajá contando 3 segundos y subí firme.' }
+  { id: 1, anim: 'squat', title: 'Sentadilla con pausa abajo', target: '3 x 10 reps', desc: 'Bajá en 3s, quedate 1s abajo y subí firme.' },
+  { id: 2, anim: 'pushup', title: 'Flexiones cerradas', target: '3 x 6 reps', desc: 'Manos más juntas y codos pegados al cuerpo.' },
+  { id: 3, anim: 'russian_twist', title: 'Toques de talón en suelo', target: '3 x 20 toques', desc: 'Boca arriba con rodillas dobladas, tocá talones.' },
+  { id: 4, anim: 'shoulder_press', title: 'Press lento con 1 kg', target: '3 x 12 reps', desc: 'Subí en 2s y bajá en 3s con control.' },
+  { id: 5, anim: 'pushup', title: 'Plancha frontal firme', target: '3 x 30 seg', desc: 'Antebrazos y puntas de pie, cuerpo recto.' },
+  { id: 6, anim: 'soccer_zigzag', title: 'Slalom corto con pelota', target: '6 pasadas', desc: 'Toques cortos alternando borde interno y externo.' },
+  { id: 7, anim: 'squat', title: 'Zancadas alternas al frente', target: '3 x 8 por pierna', desc: 'Paso al frente, bajá controlado y volvé.' },
+  { id: 8, anim: 'russian_twist', title: 'Puente de glúteos', target: '3 x 15 reps', desc: 'Boca arriba, subí cadera y apretá arriba.' },
+  { id: 9, anim: 'shoulder_press', title: 'Elevación lateral con 1 kg', target: '3 x 12 reps', desc: 'Subí brazos hasta los hombros sin encoger.' },
+  { id: 10, anim: 'pushup', title: 'Escaladores controlados', target: '3 x 20 pasos', desc: 'En plancha alta, llevá rodillas al pecho.' },
+  { id: 11, anim: 'squat', title: 'Zancada atrás alterna', target: '3 x 8 por lado', desc: 'Llevá un pie atrás y bajá manteniendo el torso.' },
+  { id: 12, anim: 'pushup', title: 'Flexiones con rodillas', target: '3 x 10 reps', desc: 'Apoyá rodillas manteniendo línea recta.' },
+  { id: 13, anim: 'bird_dog', title: 'Bicho muerto (Dead Bug)', target: '3 x 8 por lado', desc: 'Extencé brazo y pierna opuestos sin arquear.' },
+  { id: 14, anim: 'soccer_zigzag', title: 'Pases rápidos entre pies', target: '3 x 30 seg', desc: 'Pasá la pelota de un pie al otro con ritmo.' },
+  { id: 15, anim: 'squat', title: 'Sentadilla sumo abierta', target: '3 x 12 reps', desc: 'Pies bien abiertos y puntas afuera, bajá recto.' },
+  { id: 16, anim: 'pushup', title: 'Fondos en borde de silla', target: '3 x 8 reps', desc: 'Bajá flexionando codos y empujá arriba.' },
+  { id: 17, anim: 'bird_dog', title: 'Plancha lateral por lado', target: '3 x 20 seg/lado', desc: 'Cadera arriba en línea recta con el tronco.' },
+  { id: 18, anim: 'shoulder_press', title: 'Vuelos frontales con 1 kg', target: '3 x 12 reps', desc: 'Subí mancuernas al frente hasta los hombros.' },
+  { id: 19, anim: 'squat', title: 'Saltos suaves en el lugar', target: '4 x 25 saltos', desc: 'Caé suave en punta de pie con rodillas blandas.' },
+  { id: 20, anim: 'soccer_zigzag', title: 'Pisa-pelota alterno', target: '3 x 20 toques', desc: 'Tocá arriba de la pelota alternando pies.' },
+  { id: 21, anim: 'squat', title: 'Sentadilla en pared', target: '3 x 35 seg', desc: 'Espalda en pared y muslos paralelos al suelo.' },
+  { id: 22, anim: 'pushup', title: 'Flexiones con pausa abajo', target: '3 x 6 reps', desc: 'Sostené 1s abajo antes de empujar arriba.' },
+  { id: 23, anim: 'russian_twist', title: 'Crunches cortos', target: '3 x 15 reps', desc: 'Despegá apenas los omóplatos sin tirar cuello.' },
+  { id: 24, anim: 'shoulder_press', title: 'Press rotado con 1 kg', target: '3 x 10 reps', desc: 'Rotá palmas al empujar arriba y volvé.' },
+  { id: 25, anim: 'bird_dog', title: 'Perro pájaro con pausa', target: '3 x 5 por lado', desc: 'Sostené 2s brazo y pierna sin girar cadera.' },
+  { id: 26, anim: 'soccer_zigzag', title: 'Conducción pie izquierdo', target: '4 idas y vueltas', desc: 'Conducí ida y vuelta solo con pie izquierdo.' },
+  { id: 27, anim: 'soccer_zigzag', title: 'Conducción pie derecho', target: '4 idas y vueltas', desc: 'Conducí ida y vuelta solo con pie derecho.' },
+  { id: 28, anim: 'squat', title: 'Sentadilla + puntas de pie', target: '3 x 10 reps', desc: 'Al subir de la sentadilla, elevá talones.' },
+  { id: 29, anim: 'pushup', title: 'Flexiones pies elevados', target: '3 x 6 reps', desc: 'Pies en escalón bajo y abdomen firme.' },
+  { id: 30, anim: 'russian_twist', title: 'Giros rusos con pausa', target: '3 x 12 giros', desc: 'Marcá 1s a cada lado manteniendo el giro.' },
+  { id: 31, anim: 'shoulder_press', title: 'Remo inclinado con 1 kg', target: '3 x 12 reps', desc: 'Torso inclinado y espalda recta, llevá codos atrás.' },
+  { id: 32, anim: 'squat', title: 'Rodillas altas en el lugar', target: '4 x 20 seg', desc: 'Subí rodillas a la cadera con buen braceo.' },
+  { id: 33, anim: 'soccer_zigzag', title: 'Control con muslo y pie', target: '3 x 10 toques', desc: 'Elevá la pelota suave con muslo y controlá.' },
+  { id: 34, anim: 'squat', title: 'Sentadilla bajada lenta', target: '3 x 8 reps', desc: 'Bajá en 4 tiempos y subí en 1 tiempo.' },
+  { id: 35, anim: 'pushup', title: 'Plancha toque de hombro', target: '3 x 12 toques', desc: 'Tocá hombro opuesto sin balancear cadera.' },
+  { id: 36, anim: 'russian_twist', title: 'Elevación de piernas', target: '3 x 10 reps', desc: 'Subí y bajá piernas sin tocar el piso.' },
+  { id: 37, anim: 'shoulder_press', title: 'Press alterno a un brazo', target: '3 x 10 por brazo', desc: 'Empujá un brazo a la vez sin inclinarte.' },
+  { id: 38, anim: 'squat', title: 'Puente a una pierna', target: '3 x 8 por pierna', desc: 'Subí la cadera impulsando con un solo pie.' },
+  { id: 39, anim: 'soccer_zigzag', title: 'Zigzag con cambio de ritmo', target: '4 pasadas', desc: 'Lento en conos y rápido en el tramo recto.' },
+  { id: 40, anim: 'squat', title: 'Sentadilla con rebote corto', target: '3 x 10 reps', desc: 'Hacé un pequeño rebote abajo y subí.' },
+  { id: 41, anim: 'pushup', title: 'Flexiones amplias', target: '3 x 8 reps', desc: 'Manos más abiertas que los hombros, pecho firme.' },
+  { id: 42, anim: 'russian_twist', title: 'Bicicleta abdominal lenta', target: '3 x 16 giros', desc: 'Acercá codo a rodilla opuesta con control.' },
+  { id: 43, anim: 'shoulder_press', title: 'Círculos con mancuernas', target: '3 x 15 seg/lado', desc: 'Brazos a los lados haciendo círculos cortos.' },
+  { id: 44, anim: 'squat', title: 'Paso lateral en sentadilla', target: '3 x 8 por lado', desc: 'Desplazate de lado sin subir la cadera.' },
+  { id: 45, anim: 'soccer_zigzag', title: 'Freno con planta del pie', target: '3 x 15 frenos', desc: 'Rodá la pelota suave y frenala pisándola.' },
+  { id: 46, anim: 'pushup', title: 'Plancha con balanceo', target: '3 x 20 seg', desc: 'Balanceo corto adelante y atrás desde hombros.' },
+  { id: 47, anim: 'squat', title: 'Sentadilla + salto suave', target: '3 x 8 reps', desc: 'Bajá controlado y saltá suave cayendo blando.' },
+  { id: 48, anim: 'pushup', title: 'Flexiones a 90 grados', target: '3 x 8 reps', desc: 'Bajá hasta 90° en codos y subí con control.' },
+  { id: 49, anim: 'bird_dog', title: 'Superman suave', target: '3 x 10 reps', desc: 'Boca abajo, levantá suave pecho y piernas.' },
+  { id: 50, anim: 'soccer_zigzag', title: 'Conducción en 8', target: '4 vueltas', desc: 'Dibujá el 8 completo rodeando ambos conos.' }
 ];
 
 const STORAGE_KEY = 'amrap_13yo_mobile_v2';
@@ -204,9 +192,12 @@ let frozenDates = [];
 let rewardedDates = [];
 let claimedChallengeDates = [];
 let unlockedPerks = [];
+let challengeQueue = [];
+let challengeAssignments = {};
 
 document.addEventListener('DOMContentLoaded', () => {
   loadSessions();
+  ensureDailyChallengeAssigned(getTodayISO());
   applyAutomaticStreakFreezes();
   renderQuickChecklist();
   renderExerciseTabs();
@@ -256,12 +247,38 @@ function formatDisplayDate(iso) {
   return `${d}/${m}/${y}`;
 }
 
+function createShuffledQueue() {
+  const ids = DAILY_EXERCISES.map(ex => ex.id);
+  for (let i = ids.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [ids[i], ids[j]] = [ids[j], ids[i]];
+  }
+  return ids;
+}
+
+function ensureDailyChallengeAssigned(isoStr) {
+  if (challengeAssignments[isoStr]) {
+    const found = DAILY_EXERCISES.find(ex => ex.id === challengeAssignments[isoStr]);
+    if (found) return found;
+  }
+
+  if (!Array.isArray(challengeQueue) || challengeQueue.length === 0) {
+    challengeQueue = createShuffledQueue();
+  }
+
+  const nextId = challengeQueue.shift();
+  challengeAssignments[isoStr] = nextId;
+  saveSessions();
+  return DAILY_EXERCISES.find(ex => ex.id === nextId) || DAILY_EXERCISES[0];
+}
+
 function getDailyChallengeForDate(isoStr) {
-  const dayNum = isoToDayNumber(isoStr);
-  const idx = ((dayNum % DAILY_EXERCISES.length) + DAILY_EXERCISES.length) % DAILY_EXERCISES.length;
+  const ex = ensureDailyChallengeAssigned(isoStr);
+  const completedCount = Object.keys(challengeAssignments).length;
+  const stepInCycle = ((completedCount - 1) % DAILY_EXERCISES.length) + 1;
   return {
-    dayIndex: idx + 1,
-    ...DAILY_EXERCISES[idx]
+    stepInCycle: Math.max(1, stepInCycle),
+    ...ex
   };
 }
 
@@ -304,6 +321,13 @@ function loadSessions() {
           ? parsed.unlockedPerks
           : (Array.isArray(parsed.unlockedEpicPerks) ? parsed.unlockedEpicPerks : []);
         unlockedPerks = Array.from(new Set(perksSource.filter(p => typeof p === 'string')));
+
+        challengeQueue = Array.isArray(parsed.challengeQueue)
+          ? parsed.challengeQueue.filter(id => DAILY_EXERCISES.some(ex => ex.id === id))
+          : [];
+        challengeAssignments = (parsed.challengeAssignments && typeof parsed.challengeAssignments === 'object')
+          ? parsed.challengeAssignments
+          : {};
       }
     }
   } catch (e) {
@@ -314,21 +338,28 @@ function loadSessions() {
     rewardedDates = [];
     claimedChallengeDates = [];
     unlockedPerks = [];
+    challengeQueue = [];
+    challengeAssignments = {};
   }
+}
+
+function buildStatePayload() {
+  return {
+    sessions,
+    coins,
+    streakFreezes,
+    frozenDates,
+    rewardedDates,
+    claimedChallengeDates,
+    unlockedPerks,
+    challengeQueue,
+    challengeAssignments
+  };
 }
 
 function saveSessions() {
   try {
-    const payload = {
-      sessions,
-      coins,
-      streakFreezes,
-      frozenDates,
-      rewardedDates,
-      claimedChallengeDates,
-      unlockedPerks
-    };
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(payload));
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(buildStatePayload()));
   } catch (e) {
     showToast('No se pudo guardar.');
   }
@@ -465,7 +496,7 @@ function refreshShopView() {
   const descEl = document.getElementById('daily-challenge-desc');
   const claimBtn = document.getElementById('btn-claim-daily-bonus');
 
-  if (numEl) numEl.textContent = `Ejercicio #${challenge.dayIndex}/${DAILY_EXERCISES.length}`;
+  if (numEl) numEl.textContent = `Ejercicio #${challenge.stepInCycle}/${DAILY_EXERCISES.length}`;
   if (targetEl) targetEl.textContent = challenge.target;
   if (titleEl) titleEl.textContent = challenge.title;
   if (descEl) descEl.textContent = challenge.desc;
@@ -475,6 +506,8 @@ function refreshShopView() {
     claimBtn.disabled = claimed;
     claimBtn.textContent = claimed ? 'Bonus cobrado hoy (+5)' : 'Completar y cobrar +5 monedas';
   }
+
+  renderDailyChallengeSVG(performance.now());
 }
 
 function switchView(viewName) {
@@ -657,7 +690,7 @@ function handleResetTimerTap() {
   } else {
     clearTimeout(resetConfirmTimeout);
     resetConfirmPending = false;
-    resetBtn.classList.remove('bg-purewhite', 'text-pureblack');
+    resetBtn.classList.remove('bg-pureblack', 'text-purewhite');
     resetBtn.classList.add('bg-pureblack', 'text-purewhite');
     resetText.textContent = 'Reiniciar';
 
@@ -941,15 +974,15 @@ function renderArticulatedFigure(sk, extrasTop = '', extrasBottom = '') {
 
 function buildSquatFrame(tSec) {
   const p = smoothWave(tSec, 2.8);
-  const floorY = 148;
+  const floorY = 144;
 
   const ankleL = { x: 165, y: floorY };
   const footL = { x: 180, y: floorY };
   const ankleR = { x: 167, y: floorY - 1 };
   const footR = { x: 182, y: floorY - 1 };
 
-  const shinLen = 36;
-  const thighLen = 38;
+  const shinLen = 35;
+  const thighLen = 37;
   const shinAngle = lerp(-92, -62, p);
   const thighAngle = lerp(-90, -162, p);
 
@@ -962,25 +995,25 @@ function buildSquatFrame(tSec) {
 
   const lowerTorsoAngle = lerp(-90, -64, p);
   const upperTorsoAngle = lerp(-90, -62, p);
-  const waist = polarPoint(pelvis, 20, lowerTorsoAngle);
-  const neck = polarPoint(waist, 22, upperTorsoAngle);
-  const headCenter = polarPoint(neck, 12.5, upperTorsoAngle);
+  const waist = polarPoint(pelvis, 19, lowerTorsoAngle);
+  const neck = polarPoint(waist, 21, upperTorsoAngle);
+  const headCenter = polarPoint(neck, 12, upperTorsoAngle);
 
   const shoulderL = { x: neck.x, y: neck.y + 3 };
   const shoulderR = { x: neck.x + 2, y: neck.y + 2 };
 
   const upperArmAngle = lerp(84, 4, p);
   const forearmAngle = lerp(72, -10, p);
-  const elbowL = polarPoint(shoulderL, 20, upperArmAngle);
-  const handL = polarPoint(elbowL, 20, forearmAngle);
+  const elbowL = polarPoint(shoulderL, 19, upperArmAngle);
+  const handL = polarPoint(elbowL, 19, forearmAngle);
 
-  const elbowR = polarPoint(shoulderR, 20, upperArmAngle);
-  const handR = polarPoint(elbowR, 20, forearmAngle);
+  const elbowR = polarPoint(shoulderR, 19, upperArmAngle);
+  const handR = polarPoint(elbowR, 19, forearmAngle);
 
   const floorLine = `<line x1="16" y1="${floorY}" x2="324" y2="${floorY}" stroke="#000000" stroke-width="2" />`;
 
   return renderArticulatedFigure({
-    pelvis, waist, neck, headCenter, headR: 9.5,
+    pelvis, waist, neck, headCenter, headR: 9,
     hipL, kneeL, ankleL, footL,
     hipR, kneeR, ankleR, footR,
     shoulderL, elbowL, handL,
@@ -990,7 +1023,7 @@ function buildSquatFrame(tSec) {
 
 function buildPushupFrame(tSec) {
   const p = smoothWave(tSec, 2.6);
-  const floorY = 144;
+  const floorY = 140;
 
   const footL = { x: 82, y: floorY };
   const ankleL = { x: 82, y: floorY - 5 };
@@ -999,16 +1032,16 @@ function buildPushupFrame(tSec) {
 
   const plankAngle = lerp(-24, -8.5, p);
 
-  const kneeL = polarPoint(ankleL, 38, plankAngle);
-  const hipL = polarPoint(kneeL, 38, plankAngle);
+  const kneeL = polarPoint(ankleL, 36, plankAngle);
+  const hipL = polarPoint(kneeL, 36, plankAngle);
 
-  const kneeR = polarPoint(ankleR, 38, plankAngle);
-  const hipR = polarPoint(kneeR, 38, plankAngle);
+  const kneeR = polarPoint(ankleR, 36, plankAngle);
+  const hipR = polarPoint(kneeR, 36, plankAngle);
 
   const pelvis = { x: (hipL.x + hipR.x) / 2, y: (hipL.y + hipR.y) / 2 };
-  const waist = polarPoint(pelvis, 21, plankAngle);
-  const neck = polarPoint(waist, 23, plankAngle);
-  const headCenter = polarPoint(neck, 13, plankAngle);
+  const waist = polarPoint(pelvis, 20, plankAngle);
+  const neck = polarPoint(waist, 22, plankAngle);
+  const headCenter = polarPoint(neck, 12, plankAngle);
 
   const shoulderL = { x: neck.x - 3, y: neck.y + 3 };
   const shoulderR = { x: neck.x + 2, y: neck.y + 1 };
@@ -1016,15 +1049,15 @@ function buildPushupFrame(tSec) {
   const handL = { x: shoulderL.x + 2, y: floorY };
   const handR = { x: shoulderR.x + 3, y: floorY - 2 };
 
-  const upperArmLen = 21;
-  const forearmLen = 21;
+  const upperArmLen = 20;
+  const forearmLen = 20;
   const elbowL = solveTwoBoneIK(shoulderL, handL, upperArmLen, forearmLen, false);
   const elbowR = solveTwoBoneIK(shoulderR, handR, upperArmLen, forearmLen, false);
 
   const floorLine = `<line x1="16" y1="${floorY}" x2="324" y2="${floorY}" stroke="#000000" stroke-width="2" />`;
 
   return renderArticulatedFigure({
-    pelvis, waist, neck, headCenter, headR: 9,
+    pelvis, waist, neck, headCenter, headR: 8.5,
     hipL, kneeL, ankleL, footL,
     hipR, kneeR, ankleR, footR,
     shoulderL, elbowL, handL,
@@ -1050,7 +1083,7 @@ function solveTwoBoneIK(p1, p2, len1, len2, bendUp) {
 }
 
 function buildRussianTwistFrame() {
-  const floorY = 148;
+  const floorY = 142;
   const LEFT_COLOR = '#000000';
   const RIGHT_COLOR = '#777777';
 
@@ -1064,39 +1097,39 @@ function buildRussianTwistFrame() {
     const hipL = { x: ox, y: floorY - 5 };
     const hipR = { x: ox + 2.5, y: floorY - 5 };
 
-    const waist = { x: ox - 18, y: floorY - 23 };
-    const neck = { x: ox - 36, y: floorY - 41 };
-    const headCenter = { x: ox - 45, y: floorY - 51 };
+    const waist = { x: ox - 17, y: floorY - 21 };
+    const neck = { x: ox - 34, y: floorY - 38 };
+    const headCenter = { x: ox - 42, y: floorY - 47 };
 
-    const kneeL = { x: ox + 42, y: floorY - 33 };
-    const kneeR = { x: ox + 44, y: floorY - 31.5 };
+    const kneeL = { x: ox + 40, y: floorY - 31 };
+    const kneeR = { x: ox + 42, y: floorY - 29.5 };
 
-    const ankleL = { x: ox + 80, y: floorY - 4 };
-    const footL = { x: ox + 93, y: floorY - 4 };
-    const ankleR = { x: ox + 77, y: floorY - 5.5 };
-    const footR = { x: ox + 90, y: floorY - 5.5 };
+    const ankleL = { x: ox + 76, y: floorY - 4 };
+    const footL = { x: ox + 88, y: floorY - 4 };
+    const ankleR = { x: ox + 73, y: floorY - 5.5 };
+    const footR = { x: ox + 85, y: floorY - 5.5 };
 
     const shoulderL = { x: neck.x - 1, y: neck.y + 2.5 };
     const shoulderR = { x: neck.x + 3, y: neck.y + 2.5 };
 
     const isFront = mode === 'front';
-    const ballX = isFront ? (ox - 10) : (ox - 24);
-    const ballY = isFront ? (floorY - 17) : (floorY - 22);
+    const ballX = isFront ? (ox - 10) : (ox - 22);
+    const ballY = isFront ? (floorY - 16) : (floorY - 20);
 
     const handL = { x: ballX - 5.5, y: ballY + 1 };
     const handR = { x: ballX + 5.5, y: ballY - 1 };
 
     const elbowL = isFront
-      ? { x: shoulderL.x - 6, y: shoulderL.y + 15 }
-      : { x: shoulderL.x - 12, y: shoulderL.y + 11 };
+      ? { x: shoulderL.x - 6, y: shoulderL.y + 14 }
+      : { x: shoulderL.x - 11, y: shoulderL.y + 10 };
     const elbowR = isFront
-      ? { x: shoulderR.x + 8, y: shoulderR.y + 13 }
-      : { x: shoulderR.x + 2, y: shoulderR.y + 14 };
+      ? { x: shoulderR.x + 8, y: shoulderR.y + 12 }
+      : { x: shoulderR.x + 2, y: shoulderR.y + 13 };
 
     const ballSVG = `
       <g>
-        <circle cx="${ballX.toFixed(1)}" cy="${ballY.toFixed(1)}" r="6.8" fill="#FFFFFF" stroke="#000000" stroke-width="2.1" />
-        <circle cx="${ballX.toFixed(1)}" cy="${ballY.toFixed(1)}" r="2.2" fill="#000000" />
+        <circle cx="${ballX.toFixed(1)}" cy="${ballY.toFixed(1)}" r="6.5" fill="#FFFFFF" stroke="#000000" stroke-width="2" />
+        <circle cx="${ballX.toFixed(1)}" cy="${ballY.toFixed(1)}" r="2" fill="#000000" />
       </g>
     `;
 
@@ -1110,7 +1143,7 @@ function buildRussianTwistFrame() {
       ${seg(waist, neck, LEFT_COLOR, 3.2)}
       ${joint(waist, LEFT_COLOR, 1.8)}
       ${seg(neck, headCenter, LEFT_COLOR, 2.2)}
-      <circle cx="${headCenter.x.toFixed(1)}" cy="${headCenter.y.toFixed(1)}" r="7.5" fill="#FFFFFF" stroke="${LEFT_COLOR}" stroke-width="2.1" />
+      <circle cx="${headCenter.x.toFixed(1)}" cy="${headCenter.y.toFixed(1)}" r="7" fill="#FFFFFF" stroke="${LEFT_COLOR}" stroke-width="2" />
 
       ${seg(hipL, kneeL, LEFT_COLOR, 2.9)}
       ${seg(kneeL, ankleL, LEFT_COLOR, 2.9)}
@@ -1132,14 +1165,14 @@ function buildRussianTwistFrame() {
     const stepLabel = isFront ? 'PASO 1' : 'PASO 2';
 
     return `
-      <rect x="${(badgeX - 24).toFixed(1)}" y="24" width="48" height="14" fill="#000000" />
-      <text x="${badgeX.toFixed(1)}" y="34" font-size="8.5" font-weight="700" text-anchor="middle" fill="#FFFFFF">${stepLabel}</text>
+      <rect x="${(badgeX - 23).toFixed(1)}" y="22" width="46" height="13" fill="#000000" />
+      <text x="${badgeX.toFixed(1)}" y="31" font-size="8" font-weight="700" text-anchor="middle" fill="#FFFFFF">${stepLabel}</text>
       ${isFront ? `${legsAndBody}${armsSVG}${ballSVG}` : `${ballSVG}${legsAndBody}${armsSVG}`}
     `;
   };
 
   const floorLine = `<line x1="14" y1="${floorY}" x2="326" y2="${floorY}" stroke="#000000" stroke-width="2" />`;
-  const divider = `<line x1="170" y1="22" x2="170" y2="${floorY - 2}" stroke="#D4D4D4" stroke-width="1.2" stroke-dasharray="3 3" />`;
+  const divider = `<line x1="170" y1="20" x2="170" y2="${floorY - 2}" stroke="#D4D4D4" stroke-width="1.2" stroke-dasharray="3 3" />`;
 
   return `
     ${floorLine}
@@ -1151,37 +1184,37 @@ function buildRussianTwistFrame() {
 
 function buildShoulderPressFrame(tSec) {
   const p = smoothWave(tSec, 2.4);
-  const floorY = 152;
+  const floorY = 146;
   const centerX = 170;
 
-  const pelvis = { x: centerX, y: 100 };
-  const hipL = { x: centerX, y: 100 };
-  const hipR = { x: centerX, y: 100 };
+  const pelvis = { x: centerX, y: 96 };
+  const hipL = { x: centerX, y: 96 };
+  const hipR = { x: centerX, y: 96 };
 
   const thighAngleL = 104;
   const thighAngleR = 76;
-  const kneeL = polarPoint(hipL, 26, thighAngleL);
-  const ankleL = polarPoint(kneeL, 27, thighAngleL);
+  const kneeL = polarPoint(hipL, 25, thighAngleL);
+  const ankleL = polarPoint(kneeL, 25, thighAngleL);
   const footL = { x: ankleL.x - 8, y: floorY };
 
-  const kneeR = polarPoint(hipR, 26, thighAngleR);
-  const ankleR = polarPoint(kneeR, 27, thighAngleR);
+  const kneeR = polarPoint(hipR, 25, thighAngleR);
+  const ankleR = polarPoint(kneeR, 25, thighAngleR);
   const footR = { x: ankleR.x + 8, y: floorY };
 
-  const waist = { x: centerX, y: 82 };
-  const neck = { x: centerX, y: 60 };
-  const headCenter = { x: centerX, y: 46 };
+  const waist = { x: centerX, y: 79 };
+  const neck = { x: centerX, y: 58 };
+  const headCenter = { x: centerX, y: 45 };
 
-  const shoulderL = { x: centerX, y: 65 };
-  const shoulderR = { x: centerX, y: 65 };
+  const shoulderL = { x: centerX, y: 63 };
+  const shoulderR = { x: centerX, y: 63 };
 
   const upperAngleL = lerp(150, 228, p);
-  const elbowL = polarPoint(shoulderL, 21, upperAngleL);
-  const handL = polarPoint(elbowL, 19, -90);
+  const elbowL = polarPoint(shoulderL, 20, upperAngleL);
+  const handL = polarPoint(elbowL, 18, -90);
 
   const upperAngleR = lerp(30, -48, p);
-  const elbowR = polarPoint(shoulderR, 21, upperAngleR);
-  const handR = polarPoint(elbowR, 19, -90);
+  const elbowR = polarPoint(shoulderR, 20, upperAngleR);
+  const handR = polarPoint(elbowR, 18, -90);
 
   const dumbbells = `
     <g>
@@ -1193,7 +1226,7 @@ function buildShoulderPressFrame(tSec) {
   const floorLine = `<line x1="16" y1="${floorY}" x2="324" y2="${floorY}" stroke="#000000" stroke-width="2" />`;
 
   return renderArticulatedFigure({
-    pelvis, waist, neck, headCenter, headR: 9.5,
+    pelvis, waist, neck, headCenter, headR: 9,
     hipL, kneeL, ankleL, footL,
     hipR, kneeR, ankleR, footR,
     shoulderL, elbowL, handL,
@@ -1216,42 +1249,42 @@ function buildBirdDogFrame(tSec) {
     extB = 0.5 - 0.5 * Math.cos(2 * Math.PI * localT);
   }
 
-  const floorY = 144;
+  const floorY = 140;
 
-  const pelvis = { x: 136, y: 92 };
-  const waist = { x: 168, y: 92 };
-  const neck = { x: 200, y: 92 };
-  const headCenter = { x: 213, y: 86 };
+  const pelvis = { x: 136, y: 90 };
+  const waist = { x: 168, y: 90 };
+  const neck = { x: 200, y: 90 };
+  const headCenter = { x: 213, y: 84 };
 
-  const shoulderL = { x: 198, y: 93 };
-  const shoulderR = { x: 203, y: 91 };
-  const hipL = { x: 135, y: 93 };
-  const hipR = { x: 140, y: 91 };
+  const shoulderL = { x: 198, y: 91 };
+  const shoulderR = { x: 203, y: 89 };
+  const hipL = { x: 135, y: 91 };
+  const hipR = { x: 140, y: 89 };
 
   const armAngleL = lerp(90, 0, extA);
-  const elbowL = polarPoint(shoulderL, 25, armAngleL);
-  const handL = polarPoint(elbowL, 26, armAngleL);
+  const elbowL = polarPoint(shoulderL, 24, armAngleL);
+  const handL = polarPoint(elbowL, 25, armAngleL);
 
   const armAngleR = lerp(90, 0, extB);
-  const elbowR = polarPoint(shoulderR, 26, armAngleR);
-  const handR = polarPoint(elbowR, 27, armAngleR);
+  const elbowR = polarPoint(shoulderR, 25, armAngleR);
+  const handR = polarPoint(elbowR, 26, armAngleR);
 
   const thighAngleL = lerp(90, 180, extB);
   const shinAngleL = lerp(180, 180, extB);
-  const kneeL = polarPoint(hipL, 51, thighAngleL);
-  const ankleL = polarPoint(kneeL, 28, shinAngleL);
+  const kneeL = polarPoint(hipL, 48, thighAngleL);
+  const ankleL = polarPoint(kneeL, 26, shinAngleL);
   const footL = { x: ankleL.x, y: ankleL.y - 4 };
 
   const thighAngleR = lerp(90, 180, extA);
   const shinAngleR = lerp(180, 180, extA);
-  const kneeR = polarPoint(hipR, 53, thighAngleR);
-  const ankleR = polarPoint(kneeR, 28, shinAngleR);
+  const kneeR = polarPoint(hipR, 50, thighAngleR);
+  const ankleR = polarPoint(kneeR, 26, shinAngleR);
   const footR = { x: ankleR.x, y: ankleR.y - 4 };
 
   const floorLine = `<line x1="16" y1="${floorY}" x2="324" y2="${floorY}" stroke="#000000" stroke-width="2" />`;
 
   return renderArticulatedFigure({
-    pelvis, waist, neck, headCenter, headR: 8.5,
+    pelvis, waist, neck, headCenter, headR: 8,
     hipL, kneeL, ankleL, footL,
     hipR, kneeR, ankleR, footR,
     shoulderL, elbowL, handL,
@@ -1264,9 +1297,9 @@ function buildZigzagFrame(tSec) {
   const tau = ((tSec % cycle) / cycle) * Math.PI * 2;
 
   const centerX = 170;
-  const centerY = 114;
+  const centerY = 108;
   const ampX = 88;
-  const ampY = 22;
+  const ampY = 20;
 
   const ballX = centerX + ampX * Math.sin(tau);
   const ballY = centerY + ampY * Math.sin(2 * tau);
@@ -1286,34 +1319,34 @@ function buildZigzagFrame(tSec) {
   const strideOpp = -stride;
   const facingSign = tx >= 0 ? 1 : -1;
 
-  const pelvis = { x: playerX, y: playerY - 24 };
-  const waist = { x: playerX + facingSign * 1.5, y: playerY - 34 };
-  const neck = { x: playerX + facingSign * 3, y: playerY - 44 };
-  const headCenter = { x: playerX + facingSign * 4, y: playerY - 52 };
+  const pelvis = { x: playerX, y: playerY - 22 };
+  const waist = { x: playerX + facingSign * 1.5, y: playerY - 32 };
+  const neck = { x: playerX + facingSign * 3, y: playerY - 41 };
+  const headCenter = { x: playerX + facingSign * 4, y: playerY - 49 };
 
   const hipL = { x: pelvis.x - 1, y: pelvis.y };
   const thighAngleL = 90 - facingSign * (stride * 24);
-  const kneeL = polarPoint(hipL, 12, thighAngleL);
+  const kneeL = polarPoint(hipL, 11, thighAngleL);
   const shinAngleL = thighAngleL + facingSign * Math.max(6, stride * 22);
-  const ankleL = polarPoint(kneeL, 12, shinAngleL);
+  const ankleL = polarPoint(kneeL, 11, shinAngleL);
   const footL = { x: ankleL.x + facingSign * 4, y: ankleL.y };
 
   const hipR = { x: pelvis.x + 1.5, y: pelvis.y - 1 };
   const thighAngleR = 90 - facingSign * (strideOpp * 24);
-  const kneeR = polarPoint(hipR, 12, thighAngleR);
+  const kneeR = polarPoint(hipR, 11, thighAngleR);
   const shinAngleR = thighAngleR + facingSign * Math.max(6, strideOpp * 22);
-  const ankleR = polarPoint(kneeR, 12, shinAngleR);
+  const ankleR = polarPoint(kneeR, 11, shinAngleR);
   const footR = { x: ankleR.x + facingSign * 4, y: ankleR.y };
 
   const shoulderL = { x: neck.x - 1, y: neck.y + 2 };
   const armAngleL = 90 - facingSign * (strideOpp * 22);
-  const elbowL = polarPoint(shoulderL, 9, armAngleL);
-  const handL = polarPoint(elbowL, 9, armAngleL - facingSign * 26);
+  const elbowL = polarPoint(shoulderL, 8.5, armAngleL);
+  const handL = polarPoint(elbowL, 8.5, armAngleL - facingSign * 26);
 
   const shoulderR = { x: neck.x + 1.5, y: neck.y + 1.5 };
   const armAngleR = 90 - facingSign * (stride * 22);
-  const elbowR = polarPoint(shoulderR, 9, armAngleR);
-  const handR = polarPoint(elbowR, 9, armAngleR - facingSign * 26);
+  const elbowR = polarPoint(shoulderR, 8.5, armAngleR);
+  const handR = polarPoint(elbowR, 8.5, armAngleR - facingSign * 26);
 
   let pathD = '';
   const lineSegments = 24;
@@ -1327,14 +1360,14 @@ function buildZigzagFrame(tSec) {
 
   const cone1X = 116;
   const cone2X = 224;
-  const coneY = 114;
+  const coneY = 108;
 
   const backgroundField = `
-    <line x1="${cone1X}" y1="28" x2="${cone2X}" y2="28" stroke="#000000" stroke-width="1.4" />
-    <line x1="${cone1X}" y1="23" x2="${cone1X}" y2="33" stroke="#000000" stroke-width="1.4" />
-    <line x1="${cone2X}" y1="23" x2="${cone2X}" y2="33" stroke="#000000" stroke-width="1.4" />
-    <rect x="148" y="20" width="44" height="14" fill="#FFFFFF" />
-    <text x="170" y="31" font-size="9.5" font-weight="700" text-anchor="middle" fill="#000000">1,5 m</text>
+    <line x1="${cone1X}" y1="26" x2="${cone2X}" y2="26" stroke="#000000" stroke-width="1.4" />
+    <line x1="${cone1X}" y1="21" x2="${cone1X}" y2="31" stroke="#000000" stroke-width="1.4" />
+    <line x1="${cone2X}" y1="21" x2="${cone2X}" y2="31" stroke="#000000" stroke-width="1.4" />
+    <rect x="148" y="18" width="44" height="14" fill="#FFFFFF" />
+    <text x="170" y="29" font-size="9.5" font-weight="700" text-anchor="middle" fill="#000000">1,5 m</text>
 
     <path d="${pathD}" fill="none" stroke="#B5B5B5" stroke-width="1.5" />
 
@@ -1353,12 +1386,37 @@ function buildZigzagFrame(tSec) {
   `;
 
   return renderArticulatedFigure({
-    pelvis, waist, neck, headCenter, headR: 5.8,
+    pelvis, waist, neck, headCenter, headR: 5.5,
     hipL, kneeL, ankleL, footL,
     hipR, kneeR, ankleR, footR,
     shoulderL, elbowL, handL,
     shoulderR, elbowR, handR
   }, soccerBall, backgroundField);
+}
+
+function getMotionBuilders() {
+  return {
+    squat: buildSquatFrame,
+    pushup: buildPushupFrame,
+    russian_twist: buildRussianTwistFrame,
+    shoulder_press: buildShoulderPressFrame,
+    bird_dog: buildBirdDogFrame,
+    soccer_zigzag: buildZigzagFrame
+  };
+}
+
+function renderDailyChallengeSVG(timestampMs) {
+  const dailySvg = document.getElementById('daily-challenge-svg');
+  if (!dailySvg) return;
+  const tSec = (timestampMs || 0) / 1000;
+  const builders = getMotionBuilders();
+  const todayChallenge = getDailyChallengeForDate(getTodayISO());
+  const builder = builders[todayChallenge.anim] || buildSquatFrame;
+  const bodySVG = builder(tSec);
+  dailySvg.innerHTML = `
+    <text x="170" y="13" font-size="8.5" font-weight="700" text-anchor="middle" fill="#000000">MOVIMIENTO GUÍA</text>
+    ${bodySVG}
+  `;
 }
 
 function drawStaticExerciseSVGs() {
@@ -1382,15 +1440,7 @@ function drawStaticExerciseSVGs() {
 
 function updateAllSkeletonCanvases(timestampMs) {
   const tSec = timestampMs / 1000;
-
-  const builders = {
-    squat: buildSquatFrame,
-    pushup: buildPushupFrame,
-    russian_twist: buildRussianTwistFrame,
-    shoulder_press: buildShoulderPressFrame,
-    bird_dog: buildBirdDogFrame,
-    soccer_zigzag: buildZigzagFrame
-  };
+  const builders = getMotionBuilders();
 
   EXERCISES.forEach(ex => {
     const svgEl = document.getElementById(`skel-svg-${ex.id}`);
@@ -1413,18 +1463,7 @@ function updateAllSkeletonCanvases(timestampMs) {
     }
   });
 
-  // Animación del ejercicio diario bonus en Tienda
-  const dailySvg = document.getElementById('daily-challenge-svg');
-  if (dailySvg) {
-    const todayChallenge = getDailyChallengeForDate(getTodayISO());
-    const builder = builders[todayChallenge.anim] || buildSquatFrame;
-    const bodySVG = builder(tSec);
-    dailySvg.innerHTML = `
-      <text x="170" y="14" font-size="9" font-weight="700" text-anchor="middle" fill="#000000">EJEMPLO DE MOVIMIENTO</text>
-      ${bodySVG}
-    `;
-  }
-
+  renderDailyChallengeSVG(timestampMs);
   fkAnimationFrameId = requestAnimationFrame(updateAllSkeletonCanvases);
 }
 
@@ -1632,7 +1671,6 @@ function refreshProgressView() {
   }
 }
 
-// SOLO 2 ESTILOS: Estilo 1 (blanco) y Estilo 2 (negativo exacto del 1)
 function getStreakPalette(styleIndex) {
   const hasPerkFrame = unlockedPerks.includes('frame');
 
@@ -1967,16 +2005,7 @@ function confirmDeleteSession(date) {
 }
 
 function exportProgressJSON() {
-  const backupData = {
-    sessions,
-    coins,
-    streakFreezes,
-    frozenDates,
-    rewardedDates,
-    claimedChallengeDates,
-    unlockedPerks
-  };
-  const blob = new Blob([JSON.stringify(backupData, null, 2)], { type: 'application/json' });
+  const blob = new Blob([JSON.stringify(buildStatePayload(), null, 2)], { type: 'application/json' });
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
   a.href = url;
@@ -2018,9 +2047,17 @@ function importProgressJSON(event) {
           ? imported.unlockedPerks
           : (Array.isArray(imported.unlockedEpicPerks) ? imported.unlockedEpicPerks : []);
         unlockedPerks = Array.from(new Set(perksSource.filter(p => typeof p === 'string')));
+
+        challengeQueue = Array.isArray(imported.challengeQueue)
+          ? imported.challengeQueue.filter(id => DAILY_EXERCISES.some(ex => ex.id === id))
+          : [];
+        challengeAssignments = (imported.challengeAssignments && typeof imported.challengeAssignments === 'object')
+          ? imported.challengeAssignments
+          : {};
       } else {
         throw new Error('Inválido');
       }
+      ensureDailyChallengeAssigned(getTodayISO());
       applyAutomaticStreakFreezes();
       saveSessions();
       refreshProgressView();
