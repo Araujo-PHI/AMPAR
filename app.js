@@ -109,71 +109,70 @@ const EXERCISES = [
   }
 ];
 
-// Más de 60 ejercicios diarios diferentes (uno por día según la fecha)
+// Más de 60 ejercicios diarios diferentes con su animación de referencia
 const DAILY_EXERCISES = [
-  { title: 'Sentadilla con pausa abajo', target: '3 x 10 reps', desc: 'Bajá en 3 segundos, quedate 1 segundo abajo y subí firme.' },
-  { title: 'Flexiones diamante o cerradas', target: '3 x 6 reps', desc: 'Manos más juntas que los hombros y codos cerca del cuerpo.' },
-  { title: 'Toques de talón en suelo', target: '3 x 20 toques', desc: 'Acostado boca arriba, rodillas flexionadas, tocá un talón y luego el otro.' },
-  { title: 'Press militar lento con 1 kg', target: '3 x 12 reps', desc: 'Subí las mancuernas en 2 segundos y bajalas en 3 segundos.' },
-  { title: 'Plancha frontal firme', target: '3 x 30 seg', desc: 'Apoyá antebrazos y puntas de pie con abdomen y glúteos apretados.' },
-  { title: 'Slalom corto con pelota', target: '6 pasadas', desc: 'Toques cortos alternando borde interno y externo en espacio reducido.' },
-  { title: 'Zancadas alternas al frente', target: '3 x 8 por pierna', desc: 'Paso al frente, bajá controlado y volvé empujando con la pierna delantera.' },
-  { title: 'Elevación de pelvis (puente)', target: '3 x 15 reps', desc: 'Boca arriba con pies apoyados, subí la cadera y apretá glúteos arriba.' },
-  { title: 'Elevación lateral con 1 kg', target: '3 x 12 reps', desc: 'Subí los brazos hasta la altura de los hombros sin encoger el cuello.' },
-  { title: 'Escaladores controlados', target: '3 x 20 pasos', desc: 'En posición de plancha alta, llevá una rodilla al pecho y luego la otra.' },
-  { title: 'Sentadilla búlgara o trasera', target: '3 x 8 por lado', desc: 'Llevá un pie atrás y bajá vertical manteniendo el torso estable.' },
-  { title: 'Flexiones con apoyo en rodillas', target: '3 x 10 reps', desc: 'Cuerpo alineado desde rodillas a cabeza, pecho cerca del piso.' },
-  { title: 'Bicho muerto (Dead Bug)', target: '3 x 8 por lado', desc: 'Boca arriba, extendé brazo y pierna contrarios sin despegar la cintura.' },
-  { title: 'Pases rápidos entre pies', target: '3 x 30 seg', desc: 'Con la pelota, pasala de un pie al otro manteniendo el equilibrio.' },
-  { title: 'Sentadilla sumo abierta', target: '3 x 12 reps', desc: 'Pies bien separados y puntas hacia afuera, bajá recto.' },
-  { title: 'Fondos en borde de silla/sofá', target: '3 x 8 reps', desc: 'Manos en el borde, bajá flexionando codos y empujá arriba.' },
-  { title: 'Plancha lateral izquierda y derecha', target: '3 x 20 seg/lado', desc: 'Cadera arriba en línea recta con el tronco.' },
-  { title: 'Vuelos frontales con 1 kg', target: '3 x 12 reps', desc: 'Subí las mancuernas al frente hasta la altura de los hombros.' },
-  { title: 'Saltos suaves en el lugar', target: '4 x 25 saltos', desc: 'Caé suave sobre la punta de los pies amortiguando con rodillas.' },
-  { title: 'Pisa-pelota alterno rápido', target: '3 x 20 toques', desc: 'Tocá la parte superior de la pelota alternando plantas de pie.' },
-  { title: 'Sentadilla isométrica en pared', target: '3 x 35 seg', desc: 'Espalda apoyada en la pared, muslos paralelos al suelo.' },
-  { title: 'Flexiones con pausa de 1 seg', target: '3 x 6 reps', desc: 'Sostené 1 segundo abajo antes de empujar hacia arriba.' },
-  { title: 'Crunches cortos con manos al pecho', target: '3 x 15 reps', desc: 'Despegá apenas los omóplatos sin tirar del cuello.' },
-  { title: 'Press Arnold suave con 1 kg', target: '3 x 10 reps', desc: 'Rotá las palmas al empujar arriba y volvé al inicio.' },
-  { title: 'Perro pájaro con pausa de 2 seg', target: '3 x 5 por lado', desc: 'Sostené 2 segundos brazo y pierna extendidos sin mover la cadera.' },
-  { title: 'Conducción solo con pie izquierdo', target: '4 idas y vueltas', desc: 'Llevá y traé la pelota usando únicamente el pie izquierdo.' },
-  { title: 'Conducción solo con pie derecho', target: '4 idas y vueltas', desc: 'Llevá y traé la pelota usando únicamente el pie derecho.' },
-  { title: 'Sentadilla + elevación de talones', target: '3 x 10 reps', desc: 'Al subir de la sentadilla, ponete en puntas de pie.' },
-  { title: 'Flexiones declinadas (pies elevados)', target: '3 x 6 reps', desc: 'Pies sobre un escalón o banco bajo, abdomen firme.' },
-  { title: 'Giros rusos con pausa en cada lado', target: '3 x 12 giros', desc: 'Marcá 1 segundo a cada lado manteniendo el torso girado.' },
-  { title: 'Remo inclinado con 1 kg', target: '3 x 12 reps', desc: 'Torso inclinado con espalda recta, llevá codos atrás.' },
-  { title: 'Trote en el lugar rodillas altas', target: '4 x 20 seg', desc: 'Llevá las rodillas a la altura de la cadera con buen braceo.' },
-  { title: 'Control con muslo y empeine', target: '3 x 10 toques', desc: 'Elevá la pelota con el muslo y controlá suave.' },
-  { title: 'Sentadilla lenta (4 seg bajada)', target: '3 x 8 reps', desc: 'Bajá en 4 tiempos y subí en 1 tiempo.' },
-  { title: 'Plancha con toque de hombro', target: '3 x 12 toques', desc: 'En plancha alta, tocá el hombro contrario sin balancear la cadera.' },
-  { title: 'Elevación de piernas acostado', target: '3 x 10 reps', desc: 'Subí y bajá las piernas controladas sin tocar el suelo.' },
-  { title: 'Press con un brazo a la vez', target: '3 x 10 por brazo', desc: 'Mantené el tronco derechito sin inclinarte a los costados.' },
-  { title: 'Puente a una pierna', target: '3 x 8 por pierna', desc: 'Subí la cadera impulsando con un solo pie.' },
-  { title: 'Zigzag con cambio de ritmo', target: '4 pasadas', desc: 'Despacio en los conos y acelerá en el tramo recto.' },
-  { title: 'Sentadilla con rebote corto', target: '3 x 10 reps', desc: 'Abajo hacé un pequeño rebote controlado y subí.' },
-  { title: 'Flexiones amplias', target: '3 x 8 reps', desc: 'Manos un poco más abiertas que lo habitual, pecho firme.' },
-  { title: 'Bicicleta abdominal lenta', target: '3 x 16 giros', desc: 'Llevá codo hacia la rodilla contraria de forma controlada.' },
-  { title: 'Círculos pequeños con mancuernas', target: '3 x 15 seg/sentido', desc: 'Brazos extendidos a los costados, círculos firmes.' },
-  { title: 'Paso lateral con sentadilla', target: '3 x 8 por lado', desc: 'Desplazate de lado sin subir la cadera en los pasos.' },
-  { title: 'Freno de pelota con planta', target: '3 x 15 frenos', desc: 'Rodá la pelota suave y frenala con la planta del pie.' },
-  { title: 'Plancha antebrazos con balanceo', target: '3 x 20 seg', desc: 'Pequeño balanceo adelante y atrás desde los hombros.' },
-  { title: 'Sentadilla + salto suave', target: '3 x 8 reps', desc: 'Bajá controlado y saltá suave, cayendo con rodillas blandas.' },
-  { title: 'Flexiones hasta la mitad', target: '3 x 8 reps', desc: 'Bajá hasta 90° en codos y subí con fuerza controlada.' },
-  { title: 'Lumbares tipo superman suave', target: '3 x 10 reps', desc: 'Boca abajo, levantá pecho y piernas suavemente sin forzar el cuello.' },
-  { title: 'Hombros: aguante arriba', target: '3 x 20 seg', desc: 'Sostené las mancuernas arriba con brazos casi extendidos.' },
-  { title: 'Conducción en 8 entre dos conos', target: '4 vueltas', desc: 'Dibujá el 8 completo alrededor de los conos con control.' },
-  { title: 'Sentadilla con manos atrás de cabeza', target: '3 x 10 reps', desc: 'Mantené el pecho arriba y la espalda recta todo el recorrido.' },
-  { title: 'Plancha lateral con elevación de pierna', target: '3 x 8 por lado', desc: 'Subí y bajá la pierna de arriba manteniendo la cadera firme.' },
-  { title: 'Toques rápidos de punta de pie', target: '4 x 20 seg', desc: 'Ritmo ágil alternando pies en el lugar.' },
-  { title: 'Giros rusos sin apoyar talones', target: '3 x 10 giros', desc: 'Si te resulta cómodo, mantené los pies apenas elevados.' },
-  { title: 'Flexiones + perro boca abajo', target: '3 x 6 reps', desc: 'Hacé 1 flexión y llevá la cadera arriba y atrás.' },
-  { title: 'Press de hombros sentado', target: '3 x 12 reps', desc: 'Sentado con espalda recta, empujá las mancuernas arriba.' },
-  { title: 'Zancada atrás alterna', target: '3 x 8 por pierna', desc: 'Llevá un pie hacia atrás y bajá controlando el equilibrio.' },
-  { title: 'Conducción con borde externo', target: '4 pasadas', desc: 'Enfocá los toques con el exterior del pie para girar.' },
-  { title: 'Abdominales en V (tuck)', target: '3 x 10 reps', desc: 'Llevá rodillas al pecho mientras acercás el torso controlado.' },
-  { title: 'Circuito relámpago de 6 estaciones', target: '1 vuelta completa', desc: 'Completá los 6 ejercicios básicos con buena técnica.' },
-  { title: 'Estabilidad en un pie', target: '3 x 25 seg/pie', desc: 'Mantené el equilibrio en un pie con leve flexión de rodilla.' },
-  { title: 'Flexiones lentas al bajar', target: '3 x 6 reps', desc: 'Bajá en 3 segundos y subí firme.' }
+  { anim: 'squat', title: 'Sentadilla con pausa abajo', target: '3 x 10 reps', desc: 'Bajá en 3 segundos, quedate 1 segundo abajo y subí firme.' },
+  { anim: 'pushup', title: 'Flexiones cerradas', target: '3 x 6 reps', desc: 'Manos más juntas que los hombros y codos cerca del cuerpo.' },
+  { anim: 'russian_twist', title: 'Toques de talón en suelo', target: '3 x 20 toques', desc: 'Acostado boca arriba con rodillas flexionadas, tocá un talón y el otro.' },
+  { anim: 'shoulder_press', title: 'Press lento con 1 kg', target: '3 x 12 reps', desc: 'Subí las mancuernas en 2 segundos y bajalas en 3 segundos.' },
+  { anim: 'pushup', title: 'Plancha frontal firme', target: '3 x 30 seg', desc: 'Apoyá antebrazos y puntas de pie con abdomen y glúteos apretados.' },
+  { anim: 'soccer_zigzag', title: 'Slalom corto con pelota', target: '6 pasadas', desc: 'Toques cortos alternando borde interno y externo.' },
+  { anim: 'squat', title: 'Zancadas alternas al frente', target: '3 x 8 por pierna', desc: 'Paso al frente, bajá controlado y volvé empujando.' },
+  { anim: 'russian_twist', title: 'Puente de glúteos', target: '3 x 15 reps', desc: 'Boca arriba con pies apoyados, subí la cadera y apretá arriba.' },
+  { anim: 'shoulder_press', title: 'Elevación lateral con 1 kg', target: '3 x 12 reps', desc: 'Subí los brazos hasta los hombros sin encoger el cuello.' },
+  { anim: 'pushup', title: 'Escaladores controlados', target: '3 x 20 pasos', desc: 'En plancha alta, llevá una rodilla al pecho y luego la otra.' },
+  { anim: 'squat', title: 'Zancada atrás alterna', target: '3 x 8 por lado', desc: 'Llevá un pie atrás y bajá vertical manteniendo el torso estable.' },
+  { anim: 'pushup', title: 'Flexiones con rodillas apoyadas', target: '3 x 10 reps', desc: 'Cuerpo alineado de rodillas a cabeza, pecho cerca del piso.' },
+  { anim: 'bird_dog', title: 'Bicho muerto (Dead Bug)', target: '3 x 8 por lado', desc: 'Boca arriba, extendé brazo y pierna contrarios sin arquear.' },
+  { anim: 'soccer_zigzag', title: 'Pases rápidos entre pies', target: '3 x 30 seg', desc: 'Pasá la pelota de un pie al otro manteniendo el ritmo.' },
+  { anim: 'squat', title: 'Sentadilla sumo abierta', target: '3 x 12 reps', desc: 'Pies bien separados con puntas afuera, bajá recto.' },
+  { anim: 'pushup', title: 'Fondos en borde de silla', target: '3 x 8 reps', desc: 'Manos en el borde, bajá flexionando codos y empujá.' },
+  { anim: 'bird_dog', title: 'Plancha lateral por lado', target: '3 x 20 seg/lado', desc: 'Cadera arriba formando una línea recta con el tronco.' },
+  { anim: 'shoulder_press', title: 'Vuelos frontales con 1 kg', target: '3 x 12 reps', desc: 'Subí las mancuernas al frente hasta la altura de los hombros.' },
+  { anim: 'squat', title: 'Saltos suaves en el lugar', target: '4 x 25 saltos', desc: 'Caé suave en punta de pie amortiguando con rodillas.' },
+  { anim: 'soccer_zigzag', title: 'Pisa-pelota alterno', target: '3 x 20 toques', desc: 'Tocá arriba de la pelota alternando plantas de pie.' },
+  { anim: 'squat', title: 'Sentadilla en pared', target: '3 x 35 seg', desc: 'Espalda apoyada en la pared y muslos paralelos al suelo.' },
+  { anim: 'pushup', title: 'Flexiones con pausa abajo', target: '3 x 6 reps', desc: 'Sostené 1 segundo abajo antes de empujar arriba.' },
+  { anim: 'russian_twist', title: 'Crunches cortos', target: '3 x 15 reps', desc: 'Despegá apenas los omóplatos sin tirar del cuello.' },
+  { anim: 'shoulder_press', title: 'Press rotado con 1 kg', target: '3 x 10 reps', desc: 'Rotá las palmas al empujar arriba y volvé al inicio.' },
+  { anim: 'bird_dog', title: 'Perro pájaro con pausa', target: '3 x 5 por lado', desc: 'Sostené 2 segundos brazo y pierna extendidos sin girar.' },
+  { anim: 'soccer_zigzag', title: 'Conducción pie izquierdo', target: '4 idas y vueltas', desc: 'Llevá y traé la pelota usando solo el pie izquierdo.' },
+  { anim: 'soccer_zigzag', title: 'Conducción pie derecho', target: '4 idas y vueltas', desc: 'Llevá y traé la pelota usando solo el pie derecho.' },
+  { anim: 'squat', title: 'Sentadilla + puntas de pie', target: '3 x 10 reps', desc: 'Al subir de la sentadilla, elevá talones.' },
+  { anim: 'pushup', title: 'Flexiones pies elevados', target: '3 x 6 reps', desc: 'Pies sobre un escalón bajo con abdomen firme.' },
+  { anim: 'russian_twist', title: 'Giros rusos con pausa', target: '3 x 12 giros', desc: 'Marcá 1 segundo a cada lado manteniendo el giro.' },
+  { anim: 'shoulder_press', title: 'Remo inclinado con 1 kg', target: '3 x 12 reps', desc: 'Torso inclinado con espalda recta, llevá codos atrás.' },
+  { anim: 'squat', title: 'Rodillas altas en el lugar', target: '4 x 20 seg', desc: 'Subí rodillas a la altura de la cadera con braceo.' },
+  { anim: 'soccer_zigzag', title: 'Control con muslo y pie', target: '3 x 10 toques', desc: 'Elevá la pelota suave con el muslo y controlá.' },
+  { anim: 'squat', title: 'Sentadilla bajada lenta', target: '3 x 8 reps', desc: 'Bajá contando 4 segundos y subí en 1 segundo.' },
+  { anim: 'pushup', title: 'Plancha con toque de hombro', target: '3 x 12 toques', desc: 'En plancha alta, tocá el hombro contrario sin mover cadera.' },
+  { anim: 'russian_twist', title: 'Elevación de piernas', target: '3 x 10 reps', desc: 'Acostado, subí y bajá piernas sin tocar el suelo.' },
+  { anim: 'shoulder_press', title: 'Press alterno a un brazo', target: '3 x 10 por brazo', desc: 'Empujá un brazo a la vez manteniendo el tronco recto.' },
+  { anim: 'squat', title: 'Puente a una pierna', target: '3 x 8 por pierna', desc: 'Subí la cadera impulsando con un solo pie apoyado.' },
+  { anim: 'soccer_zigzag', title: 'Zigzag con cambio de ritmo', target: '4 pasadas', desc: 'Despacio en los conos y rápido en el tramo recto.' },
+  { anim: 'squat', title: 'Sentadilla con rebote corto', target: '3 x 10 reps', desc: 'Abajo hacé un pequeño rebote controlado y subí.' },
+  { anim: 'pushup', title: 'Flexiones amplias', target: '3 x 8 reps', desc: 'Manos más abiertas que los hombros, pecho firme.' },
+  { anim: 'russian_twist', title: 'Bicicleta abdominal lenta', target: '3 x 16 giros', desc: 'Acercá codo a la rodilla contraria de forma controlada.' },
+  { anim: 'shoulder_press', title: 'Círculos con mancuernas', target: '3 x 15 seg/sentido', desc: 'Brazos abiertos a los costados haciendo círculos cortos.' },
+  { anim: 'squat', title: 'Paso lateral en sentadilla', target: '3 x 8 por lado', desc: 'Desplazate de lado sin subir la cadera en los pasos.' },
+  { anim: 'soccer_zigzag', title: 'Freno con planta del pie', target: '3 x 15 frenos', desc: 'Rodá la pelota suave y frenala pisándola.' },
+  { anim: 'pushup', title: 'Plancha con balanceo', target: '3 x 20 seg', desc: 'Balanceo corto adelante y atrás desde los hombros.' },
+  { anim: 'squat', title: 'Sentadilla + salto suave', target: '3 x 8 reps', desc: 'Bajá controlado y saltá suave cayendo blando.' },
+  { anim: 'pushup', title: 'Flexiones a 90 grados', target: '3 x 8 reps', desc: 'Bajá hasta doblar codos a 90° y subí con control.' },
+  { anim: 'bird_dog', title: 'Superman suave', target: '3 x 10 reps', desc: 'Boca abajo, despegá apenas pecho y piernas sin forzar cuello.' },
+  { anim: 'shoulder_press', title: 'Aguante arriba con 1 kg', target: '3 x 20 seg', desc: 'Sostené las mancuernas arriba con brazos casi extendidos.' },
+  { anim: 'soccer_zigzag', title: 'Conducción en 8', target: '4 vueltas', desc: 'Dibujá el 8 completo rodeando ambos conos.' },
+  { anim: 'squat', title: 'Sentadilla manos en nuca', target: '3 x 10 reps', desc: 'Mantené el pecho alto y la espalda bien derecha.' },
+  { anim: 'bird_dog', title: 'Plancha lateral + pierna', target: '3 x 8 por lado', desc: 'Subí y bajá la pierna de arriba sin bajar la cadera.' },
+  { anim: 'squat', title: 'Toques rápidos de punta', target: '4 x 20 seg', desc: 'Ritmo ágil alternando puntas de pie en el lugar.' },
+  { anim: 'russian_twist', title: 'Giros rusos pies elevados', target: '3 x 10 giros', desc: 'Mantené los pies apenas despegados del suelo si podés.' },
+  { anim: 'pushup', title: 'Flexión + carpa', target: '3 x 6 reps', desc: 'Hacé 1 flexión y llevá la cadera arriba y atrás.' },
+  { anim: 'shoulder_press', title: 'Press sentado con 1 kg', target: '3 x 12 reps', desc: 'Sentado con espalda recta, empujá las mancuernas arriba.' },
+  { anim: 'squat', title: 'Zancada cruzada atrás', target: '3 x 8 por lado', desc: 'Llevá el pie atrás en diagonal y bajá controlado.' },
+  { anim: 'soccer_zigzag', title: 'Toques con borde externo', target: '4 pasadas', desc: 'Conducí girando con el exterior de cada pie.' },
+  { anim: 'russian_twist', title: 'Abdominales en V cortos', target: '3 x 10 reps', desc: 'Acercá rodillas y pecho al mismo tiempo con control.' },
+  { anim: 'bird_dog', title: 'Equilibrio en un pie', target: '3 x 25 seg/pie', desc: 'Mantené el equilibrio en un pie con rodilla semiflexionada.' },
+  { anim: 'pushup', title: 'Flexiones bajada en 3 seg', target: '3 x 6 reps', desc: 'Bajá contando 3 segundos y subí firme.' }
 ];
 
 const STORAGE_KEY = 'amrap_13yo_mobile_v2';
@@ -196,7 +195,7 @@ let checklistState = {};
 let selectedExerciseFilter = EXERCISES[0].id;
 let monthOffset = 0;
 let wakeLockSentinel = null;
-let selectedStreakStyleIndex = 2;
+let selectedStreakStyleIndex = 0;
 
 let sessions = [];
 let coins = 0;
@@ -1414,6 +1413,18 @@ function updateAllSkeletonCanvases(timestampMs) {
     }
   });
 
+  // Animación del ejercicio diario bonus en Tienda
+  const dailySvg = document.getElementById('daily-challenge-svg');
+  if (dailySvg) {
+    const todayChallenge = getDailyChallengeForDate(getTodayISO());
+    const builder = builders[todayChallenge.anim] || buildSquatFrame;
+    const bodySVG = builder(tSec);
+    dailySvg.innerHTML = `
+      <text x="170" y="14" font-size="9" font-weight="700" text-anchor="middle" fill="#000000">EJEMPLO DE MOVIMIENTO</text>
+      ${bodySVG}
+    `;
+  }
+
   fkAnimationFrameId = requestAnimationFrame(updateAllSkeletonCanvases);
 }
 
@@ -1621,25 +1632,14 @@ function refreshProgressView() {
   }
 }
 
-function getStreakPalette(streakDays, styleIndex) {
+// SOLO 2 ESTILOS: Estilo 1 (blanco) y Estilo 2 (negativo exacto del 1)
+function getStreakPalette(styleIndex) {
   const hasPerkFrame = unlockedPerks.includes('frame');
 
   if (styleIndex === 1) {
     return {
-      bg: '#FFFFFF',
-      fg: '#000000',
-      muted: '#555555',
-      framed: true,
-      doubleFrame: hasPerkFrame,
-      fillCalendar: false
-    };
-  }
-
-  if (styleIndex === 2) {
-    return {
       bg: '#000000',
       fg: '#FFFFFF',
-      muted: '#B5B5B5',
       framed: true,
       doubleFrame: hasPerkFrame,
       fillCalendar: true
@@ -1649,8 +1649,7 @@ function getStreakPalette(streakDays, styleIndex) {
   return {
     bg: '#FFFFFF',
     fg: '#000000',
-    muted: '#666666',
-    framed: hasPerkFrame,
+    framed: true,
     doubleFrame: hasPerkFrame,
     fillCalendar: false
   };
@@ -1711,7 +1710,7 @@ function renderStreakCanvas(canvas, styleIndex = selectedStreakStyleIndex) {
   if (!canvas) return;
   const { currentStreak } = calculateStreaks();
   const todayISO = getTodayISO();
-  const palette = getStreakPalette(currentStreak, styleIndex);
+  const palette = getStreakPalette(styleIndex);
   const ctx = canvas.getContext('2d');
 
   ctx.fillStyle = palette.bg;
@@ -1741,9 +1740,9 @@ function renderStreakCanvas(canvas, styleIndex = selectedStreakStyleIndex) {
   const calCenterY = 480;
   drawCalendarWithStreakNumber(ctx, canvas.width / 2, calCenterY, calSize, currentStreak, palette);
 
-  const streakPhrase = styleIndex === 2
-    ? `${currentStreak} ${currentStreak === 1 ? 'dia de racha entrenando 💪' : 'dias de racha entrenando 💪'}`
-    : `${currentStreak} ${currentStreak === 1 ? 'día de racha' : 'días de racha'}`;
+  const streakPhrase = currentStreak === 1
+    ? '1 dia de racha entrenando'
+    : `${currentStreak} dias de racha entrenando`;
 
   ctx.fillStyle = palette.fg;
   ctx.font = 'bold 40px Arimo, sans-serif';
@@ -1757,9 +1756,9 @@ function renderStreakCanvas(canvas, styleIndex = selectedStreakStyleIndex) {
 }
 
 function selectStreakStyle(styleIndex) {
-  selectedStreakStyleIndex = styleIndex;
+  selectedStreakStyleIndex = styleIndex === 1 ? 1 : 0;
   document.querySelectorAll('.streak-style-btn').forEach(btn => {
-    const active = Number(btn.dataset.style) === styleIndex;
+    const active = Number(btn.dataset.style) === selectedStreakStyleIndex;
     btn.classList.toggle('bg-pureblack', active);
     btn.classList.toggle('text-purewhite', active);
     btn.classList.toggle('bg-purewhite', !active);
@@ -1791,11 +1790,12 @@ async function downloadStreakPreviewImage() {
   const a = document.createElement('a');
   a.href = url;
   a.download = fileName;
+  a.rel = 'noopener';
   document.body.appendChild(a);
   a.click();
   document.body.removeChild(a);
-  URL.revokeObjectURL(url);
-  showToast('PNG descargado');
+  setTimeout(() => URL.revokeObjectURL(url), 1500);
+  showToast('Imagen descargada');
 }
 
 async function confirmShareStreakImage() {
@@ -1808,13 +1808,29 @@ async function confirmShareStreakImage() {
   }
 
   const fileName = `racha-amrap-${currentStreak}d-e${selectedStreakStyleIndex + 1}-${todayISO}.png`;
-  const file = new File([blob], fileName, { type: 'image/png' });
+  const shareText = currentStreak === 1
+    ? '1 dia de racha entrenando'
+    : `${currentStreak} dias de racha entrenando`;
 
-  if (navigator.share && navigator.canShare && navigator.canShare({ files: [file] })) {
+  let canShareFile = false;
+  let file = null;
+
+  try {
+    if (typeof File === 'function') {
+      file = new File([blob], fileName, { type: 'image/png' });
+      if (navigator.share && typeof navigator.canShare === 'function') {
+        canShareFile = navigator.canShare({ files: [file] });
+      }
+    }
+  } catch (e) {
+    canShareFile = false;
+  }
+
+  if (canShareFile && file) {
     try {
       await navigator.share({
         title: 'AMRAP',
-        text: `${currentStreak} dias de racha entrenando 💪`,
+        text: shareText,
         files: [file]
       });
       return;
