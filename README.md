@@ -1,6 +1,6 @@
 # AMRAP
 
-![AMRAP Banner]("https://github.com/user-attachments/assets/642ae1ef-d6d9-4dea-a9da-6b21452fbe3e")
+![AMRAP Banner](https://github.com/user-attachments/assets/642ae1ef-d6d9-4dea-a9da-6b21452fbe3e)
 
 **AMRAP** (*As Many Rounds As Possible* / *As Many Reps As Possible*) significa **"tantas rondas como sea posible"** o **"tantas repeticiones como sea posible"**.
 
