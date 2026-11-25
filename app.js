@@ -109,7 +109,6 @@ const EXERCISES = [
   }
 ];
 
-// Exactamente 50 ejercicios bonus diarios
 const DAILY_EXERCISES = [
   { id: 1, anim: 'squat', title: 'Sentadilla con pausa abajo', target: '3 x 10 reps', desc: 'Bajá en 3s, quedate 1s abajo y subí firme.' },
   { id: 2, anim: 'pushup', title: 'Flexiones cerradas', target: '3 x 6 reps', desc: 'Manos más juntas y codos pegados al cuerpo.' },
@@ -123,7 +122,7 @@ const DAILY_EXERCISES = [
   { id: 10, anim: 'pushup', title: 'Escaladores controlados', target: '3 x 20 pasos', desc: 'En plancha alta, llevá rodillas al pecho.' },
   { id: 11, anim: 'squat', title: 'Zancada atrás alterna', target: '3 x 8 por lado', desc: 'Llevá un pie atrás y bajá manteniendo el torso.' },
   { id: 12, anim: 'pushup', title: 'Flexiones con rodillas', target: '3 x 10 reps', desc: 'Apoyá rodillas manteniendo línea recta.' },
-  { id: 13, anim: 'bird_dog', title: 'Bicho muerto (Dead Bug)', target: '3 x 8 por lado', desc: 'Extencé brazo y pierna opuestos sin arquear.' },
+  { id: 13, anim: 'bird_dog', title: 'Bicho muerto (Dead Bug)', target: '3 x 8 por lado', desc: 'Extendé brazo y pierna opuestos sin arquear.' },
   { id: 14, anim: 'soccer_zigzag', title: 'Pases rápidos entre pies', target: '3 x 30 seg', desc: 'Pasá la pelota de un pie al otro con ritmo.' },
   { id: 15, anim: 'squat', title: 'Sentadilla sumo abierta', target: '3 x 12 reps', desc: 'Pies bien abiertos y puntas afuera, bajá recto.' },
   { id: 16, anim: 'pushup', title: 'Fondos en borde de silla', target: '3 x 8 reps', desc: 'Bajá flexionando codos y empujá arriba.' },
@@ -163,6 +162,7 @@ const DAILY_EXERCISES = [
   { id: 50, anim: 'soccer_zigzag', title: 'Conducción en 8', target: '4 vueltas', desc: 'Dibujá el 8 completo rodeando ambos conos.' }
 ];
 
+const VIEWS_ORDER = ['timer', 'exercises', 'progress', 'shop'];
 const STORAGE_KEY = 'amrap_13yo_mobile_v2';
 const TOTAL_SECONDS = 20 * 60;
 const DAILY_COINS_REWARD = 10;
@@ -170,6 +170,7 @@ const DAILY_CHALLENGE_BONUS = 5;
 const FREEZE_COST = 100;
 const MAX_FREEZES = 2;
 
+let currentViewName = 'timer';
 let timerSecondsLeft = TOTAL_SECONDS;
 let timerInterval = null;
 let isTimerRunning = false;
@@ -203,6 +204,7 @@ document.addEventListener('DOMContentLoaded', () => {
   renderExerciseTabs();
   renderExercisesGrid();
   startSkeletonAnimationLoop();
+  setupSwipeNavigation();
   updateTimerUI();
   updateRoundsUI();
   refreshProgressView();
@@ -219,6 +221,75 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 });
+
+function isAnyModalOpen() {
+  return ['share-streak-modal', 'session-modal', 'confirm-modal'].some(id => {
+    const el = document.getElementById(id);
+    return el && !el.classList.contains('hidden');
+  });
+}
+
+function setupSwipeNavigation() {
+  const stage = document.getElementById('main-stage');
+  if (!stage) return;
+
+  let startX = 0;
+  let startY = 0;
+  let tracking = false;
+
+  const onStart = (x, y, target) => {
+    if (isAnyModalOpen()) return;
+    if (target && (target.closest('#monthly-calendar-rows') || target.closest('input') || target.closest('select'))) {
+      return;
+    }
+    startX = x;
+    startY = y;
+    tracking = true;
+  };
+
+  const onEnd = (x, y) => {
+    if (!tracking) return;
+    tracking = false;
+    const dx = x - startX;
+    const dy = y - startY;
+
+    if (Math.abs(dx) < 65 || Math.abs(dx) < Math.abs(dy) * 1.35) {
+      return;
+    }
+
+    const idx = VIEWS_ORDER.indexOf(currentViewName);
+    if (dx < 0 && idx < VIEWS_ORDER.length - 1) {
+      switchView(VIEWS_ORDER[idx + 1], 'right');
+    } else if (dx > 0 && idx > 0) {
+      switchView(VIEWS_ORDER[idx - 1], 'left');
+    }
+  };
+
+  stage.addEventListener('touchstart', e => {
+    if (e.touches && e.touches.length === 1) {
+      onStart(e.touches[0].clientX, e.touches[0].clientY, e.target);
+    }
+  }, { passive: true });
+
+  stage.addEventListener('touchend', e => {
+    if (e.changedTouches && e.changedTouches.length > 0) {
+      onEnd(e.changedTouches[0].clientX, e.changedTouches[0].clientY);
+    }
+  }, { passive: true });
+
+  let mouseDown = false;
+  stage.addEventListener('mousedown', e => {
+    if (e.button !== 0) return;
+    mouseDown = true;
+    onStart(e.clientX, e.clientY, e.target);
+  });
+
+  window.addEventListener('mouseup', e => {
+    if (!mouseDown) return;
+    mouseDown = false;
+    onEnd(e.clientX, e.clientY);
+  });
+}
 
 function getTodayISO() {
   const now = new Date();
@@ -320,7 +391,7 @@ function loadSessions() {
         const perksSource = Array.isArray(parsed.unlockedPerks)
           ? parsed.unlockedPerks
           : (Array.isArray(parsed.unlockedEpicPerks) ? parsed.unlockedEpicPerks : []);
-        unlockedPerks = Array.from(new Set(perksSource.filter(p => typeof p === 'string')));
+        unlockedPerks = Array.from(new Set(perksSource.filter(p => typeof p === 'string' && p !== 'frame')));
 
         challengeQueue = Array.isArray(parsed.challengeQueue)
           ? parsed.challengeQueue.filter(id => DAILY_EXERCISES.some(ex => ex.id === id))
@@ -476,12 +547,6 @@ function refreshShopView() {
     }
   }
 
-  const frameBtn = document.getElementById('btn-buy-epic-frame');
-  if (frameBtn) {
-    frameBtn.disabled = unlockedPerks.includes('frame') || coins < 25;
-    frameBtn.textContent = unlockedPerks.includes('frame') ? 'Activo' : '25 Monedas';
-  }
-
   const chimeBtn = document.getElementById('btn-buy-epic-chime');
   if (chimeBtn) {
     chimeBtn.disabled = unlockedPerks.includes('chime') || coins < 30;
@@ -506,13 +571,18 @@ function refreshShopView() {
     claimBtn.disabled = claimed;
     claimBtn.textContent = claimed ? 'Bonus cobrado hoy (+5)' : 'Completar y cobrar +5 monedas';
   }
-
-  renderDailyChallengeSVG(performance.now());
 }
 
-function switchView(viewName) {
-  const views = ['timer', 'exercises', 'progress', 'shop'];
-  views.forEach(v => {
+function switchView(viewName, direction = null) {
+  if (!direction) {
+    const prevIdx = VIEWS_ORDER.indexOf(currentViewName);
+    const nextIdx = VIEWS_ORDER.indexOf(viewName);
+    direction = nextIdx >= prevIdx ? 'right' : 'left';
+  }
+
+  currentViewName = viewName;
+
+  VIEWS_ORDER.forEach(v => {
     const section = document.getElementById(`view-${v}`);
     const btn = document.getElementById(`nav-${v}`);
     if (!section || !btn) return;
@@ -526,6 +596,13 @@ function switchView(viewName) {
       btn.classList.add('bg-purewhite', 'text-pureblack');
     }
   });
+
+  const stage = document.getElementById('main-stage');
+  if (stage) {
+    stage.classList.remove('view-slide-in-right', 'view-slide-in-left');
+    void stage.offsetWidth;
+    stage.classList.add(direction === 'left' ? 'view-slide-in-left' : 'view-slide-in-right');
+  }
 
   window.scrollTo({ top: 0, behavior: 'instant' });
   if (viewName === 'progress') refreshProgressView();
@@ -691,7 +768,7 @@ function handleResetTimerTap() {
     clearTimeout(resetConfirmTimeout);
     resetConfirmPending = false;
     resetBtn.classList.remove('bg-pureblack', 'text-purewhite');
-    resetBtn.classList.add('bg-pureblack', 'text-purewhite');
+    resetBtn.classList.add('bg-purewhite', 'text-pureblack');
     resetText.textContent = 'Reiniciar';
 
     pauseTimer();
@@ -974,15 +1051,15 @@ function renderArticulatedFigure(sk, extrasTop = '', extrasBottom = '') {
 
 function buildSquatFrame(tSec) {
   const p = smoothWave(tSec, 2.8);
-  const floorY = 144;
+  const floorY = 148;
 
   const ankleL = { x: 165, y: floorY };
   const footL = { x: 180, y: floorY };
   const ankleR = { x: 167, y: floorY - 1 };
   const footR = { x: 182, y: floorY - 1 };
 
-  const shinLen = 35;
-  const thighLen = 37;
+  const shinLen = 36;
+  const thighLen = 38;
   const shinAngle = lerp(-92, -62, p);
   const thighAngle = lerp(-90, -162, p);
 
@@ -995,25 +1072,25 @@ function buildSquatFrame(tSec) {
 
   const lowerTorsoAngle = lerp(-90, -64, p);
   const upperTorsoAngle = lerp(-90, -62, p);
-  const waist = polarPoint(pelvis, 19, lowerTorsoAngle);
-  const neck = polarPoint(waist, 21, upperTorsoAngle);
-  const headCenter = polarPoint(neck, 12, upperTorsoAngle);
+  const waist = polarPoint(pelvis, 20, lowerTorsoAngle);
+  const neck = polarPoint(waist, 22, upperTorsoAngle);
+  const headCenter = polarPoint(neck, 12.5, upperTorsoAngle);
 
   const shoulderL = { x: neck.x, y: neck.y + 3 };
   const shoulderR = { x: neck.x + 2, y: neck.y + 2 };
 
   const upperArmAngle = lerp(84, 4, p);
   const forearmAngle = lerp(72, -10, p);
-  const elbowL = polarPoint(shoulderL, 19, upperArmAngle);
-  const handL = polarPoint(elbowL, 19, forearmAngle);
+  const elbowL = polarPoint(shoulderL, 20, upperArmAngle);
+  const handL = polarPoint(elbowL, 20, forearmAngle);
 
-  const elbowR = polarPoint(shoulderR, 19, upperArmAngle);
-  const handR = polarPoint(elbowR, 19, forearmAngle);
+  const elbowR = polarPoint(shoulderR, 20, upperArmAngle);
+  const handR = polarPoint(elbowR, 20, forearmAngle);
 
   const floorLine = `<line x1="16" y1="${floorY}" x2="324" y2="${floorY}" stroke="#000000" stroke-width="2" />`;
 
   return renderArticulatedFigure({
-    pelvis, waist, neck, headCenter, headR: 9,
+    pelvis, waist, neck, headCenter, headR: 9.5,
     hipL, kneeL, ankleL, footL,
     hipR, kneeR, ankleR, footR,
     shoulderL, elbowL, handL,
@@ -1023,7 +1100,7 @@ function buildSquatFrame(tSec) {
 
 function buildPushupFrame(tSec) {
   const p = smoothWave(tSec, 2.6);
-  const floorY = 140;
+  const floorY = 144;
 
   const footL = { x: 82, y: floorY };
   const ankleL = { x: 82, y: floorY - 5 };
@@ -1032,16 +1109,16 @@ function buildPushupFrame(tSec) {
 
   const plankAngle = lerp(-24, -8.5, p);
 
-  const kneeL = polarPoint(ankleL, 36, plankAngle);
-  const hipL = polarPoint(kneeL, 36, plankAngle);
+  const kneeL = polarPoint(ankleL, 38, plankAngle);
+  const hipL = polarPoint(kneeL, 38, plankAngle);
 
-  const kneeR = polarPoint(ankleR, 36, plankAngle);
-  const hipR = polarPoint(kneeR, 36, plankAngle);
+  const kneeR = polarPoint(ankleR, 38, plankAngle);
+  const hipR = polarPoint(kneeR, 38, plankAngle);
 
   const pelvis = { x: (hipL.x + hipR.x) / 2, y: (hipL.y + hipR.y) / 2 };
-  const waist = polarPoint(pelvis, 20, plankAngle);
-  const neck = polarPoint(waist, 22, plankAngle);
-  const headCenter = polarPoint(neck, 12, plankAngle);
+  const waist = polarPoint(pelvis, 21, plankAngle);
+  const neck = polarPoint(waist, 23, plankAngle);
+  const headCenter = polarPoint(neck, 13, plankAngle);
 
   const shoulderL = { x: neck.x - 3, y: neck.y + 3 };
   const shoulderR = { x: neck.x + 2, y: neck.y + 1 };
@@ -1049,15 +1126,15 @@ function buildPushupFrame(tSec) {
   const handL = { x: shoulderL.x + 2, y: floorY };
   const handR = { x: shoulderR.x + 3, y: floorY - 2 };
 
-  const upperArmLen = 20;
-  const forearmLen = 20;
+  const upperArmLen = 21;
+  const forearmLen = 21;
   const elbowL = solveTwoBoneIK(shoulderL, handL, upperArmLen, forearmLen, false);
   const elbowR = solveTwoBoneIK(shoulderR, handR, upperArmLen, forearmLen, false);
 
   const floorLine = `<line x1="16" y1="${floorY}" x2="324" y2="${floorY}" stroke="#000000" stroke-width="2" />`;
 
   return renderArticulatedFigure({
-    pelvis, waist, neck, headCenter, headR: 8.5,
+    pelvis, waist, neck, headCenter, headR: 9,
     hipL, kneeL, ankleL, footL,
     hipR, kneeR, ankleR, footR,
     shoulderL, elbowL, handL,
@@ -1083,7 +1160,7 @@ function solveTwoBoneIK(p1, p2, len1, len2, bendUp) {
 }
 
 function buildRussianTwistFrame() {
-  const floorY = 142;
+  const floorY = 148;
   const LEFT_COLOR = '#000000';
   const RIGHT_COLOR = '#777777';
 
@@ -1097,39 +1174,39 @@ function buildRussianTwistFrame() {
     const hipL = { x: ox, y: floorY - 5 };
     const hipR = { x: ox + 2.5, y: floorY - 5 };
 
-    const waist = { x: ox - 17, y: floorY - 21 };
-    const neck = { x: ox - 34, y: floorY - 38 };
-    const headCenter = { x: ox - 42, y: floorY - 47 };
+    const waist = { x: ox - 18, y: floorY - 23 };
+    const neck = { x: ox - 36, y: floorY - 41 };
+    const headCenter = { x: ox - 45, y: floorY - 51 };
 
-    const kneeL = { x: ox + 40, y: floorY - 31 };
-    const kneeR = { x: ox + 42, y: floorY - 29.5 };
+    const kneeL = { x: ox + 42, y: floorY - 33 };
+    const kneeR = { x: ox + 44, y: floorY - 31.5 };
 
-    const ankleL = { x: ox + 76, y: floorY - 4 };
-    const footL = { x: ox + 88, y: floorY - 4 };
-    const ankleR = { x: ox + 73, y: floorY - 5.5 };
-    const footR = { x: ox + 85, y: floorY - 5.5 };
+    const ankleL = { x: ox + 80, y: floorY - 4 };
+    const footL = { x: ox + 93, y: floorY - 4 };
+    const ankleR = { x: ox + 77, y: floorY - 5.5 };
+    const footR = { x: ox + 90, y: floorY - 5.5 };
 
     const shoulderL = { x: neck.x - 1, y: neck.y + 2.5 };
     const shoulderR = { x: neck.x + 3, y: neck.y + 2.5 };
 
     const isFront = mode === 'front';
-    const ballX = isFront ? (ox - 10) : (ox - 22);
-    const ballY = isFront ? (floorY - 16) : (floorY - 20);
+    const ballX = isFront ? (ox - 10) : (ox - 24);
+    const ballY = isFront ? (floorY - 17) : (floorY - 22);
 
     const handL = { x: ballX - 5.5, y: ballY + 1 };
     const handR = { x: ballX + 5.5, y: ballY - 1 };
 
     const elbowL = isFront
-      ? { x: shoulderL.x - 6, y: shoulderL.y + 14 }
-      : { x: shoulderL.x - 11, y: shoulderL.y + 10 };
+      ? { x: shoulderL.x - 6, y: shoulderL.y + 15 }
+      : { x: shoulderL.x - 12, y: shoulderL.y + 11 };
     const elbowR = isFront
-      ? { x: shoulderR.x + 8, y: shoulderR.y + 12 }
-      : { x: shoulderR.x + 2, y: shoulderR.y + 13 };
+      ? { x: shoulderR.x + 8, y: shoulderR.y + 13 }
+      : { x: shoulderR.x + 2, y: shoulderR.y + 14 };
 
     const ballSVG = `
       <g>
-        <circle cx="${ballX.toFixed(1)}" cy="${ballY.toFixed(1)}" r="6.5" fill="#FFFFFF" stroke="#000000" stroke-width="2" />
-        <circle cx="${ballX.toFixed(1)}" cy="${ballY.toFixed(1)}" r="2" fill="#000000" />
+        <circle cx="${ballX.toFixed(1)}" cy="${ballY.toFixed(1)}" r="6.8" fill="#FFFFFF" stroke="#000000" stroke-width="2.1" />
+        <circle cx="${ballX.toFixed(1)}" cy="${ballY.toFixed(1)}" r="2.2" fill="#000000" />
       </g>
     `;
 
@@ -1143,7 +1220,7 @@ function buildRussianTwistFrame() {
       ${seg(waist, neck, LEFT_COLOR, 3.2)}
       ${joint(waist, LEFT_COLOR, 1.8)}
       ${seg(neck, headCenter, LEFT_COLOR, 2.2)}
-      <circle cx="${headCenter.x.toFixed(1)}" cy="${headCenter.y.toFixed(1)}" r="7" fill="#FFFFFF" stroke="${LEFT_COLOR}" stroke-width="2" />
+      <circle cx="${headCenter.x.toFixed(1)}" cy="${headCenter.y.toFixed(1)}" r="7.5" fill="#FFFFFF" stroke="${LEFT_COLOR}" stroke-width="2.1" />
 
       ${seg(hipL, kneeL, LEFT_COLOR, 2.9)}
       ${seg(kneeL, ankleL, LEFT_COLOR, 2.9)}
@@ -1165,14 +1242,14 @@ function buildRussianTwistFrame() {
     const stepLabel = isFront ? 'PASO 1' : 'PASO 2';
 
     return `
-      <rect x="${(badgeX - 23).toFixed(1)}" y="22" width="46" height="13" fill="#000000" />
-      <text x="${badgeX.toFixed(1)}" y="31" font-size="8" font-weight="700" text-anchor="middle" fill="#FFFFFF">${stepLabel}</text>
+      <rect x="${(badgeX - 24).toFixed(1)}" y="24" width="48" height="14" fill="#000000" />
+      <text x="${badgeX.toFixed(1)}" y="34" font-size="8.5" font-weight="700" text-anchor="middle" fill="#FFFFFF">${stepLabel}</text>
       ${isFront ? `${legsAndBody}${armsSVG}${ballSVG}` : `${ballSVG}${legsAndBody}${armsSVG}`}
     `;
   };
 
   const floorLine = `<line x1="14" y1="${floorY}" x2="326" y2="${floorY}" stroke="#000000" stroke-width="2" />`;
-  const divider = `<line x1="170" y1="20" x2="170" y2="${floorY - 2}" stroke="#D4D4D4" stroke-width="1.2" stroke-dasharray="3 3" />`;
+  const divider = `<line x1="170" y1="22" x2="170" y2="${floorY - 2}" stroke="#D4D4D4" stroke-width="1.2" stroke-dasharray="3 3" />`;
 
   return `
     ${floorLine}
@@ -1184,37 +1261,37 @@ function buildRussianTwistFrame() {
 
 function buildShoulderPressFrame(tSec) {
   const p = smoothWave(tSec, 2.4);
-  const floorY = 146;
+  const floorY = 152;
   const centerX = 170;
 
-  const pelvis = { x: centerX, y: 96 };
-  const hipL = { x: centerX, y: 96 };
-  const hipR = { x: centerX, y: 96 };
+  const pelvis = { x: centerX, y: 100 };
+  const hipL = { x: centerX, y: 100 };
+  const hipR = { x: centerX, y: 100 };
 
   const thighAngleL = 104;
   const thighAngleR = 76;
-  const kneeL = polarPoint(hipL, 25, thighAngleL);
-  const ankleL = polarPoint(kneeL, 25, thighAngleL);
+  const kneeL = polarPoint(hipL, 26, thighAngleL);
+  const ankleL = polarPoint(kneeL, 27, thighAngleL);
   const footL = { x: ankleL.x - 8, y: floorY };
 
-  const kneeR = polarPoint(hipR, 25, thighAngleR);
-  const ankleR = polarPoint(kneeR, 25, thighAngleR);
+  const kneeR = polarPoint(hipR, 26, thighAngleR);
+  const ankleR = polarPoint(kneeR, 27, thighAngleR);
   const footR = { x: ankleR.x + 8, y: floorY };
 
-  const waist = { x: centerX, y: 79 };
-  const neck = { x: centerX, y: 58 };
-  const headCenter = { x: centerX, y: 45 };
+  const waist = { x: centerX, y: 82 };
+  const neck = { x: centerX, y: 60 };
+  const headCenter = { x: centerX, y: 46 };
 
-  const shoulderL = { x: centerX, y: 63 };
-  const shoulderR = { x: centerX, y: 63 };
+  const shoulderL = { x: centerX, y: 65 };
+  const shoulderR = { x: centerX, y: 65 };
 
   const upperAngleL = lerp(150, 228, p);
-  const elbowL = polarPoint(shoulderL, 20, upperAngleL);
-  const handL = polarPoint(elbowL, 18, -90);
+  const elbowL = polarPoint(shoulderL, 21, upperAngleL);
+  const handL = polarPoint(elbowL, 19, -90);
 
   const upperAngleR = lerp(30, -48, p);
-  const elbowR = polarPoint(shoulderR, 20, upperAngleR);
-  const handR = polarPoint(elbowR, 18, -90);
+  const elbowR = polarPoint(shoulderR, 21, upperAngleR);
+  const handR = polarPoint(elbowR, 19, -90);
 
   const dumbbells = `
     <g>
@@ -1226,7 +1303,7 @@ function buildShoulderPressFrame(tSec) {
   const floorLine = `<line x1="16" y1="${floorY}" x2="324" y2="${floorY}" stroke="#000000" stroke-width="2" />`;
 
   return renderArticulatedFigure({
-    pelvis, waist, neck, headCenter, headR: 9,
+    pelvis, waist, neck, headCenter, headR: 9.5,
     hipL, kneeL, ankleL, footL,
     hipR, kneeR, ankleR, footR,
     shoulderL, elbowL, handL,
@@ -1249,42 +1326,42 @@ function buildBirdDogFrame(tSec) {
     extB = 0.5 - 0.5 * Math.cos(2 * Math.PI * localT);
   }
 
-  const floorY = 140;
+  const floorY = 144;
 
-  const pelvis = { x: 136, y: 90 };
-  const waist = { x: 168, y: 90 };
-  const neck = { x: 200, y: 90 };
-  const headCenter = { x: 213, y: 84 };
+  const pelvis = { x: 136, y: 92 };
+  const waist = { x: 168, y: 92 };
+  const neck = { x: 200, y: 92 };
+  const headCenter = { x: 213, y: 86 };
 
-  const shoulderL = { x: 198, y: 91 };
-  const shoulderR = { x: 203, y: 89 };
-  const hipL = { x: 135, y: 91 };
-  const hipR = { x: 140, y: 89 };
+  const shoulderL = { x: 198, y: 93 };
+  const shoulderR = { x: 203, y: 91 };
+  const hipL = { x: 135, y: 93 };
+  const hipR = { x: 140, y: 91 };
 
   const armAngleL = lerp(90, 0, extA);
-  const elbowL = polarPoint(shoulderL, 24, armAngleL);
-  const handL = polarPoint(elbowL, 25, armAngleL);
+  const elbowL = polarPoint(shoulderL, 25, armAngleL);
+  const handL = polarPoint(elbowL, 26, armAngleL);
 
   const armAngleR = lerp(90, 0, extB);
-  const elbowR = polarPoint(shoulderR, 25, armAngleR);
-  const handR = polarPoint(elbowR, 26, armAngleR);
+  const elbowR = polarPoint(shoulderR, 26, armAngleR);
+  const handR = polarPoint(elbowR, 27, armAngleR);
 
   const thighAngleL = lerp(90, 180, extB);
   const shinAngleL = lerp(180, 180, extB);
-  const kneeL = polarPoint(hipL, 48, thighAngleL);
-  const ankleL = polarPoint(kneeL, 26, shinAngleL);
+  const kneeL = polarPoint(hipL, 51, thighAngleL);
+  const ankleL = polarPoint(kneeL, 28, shinAngleL);
   const footL = { x: ankleL.x, y: ankleL.y - 4 };
 
   const thighAngleR = lerp(90, 180, extA);
   const shinAngleR = lerp(180, 180, extA);
-  const kneeR = polarPoint(hipR, 50, thighAngleR);
-  const ankleR = polarPoint(kneeR, 26, shinAngleR);
+  const kneeR = polarPoint(hipR, 53, thighAngleR);
+  const ankleR = polarPoint(kneeR, 28, shinAngleR);
   const footR = { x: ankleR.x, y: ankleR.y - 4 };
 
   const floorLine = `<line x1="16" y1="${floorY}" x2="324" y2="${floorY}" stroke="#000000" stroke-width="2" />`;
 
   return renderArticulatedFigure({
-    pelvis, waist, neck, headCenter, headR: 8,
+    pelvis, waist, neck, headCenter, headR: 8.5,
     hipL, kneeL, ankleL, footL,
     hipR, kneeR, ankleR, footR,
     shoulderL, elbowL, handL,
@@ -1297,9 +1374,9 @@ function buildZigzagFrame(tSec) {
   const tau = ((tSec % cycle) / cycle) * Math.PI * 2;
 
   const centerX = 170;
-  const centerY = 108;
+  const centerY = 114;
   const ampX = 88;
-  const ampY = 20;
+  const ampY = 22;
 
   const ballX = centerX + ampX * Math.sin(tau);
   const ballY = centerY + ampY * Math.sin(2 * tau);
@@ -1319,34 +1396,34 @@ function buildZigzagFrame(tSec) {
   const strideOpp = -stride;
   const facingSign = tx >= 0 ? 1 : -1;
 
-  const pelvis = { x: playerX, y: playerY - 22 };
-  const waist = { x: playerX + facingSign * 1.5, y: playerY - 32 };
-  const neck = { x: playerX + facingSign * 3, y: playerY - 41 };
-  const headCenter = { x: playerX + facingSign * 4, y: playerY - 49 };
+  const pelvis = { x: playerX, y: playerY - 24 };
+  const waist = { x: playerX + facingSign * 1.5, y: playerY - 34 };
+  const neck = { x: playerX + facingSign * 3, y: playerY - 44 };
+  const headCenter = { x: playerX + facingSign * 4, y: playerY - 52 };
 
   const hipL = { x: pelvis.x - 1, y: pelvis.y };
   const thighAngleL = 90 - facingSign * (stride * 24);
-  const kneeL = polarPoint(hipL, 11, thighAngleL);
+  const kneeL = polarPoint(hipL, 12, thighAngleL);
   const shinAngleL = thighAngleL + facingSign * Math.max(6, stride * 22);
-  const ankleL = polarPoint(kneeL, 11, shinAngleL);
+  const ankleL = polarPoint(kneeL, 12, shinAngleL);
   const footL = { x: ankleL.x + facingSign * 4, y: ankleL.y };
 
   const hipR = { x: pelvis.x + 1.5, y: pelvis.y - 1 };
   const thighAngleR = 90 - facingSign * (strideOpp * 24);
-  const kneeR = polarPoint(hipR, 11, thighAngleR);
+  const kneeR = polarPoint(hipR, 12, thighAngleR);
   const shinAngleR = thighAngleR + facingSign * Math.max(6, strideOpp * 22);
-  const ankleR = polarPoint(kneeR, 11, shinAngleR);
+  const ankleR = polarPoint(kneeR, 12, shinAngleR);
   const footR = { x: ankleR.x + facingSign * 4, y: ankleR.y };
 
   const shoulderL = { x: neck.x - 1, y: neck.y + 2 };
   const armAngleL = 90 - facingSign * (strideOpp * 22);
-  const elbowL = polarPoint(shoulderL, 8.5, armAngleL);
-  const handL = polarPoint(elbowL, 8.5, armAngleL - facingSign * 26);
+  const elbowL = polarPoint(shoulderL, 9, armAngleL);
+  const handL = polarPoint(elbowL, 9, armAngleL - facingSign * 26);
 
   const shoulderR = { x: neck.x + 1.5, y: neck.y + 1.5 };
   const armAngleR = 90 - facingSign * (stride * 22);
-  const elbowR = polarPoint(shoulderR, 8.5, armAngleR);
-  const handR = polarPoint(elbowR, 8.5, armAngleR - facingSign * 26);
+  const elbowR = polarPoint(shoulderR, 9, armAngleR);
+  const handR = polarPoint(elbowR, 9, armAngleR - facingSign * 26);
 
   let pathD = '';
   const lineSegments = 24;
@@ -1360,14 +1437,14 @@ function buildZigzagFrame(tSec) {
 
   const cone1X = 116;
   const cone2X = 224;
-  const coneY = 108;
+  const coneY = 114;
 
   const backgroundField = `
-    <line x1="${cone1X}" y1="26" x2="${cone2X}" y2="26" stroke="#000000" stroke-width="1.4" />
-    <line x1="${cone1X}" y1="21" x2="${cone1X}" y2="31" stroke="#000000" stroke-width="1.4" />
-    <line x1="${cone2X}" y1="21" x2="${cone2X}" y2="31" stroke="#000000" stroke-width="1.4" />
-    <rect x="148" y="18" width="44" height="14" fill="#FFFFFF" />
-    <text x="170" y="29" font-size="9.5" font-weight="700" text-anchor="middle" fill="#000000">1,5 m</text>
+    <line x1="${cone1X}" y1="28" x2="${cone2X}" y2="28" stroke="#000000" stroke-width="1.4" />
+    <line x1="${cone1X}" y1="23" x2="${cone1X}" y2="33" stroke="#000000" stroke-width="1.4" />
+    <line x1="${cone2X}" y1="23" x2="${cone2X}" y2="33" stroke="#000000" stroke-width="1.4" />
+    <rect x="148" y="20" width="44" height="14" fill="#FFFFFF" />
+    <text x="170" y="31" font-size="9.5" font-weight="700" text-anchor="middle" fill="#000000">1,5 m</text>
 
     <path d="${pathD}" fill="none" stroke="#B5B5B5" stroke-width="1.5" />
 
@@ -1386,7 +1463,7 @@ function buildZigzagFrame(tSec) {
   `;
 
   return renderArticulatedFigure({
-    pelvis, waist, neck, headCenter, headR: 5.5,
+    pelvis, waist, neck, headCenter, headR: 5.8,
     hipL, kneeL, ankleL, footL,
     hipR, kneeR, ankleR, footR,
     shoulderL, elbowL, handL,
@@ -1403,20 +1480,6 @@ function getMotionBuilders() {
     bird_dog: buildBirdDogFrame,
     soccer_zigzag: buildZigzagFrame
   };
-}
-
-function renderDailyChallengeSVG(timestampMs) {
-  const dailySvg = document.getElementById('daily-challenge-svg');
-  if (!dailySvg) return;
-  const tSec = (timestampMs || 0) / 1000;
-  const builders = getMotionBuilders();
-  const todayChallenge = getDailyChallengeForDate(getTodayISO());
-  const builder = builders[todayChallenge.anim] || buildSquatFrame;
-  const bodySVG = builder(tSec);
-  dailySvg.innerHTML = `
-    <text x="170" y="13" font-size="8.5" font-weight="700" text-anchor="middle" fill="#000000">MOVIMIENTO GUÍA</text>
-    ${bodySVG}
-  `;
 }
 
 function drawStaticExerciseSVGs() {
@@ -1463,7 +1526,6 @@ function updateAllSkeletonCanvases(timestampMs) {
     }
   });
 
-  renderDailyChallengeSVG(timestampMs);
   fkAnimationFrameId = requestAnimationFrame(updateAllSkeletonCanvases);
 }
 
@@ -1671,15 +1733,13 @@ function refreshProgressView() {
   }
 }
 
+// SOLO 2 ESTILOS: Estilo 1 (blanco) y Estilo 2 (negativo limpio del 1)
 function getStreakPalette(styleIndex) {
-  const hasPerkFrame = unlockedPerks.includes('frame');
-
   if (styleIndex === 1) {
     return {
       bg: '#000000',
       fg: '#FFFFFF',
       framed: true,
-      doubleFrame: hasPerkFrame,
       fillCalendar: true
     };
   }
@@ -1688,7 +1748,6 @@ function getStreakPalette(styleIndex) {
     bg: '#FFFFFF',
     fg: '#000000',
     framed: true,
-    doubleFrame: hasPerkFrame,
     fillCalendar: false
   };
 }
@@ -1718,12 +1777,12 @@ function drawCalendarWithStreakNumber(ctx, cx, cy, size, streakNumber, palette) 
   ctx.fillRect(x, y, size, headerH);
 
   ctx.strokeStyle = palette.fg;
-  ctx.lineWidth = 9;
+  ctx.lineWidth = 10;
   ctx.beginPath();
-  ctx.moveTo(x + size * 0.27, y - 18);
-  ctx.lineTo(x + size * 0.27, y + 6);
-  ctx.moveTo(x + size * 0.73, y - 18);
-  ctx.lineTo(x + size * 0.73, y + 6);
+  ctx.moveTo(x + size * 0.28, y - 22);
+  ctx.lineTo(x + size * 0.28, y + 6);
+  ctx.moveTo(x + size * 0.72, y - 22);
+  ctx.lineTo(x + size * 0.72, y + 6);
   ctx.stroke();
 
   const bodyTop = y + headerH;
@@ -1756,26 +1815,22 @@ function renderStreakCanvas(canvas, styleIndex = selectedStreakStyleIndex) {
 
   if (palette.framed) {
     ctx.strokeStyle = palette.fg;
-    ctx.lineWidth = 8;
-    ctx.strokeRect(36, 36, canvas.width - 72, canvas.height - 72);
-    if (palette.doubleFrame) {
-      ctx.lineWidth = 4;
-      ctx.strokeRect(52, 52, canvas.width - 104, canvas.height - 104);
-    }
+    ctx.lineWidth = 10;
+    ctx.strokeRect(48, 48, canvas.width - 96, canvas.height - 96);
   }
 
   ctx.textAlign = 'left';
   ctx.textBaseline = 'alphabetic';
   ctx.fillStyle = palette.fg;
   ctx.font = 'bold 34px Arimo, sans-serif';
-  ctx.fillText('AMRAP', 84, 108);
+  ctx.fillText('AMRAP', 88, 114);
 
   ctx.fillStyle = palette.fg;
   ctx.font = 'bold 24px Arimo, sans-serif';
-  ctx.fillText('araujo-phi.github.io/AMRAP', 84, 146);
+  ctx.fillText('araujo-phi.github.io/AMRAP', 88, 152);
 
-  const calSize = 300;
-  const calCenterY = 480;
+  const calSize = 310;
+  const calCenterY = 495;
   drawCalendarWithStreakNumber(ctx, canvas.width / 2, calCenterY, calSize, currentStreak, palette);
 
   const streakPhrase = currentStreak === 1
@@ -1783,14 +1838,14 @@ function renderStreakCanvas(canvas, styleIndex = selectedStreakStyleIndex) {
     : `${currentStreak} dias de racha entrenando`;
 
   ctx.fillStyle = palette.fg;
-  ctx.font = 'bold 40px Arimo, sans-serif';
+  ctx.font = 'bold 42px Arimo, sans-serif';
   ctx.textAlign = 'center';
-  ctx.fillText(streakPhrase, canvas.width / 2, calCenterY + calSize / 2 + 74);
+  ctx.fillText(streakPhrase, canvas.width / 2, calCenterY + calSize / 2 + 78);
 
   ctx.fillStyle = palette.fg;
   ctx.font = 'bold 26px Arimo, sans-serif';
   ctx.textAlign = 'left';
-  ctx.fillText(formatDisplayDate(todayISO), 84, canvas.height - 72);
+  ctx.fillText(formatDisplayDate(todayISO), 88, canvas.height - 82);
 }
 
 function selectStreakStyle(styleIndex) {
@@ -1919,7 +1974,6 @@ function openSessionModal(prefillDate) {
 
   const existing = sessions.find(s => s.date === targetDate);
 
-  dateInput.max = todayISO;
   dateInput.value = targetDate;
 
   if (existing) {
@@ -1969,12 +2023,12 @@ function handleManualSessionSubmit(e) {
   const notesEl = document.getElementById('modal-notes');
   if (!dateEl || !roundsEl) return;
 
-  const date = dateEl.value;
+  const date = dateEl.value || todayISO;
   const rounds = Math.max(0, parseInt(roundsEl.value, 10) || 0);
   const effort = effortEl ? effortEl.value : 'Normal';
   const notes = notesEl ? notesEl.value.trim() : '';
 
-  if (!date || date > todayISO) return;
+  if (date > todayISO) return;
 
   const idx = sessions.findIndex(s => s.date === date);
   const record = { date, rounds, effort, notes };
@@ -2046,7 +2100,7 @@ function importProgressJSON(event) {
         const perksSource = Array.isArray(imported.unlockedPerks)
           ? imported.unlockedPerks
           : (Array.isArray(imported.unlockedEpicPerks) ? imported.unlockedEpicPerks : []);
-        unlockedPerks = Array.from(new Set(perksSource.filter(p => typeof p === 'string')));
+        unlockedPerks = Array.from(new Set(perksSource.filter(p => typeof p === 'string' && p !== 'frame')));
 
         challengeQueue = Array.isArray(imported.challengeQueue)
           ? imported.challengeQueue.filter(id => DAILY_EXERCISES.some(ex => ex.id === id))
