@@ -790,8 +790,8 @@ function renderArticulatedFigure(sk, extrasTop = '', extrasBottom = '') {
   const joint = (p, color, r = 2.1) =>
     `<circle cx="${p.x.toFixed(1)}" cy="${p.y.toFixed(1)}" r="${r}" fill="${color}" />`;
 
-  const foot = (ankle, footTip, color) =>
-    footTip ? seg(ankle, footTip, color, 3) : '';
+  const foot = (ankle, tip, color) =>
+    tip ? seg(ankle, tip, color, 3) : '';
 
   return `
     ${extrasBottom}
