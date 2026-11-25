@@ -9,7 +9,6 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Arimo:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet" />
   <script src="https://cdn.tailwindcss.com"></script>
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script>
     tailwind.config = {
       theme: {
@@ -59,15 +58,8 @@
 <body class="bg-purewhite text-pureblack min-h-screen pb-24">
 
   <header class="sticky top-0 z-30 bg-purewhite border-b-2 border-pureblack">
-    <div class="max-w-xl mx-auto px-4 h-14 flex items-center justify-between gap-2">
-      <span class="px-2.5 py-1 bg-pureblack text-purewhite text-xs font-bold uppercase tracking-wider shrink-0">AMRAP</span>
-      <div class="flex items-center gap-2 min-w-0">
-        <span id="auth-status-label" class="text-[11px] font-bold uppercase text-neutral-600 truncate">Local</span>
-        <button id="btn-auth-action" type="button" onclick="handleAuthButtonClick()"
-          class="min-h-[34px] px-2.5 border-2 border-pureblack bg-purewhite text-pureblack text-[11px] font-bold uppercase whitespace-nowrap shrink-0 btn-press">
-          Google
-        </button>
-      </div>
+    <div class="max-w-xl mx-auto px-4 h-14 flex items-center justify-center sm:justify-between">
+      <span class="px-2.5 py-1 bg-pureblack text-purewhite text-xs font-bold uppercase tracking-wider">AMRAP</span>
     </div>
   </header>
 
@@ -120,9 +112,9 @@
           <span id="round-status-hint" class="px-2.5 py-0.5 border border-pureblack text-xs font-bold tabular-nums">0/6</span>
         </div>
 
-        <div class="flex items-center justify-between gap-3">
+        <div class="flex items-center justify-between gap-2 sm:gap-3">
           <button type="button" onclick="changeRounds(-1)" aria-label="Restar vuelta"
-            class="w-16 h-16 border-2 border-pureblack bg-purewhite text-pureblack text-3xl font-bold flex items-center justify-center shrink-0 btn-press">
+            class="w-14 sm:w-16 h-14 sm:h-16 border-2 border-pureblack bg-purewhite text-pureblack text-3xl font-bold flex items-center justify-center shrink-0 btn-press">
             -
           </button>
 
@@ -131,7 +123,7 @@
           </div>
 
           <button id="btn-add-round" type="button" onclick="changeRounds(1)" aria-label="Sumar vuelta"
-            class="w-16 h-16 border-2 border-pureblack bg-pureblack text-purewhite text-3xl font-bold flex items-center justify-center shrink-0 btn-press">
+            class="w-14 sm:w-16 h-14 sm:h-16 border-2 border-pureblack bg-pureblack text-purewhite text-3xl font-bold flex items-center justify-center shrink-0 btn-press">
             +
           </button>
         </div>
@@ -315,20 +307,26 @@
         </div>
       </section>
 
-      <!-- EJERCICIO DIARIO (+5 MONEDAS BONUS) -->
+      <!-- EJERCICIO DIARIO (+5 MONEDAS BONUS) CON ANIMACIÓN -->
       <section class="brutal-border bg-purewhite p-4 sm:p-5 space-y-3">
         <div class="flex items-center justify-between border-b-2 border-pureblack pb-2.5">
           <h3 class="text-sm font-bold uppercase tracking-wider">Ejercicio de hoy</h3>
           <span class="px-2 py-0.5 bg-pureblack text-purewhite text-xs font-bold uppercase">+5 Bonus</span>
         </div>
 
-        <div class="border-2 border-pureblack p-3.5 bg-neutral-50 text-center sm:text-left space-y-2">
-          <div class="flex items-center justify-between gap-2">
-            <span id="daily-challenge-number" class="text-xs font-bold uppercase text-neutral-600">Día #1</span>
-            <span id="daily-challenge-target" class="px-2 py-0.5 border border-pureblack bg-purewhite text-xs font-bold">Meta</span>
+        <div class="border-2 border-pureblack bg-purewhite overflow-hidden">
+          <div class="p-3 bg-neutral-50 border-b-2 border-pureblack space-y-1.5">
+            <div class="flex items-center justify-between gap-2">
+              <span id="daily-challenge-number" class="text-xs font-bold uppercase text-neutral-600">Día #1</span>
+              <span id="daily-challenge-target" class="px-2 py-0.5 border border-pureblack bg-purewhite text-xs font-bold">Meta</span>
+            </div>
+            <div id="daily-challenge-title" class="text-base font-bold uppercase tracking-tight">Cargando...</div>
+            <p id="daily-challenge-desc" class="text-xs sm:text-sm text-neutral-700 leading-snug"></p>
           </div>
-          <div id="daily-challenge-title" class="text-base font-bold uppercase tracking-tight">Cargando...</div>
-          <p id="daily-challenge-desc" class="text-xs sm:text-sm text-neutral-700 leading-snug"></p>
+
+          <div class="p-2.5 bg-purewhite">
+            <svg id="daily-challenge-svg" viewBox="0 0 340 165" class="w-full h-auto bg-purewhite block" role="img" aria-label="Animación ejercicio diario"></svg>
+          </div>
         </div>
 
         <button id="btn-claim-daily-bonus" type="button" onclick="claimDailyChallengeBonus()"
@@ -340,7 +338,7 @@
 
   </main>
 
-  <!-- MODAL COMPARTIR RACHA -->
+  <!-- MODAL COMPARTIR RACHA (SOLO 2 ESTILOS) -->
   <div id="share-streak-modal" class="fixed inset-0 z-50 hidden items-end sm:items-center justify-center bg-black/75 p-3 sm:p-4">
     <div class="bg-purewhite border-2 border-pureblack max-w-md w-full p-4 sm:p-5 max-h-[92vh] overflow-y-auto space-y-4">
       <div class="flex items-center justify-between border-b-2 border-pureblack pb-2.5">
@@ -353,7 +351,7 @@
         </button>
       </div>
 
-      <div class="grid grid-cols-3 gap-2">
+      <div class="grid grid-cols-2 gap-2">
         <button type="button" data-style="0" onclick="selectStreakStyle(0)"
           class="streak-style-btn min-h-[44px] px-2 text-xs font-bold uppercase border-2 border-pureblack bg-pureblack text-purewhite btn-press">
           Estilo 1
@@ -361,10 +359,6 @@
         <button type="button" data-style="1" onclick="selectStreakStyle(1)"
           class="streak-style-btn min-h-[44px] px-2 text-xs font-bold uppercase border-2 border-pureblack bg-purewhite text-pureblack btn-press">
           Estilo 2
-        </button>
-        <button type="button" data-style="2" onclick="selectStreakStyle(2)"
-          class="streak-style-btn min-h-[44px] px-2 text-xs font-bold uppercase border-2 border-pureblack bg-purewhite text-pureblack btn-press">
-          Estilo 3
         </button>
       </div>
 
