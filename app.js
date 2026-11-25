@@ -1,6 +1,3 @@
-// =========================================================================
-// DATOS DE LOS 6 EJERCICIOS (SISTEMA DE ESQUELETO ARTICULADO DE 11 PARTES)
-// =========================================================================
 const EXERCISES = [
   {
     id: 'squat',
@@ -47,7 +44,7 @@ const EXERCISES = [
     rhythm: 'Giro controlado • Abdomen firme',
     equipment: '1 pelota de fútbol',
     animHeader: 'PASO 1 Y PASO 2 • GIROS RUSOS CON PELOTA',
-    animFooter: 'Izquierda: Paso 1 (lado delantero) • Derecha: Paso 2 (lado trasero)',
+    animFooter: 'Izquierda: Paso 1 • Derecha: Paso 2',
     steps: [
       'Siéntate en el suelo con las rodillas flexionadas, talones apoyados y el torso levemente inclinado hacia atrás.',
       'Sostén la pelota con ambas manos frente al pecho manteniendo la espalda recta y el abdomen firme.',
@@ -112,15 +109,68 @@ const EXERCISES = [
   }
 ];
 
-// =========================================================================
-// ESTADO GLOBAL Y STORAGE
-// =========================================================================
+const DAILY_EXERCISES = [
+  { id: 1, anim: 'squat', title: 'Sentadilla con pausa abajo', target: '3 x 10 reps', desc: 'Bajá en 3s, quedate 1s abajo y subí firme.' },
+  { id: 2, anim: 'pushup', title: 'Flexiones cerradas', target: '3 x 6 reps', desc: 'Manos más juntas y codos pegados al cuerpo.' },
+  { id: 3, anim: 'russian_twist', title: 'Toques de talón en suelo', target: '3 x 20 toques', desc: 'Boca arriba con rodillas dobladas, tocá talones.' },
+  { id: 4, anim: 'shoulder_press', title: 'Press lento con 1 kg', target: '3 x 12 reps', desc: 'Subí en 2s y bajá en 3s con control.' },
+  { id: 5, anim: 'pushup', title: 'Plancha frontal firme', target: '3 x 30 seg', desc: 'Antebrazos y puntas de pie, cuerpo recto.' },
+  { id: 6, anim: 'soccer_zigzag', title: 'Slalom corto con pelota', target: '6 pasadas', desc: 'Toques cortos alternando borde interno y externo.' },
+  { id: 7, anim: 'squat', title: 'Zancadas alternas al frente', target: '3 x 8 por pierna', desc: 'Paso al frente, bajá controlado y volvé.' },
+  { id: 8, anim: 'russian_twist', title: 'Puente de glúteos', target: '3 x 15 reps', desc: 'Boca arriba, subí cadera y apretá arriba.' },
+  { id: 9, anim: 'shoulder_press', title: 'Elevación lateral con 1 kg', target: '3 x 12 reps', desc: 'Subí brazos hasta los hombros sin encoger.' },
+  { id: 10, anim: 'pushup', title: 'Escaladores controlados', target: '3 x 20 pasos', desc: 'En plancha alta, llevá rodillas al pecho.' },
+  { id: 11, anim: 'squat', title: 'Zancada atrás alterna', target: '3 x 8 por lado', desc: 'Llevá un pie atrás y bajá manteniendo el torso.' },
+  { id: 12, anim: 'pushup', title: 'Flexiones con rodillas', target: '3 x 10 reps', desc: 'Apoyá rodillas manteniendo línea recta.' },
+  { id: 13, anim: 'bird_dog', title: 'Bicho muerto (Dead Bug)', target: '3 x 8 por lado', desc: 'Extendé brazo y pierna opuestos sin arquear.' },
+  { id: 14, anim: 'soccer_zigzag', title: 'Pases rápidos entre pies', target: '3 x 30 seg', desc: 'Pasá la pelota de un pie al otro con ritmo.' },
+  { id: 15, anim: 'squat', title: 'Sentadilla sumo abierta', target: '3 x 12 reps', desc: 'Pies bien abiertos y puntas afuera, bajá recto.' },
+  { id: 16, anim: 'pushup', title: 'Fondos en borde de silla', target: '3 x 8 reps', desc: 'Bajá flexionando codos y empujá arriba.' },
+  { id: 17, anim: 'bird_dog', title: 'Plancha lateral por lado', target: '3 x 20 seg/lado', desc: 'Cadera arriba en línea recta con el tronco.' },
+  { id: 18, anim: 'shoulder_press', title: 'Vuelos frontales con 1 kg', target: '3 x 12 reps', desc: 'Subí mancuernas al frente hasta los hombros.' },
+  { id: 19, anim: 'squat', title: 'Saltos suaves en el lugar', target: '4 x 25 saltos', desc: 'Caé suave en punta de pie con rodillas blandas.' },
+  { id: 20, anim: 'soccer_zigzag', title: 'Pisa-pelota alterno', target: '3 x 20 toques', desc: 'Tocá arriba de la pelota alternando pies.' },
+  { id: 21, anim: 'squat', title: 'Sentadilla en pared', target: '3 x 35 seg', desc: 'Espalda en pared y muslos paralelos al suelo.' },
+  { id: 22, anim: 'pushup', title: 'Flexiones con pausa abajo', target: '3 x 6 reps', desc: 'Sostené 1s abajo antes de empujar arriba.' },
+  { id: 23, anim: 'russian_twist', title: 'Crunches cortos', target: '3 x 15 reps', desc: 'Despegá apenas los omóplatos sin tirar cuello.' },
+  { id: 24, anim: 'shoulder_press', title: 'Press rotado con 1 kg', target: '3 x 10 reps', desc: 'Rotá palmas al empujar arriba y volvé.' },
+  { id: 25, anim: 'bird_dog', title: 'Perro pájaro con pausa', target: '3 x 5 por lado', desc: 'Sostené 2s brazo y pierna sin girar cadera.' },
+  { id: 26, anim: 'soccer_zigzag', title: 'Conducción pie izquierdo', target: '4 idas y vueltas', desc: 'Conducí ida y vuelta solo con pie izquierdo.' },
+  { id: 27, anim: 'soccer_zigzag', title: 'Conducción pie derecho', target: '4 idas y vueltas', desc: 'Conducí ida y vuelta solo con pie derecho.' },
+  { id: 28, anim: 'squat', title: 'Sentadilla + puntas de pie', target: '3 x 10 reps', desc: 'Al subir de la sentadilla, elevá talones.' },
+  { id: 29, anim: 'pushup', title: 'Flexiones pies elevados', target: '3 x 6 reps', desc: 'Pies en escalón bajo y abdomen firme.' },
+  { id: 30, anim: 'russian_twist', title: 'Giros rusos con pausa', target: '3 x 12 giros', desc: 'Marcá 1s a cada lado manteniendo el giro.' },
+  { id: 31, anim: 'shoulder_press', title: 'Remo inclinado con 1 kg', target: '3 x 12 reps', desc: 'Torso inclinado y espalda recta, llevá codos atrás.' },
+  { id: 32, anim: 'squat', title: 'Rodillas altas en el lugar', target: '4 x 20 seg', desc: 'Subí rodillas a la cadera con buen braceo.' },
+  { id: 33, anim: 'soccer_zigzag', title: 'Control con muslo y pie', target: '3 x 10 toques', desc: 'Elevá la pelota suave con muslo y controlá.' },
+  { id: 34, anim: 'squat', title: 'Sentadilla bajada lenta', target: '3 x 8 reps', desc: 'Bajá en 4 tiempos y subí en 1 tiempo.' },
+  { id: 35, anim: 'pushup', title: 'Plancha toque de hombro', target: '3 x 12 toques', desc: 'Tocá hombro opuesto sin balancear cadera.' },
+  { id: 36, anim: 'russian_twist', title: 'Elevación de piernas', target: '3 x 10 reps', desc: 'Subí y bajá piernas sin tocar el piso.' },
+  { id: 37, anim: 'shoulder_press', title: 'Press alterno a un brazo', target: '3 x 10 por brazo', desc: 'Empujá un brazo a la vez sin inclinarte.' },
+  { id: 38, anim: 'squat', title: 'Puente a una pierna', target: '3 x 8 por pierna', desc: 'Subí la cadera impulsando con un solo pie.' },
+  { id: 39, anim: 'soccer_zigzag', title: 'Zigzag con cambio de ritmo', target: '4 pasadas', desc: 'Lento en conos y rápido en el tramo recto.' },
+  { id: 40, anim: 'squat', title: 'Sentadilla con rebote corto', target: '3 x 10 reps', desc: 'Hacé un pequeño rebote abajo y subí.' },
+  { id: 41, anim: 'pushup', title: 'Flexiones amplias', target: '3 x 8 reps', desc: 'Manos más abiertas que los hombros, pecho firme.' },
+  { id: 42, anim: 'russian_twist', title: 'Bicicleta abdominal lenta', target: '3 x 16 giros', desc: 'Acercá codo a rodilla opuesta con control.' },
+  { id: 43, anim: 'shoulder_press', title: 'Círculos con mancuernas', target: '3 x 15 seg/lado', desc: 'Brazos a los lados haciendo círculos cortos.' },
+  { id: 44, anim: 'squat', title: 'Paso lateral en sentadilla', target: '3 x 8 por lado', desc: 'Desplazate de lado sin subir la cadera.' },
+  { id: 45, anim: 'soccer_zigzag', title: 'Freno con planta del pie', target: '3 x 15 frenos', desc: 'Rodá la pelota suave y frenala pisándola.' },
+  { id: 46, anim: 'pushup', title: 'Plancha con balanceo', target: '3 x 20 seg', desc: 'Balanceo corto adelante y atrás desde hombros.' },
+  { id: 47, anim: 'squat', title: 'Sentadilla + salto suave', target: '3 x 8 reps', desc: 'Bajá controlado y saltá suave cayendo blando.' },
+  { id: 48, anim: 'pushup', title: 'Flexiones a 90 grados', target: '3 x 8 reps', desc: 'Bajá hasta 90° en codos y subí con control.' },
+  { id: 49, anim: 'bird_dog', title: 'Superman suave', target: '3 x 10 reps', desc: 'Boca abajo, levantá suave pecho y piernas.' },
+  { id: 50, anim: 'soccer_zigzag', title: 'Conducción en 8', target: '4 vueltas', desc: 'Dibujá el 8 completo rodeando ambos conos.' }
+];
+
+const VIEWS_ORDER = ['timer', 'exercises', 'progress', 'shop'];
 const STORAGE_KEY = 'amrap_13yo_mobile_v2';
-const TOTAL_SECONDS = 20 * 60; // 20:00
-const COINS_PER_SESSION = 10;
-const FREEZE_COST = 30;
+const TOTAL_SECONDS = 20 * 60;
+const DAILY_COINS_REWARD = 10;
+const DAILY_CHALLENGE_BONUS = 5;
+const FREEZE_COST = 100;
 const MAX_FREEZES = 2;
 
+let currentViewName = 'timer';
 let timerSecondsLeft = TOTAL_SECONDS;
 let timerInterval = null;
 let isTimerRunning = false;
@@ -131,38 +181,115 @@ let resetConfirmTimeout = null;
 let currentRounds = 0;
 let selectedEffort = 'Normal';
 let checklistState = {};
-let selectedExerciseFilter = 'all';
-let monthOffset = 0; // 0 = mes actual, -1 = mes anterior, etc.
+let selectedExerciseFilter = EXERCISES[0].id;
+let monthOffset = 0;
 let wakeLockSentinel = null;
+let selectedStreakStyleIndex = 0;
 
-// Estructura de sesión: { date: 'YYYY-MM-DD', rounds: number, effort: string, notes: string }
 let sessions = [];
 let coins = 0;
 let streakFreezes = 0;
 let frozenDates = [];
 let rewardedDates = [];
+let claimedChallengeDates = [];
+let unlockedPerks = [];
+let challengeQueue = [];
+let challengeAssignments = {};
 
-// =========================================================================
-// INICIALIZACIÓN
-// =========================================================================
 document.addEventListener('DOMContentLoaded', () => {
   loadSessions();
+  ensureDailyChallengeAssigned(getTodayISO());
   applyAutomaticStreakFreezes();
   renderQuickChecklist();
   renderExerciseTabs();
   renderExercisesGrid();
   startSkeletonAnimationLoop();
+  setupSwipeNavigation();
   updateTimerUI();
   updateRoundsUI();
   refreshProgressView();
+  refreshShopView();
 
-  // Re-adquirir Wake Lock si el usuario vuelve a la pestaña mientras el reloj corre
+  const manualForm = document.getElementById('manual-session-form');
+  if (manualForm) {
+    manualForm.addEventListener('submit', handleManualSessionSubmit);
+  }
+
   document.addEventListener('visibilitychange', async () => {
     if (document.visibilityState === 'visible' && wakeLockSentinel !== null) {
       await requestWakeLock(true);
     }
   });
 });
+
+function isAnyModalOpen() {
+  return ['share-streak-modal', 'session-modal', 'confirm-modal'].some(id => {
+    const el = document.getElementById(id);
+    return el && !el.classList.contains('hidden');
+  });
+}
+
+function setupSwipeNavigation() {
+  const stage = document.getElementById('main-stage');
+  if (!stage) return;
+
+  let startX = 0;
+  let startY = 0;
+  let tracking = false;
+
+  const onStart = (x, y, target) => {
+    if (isAnyModalOpen()) return;
+    if (target && (target.closest('#monthly-calendar-rows') || target.closest('input') || target.closest('select'))) {
+      return;
+    }
+    startX = x;
+    startY = y;
+    tracking = true;
+  };
+
+  const onEnd = (x, y) => {
+    if (!tracking) return;
+    tracking = false;
+    const dx = x - startX;
+    const dy = y - startY;
+
+    if (Math.abs(dx) < 65 || Math.abs(dx) < Math.abs(dy) * 1.35) {
+      return;
+    }
+
+    const idx = VIEWS_ORDER.indexOf(currentViewName);
+    if (dx < 0 && idx < VIEWS_ORDER.length - 1) {
+      switchView(VIEWS_ORDER[idx + 1], 'right');
+    } else if (dx > 0 && idx > 0) {
+      switchView(VIEWS_ORDER[idx - 1], 'left');
+    }
+  };
+
+  stage.addEventListener('touchstart', e => {
+    if (e.touches && e.touches.length === 1) {
+      onStart(e.touches[0].clientX, e.touches[0].clientY, e.target);
+    }
+  }, { passive: true });
+
+  stage.addEventListener('touchend', e => {
+    if (e.changedTouches && e.changedTouches.length > 0) {
+      onEnd(e.changedTouches[0].clientX, e.changedTouches[0].clientY);
+    }
+  }, { passive: true });
+
+  let mouseDown = false;
+  stage.addEventListener('mousedown', e => {
+    if (e.button !== 0) return;
+    mouseDown = true;
+    onStart(e.clientX, e.clientY, e.target);
+  });
+
+  window.addEventListener('mouseup', e => {
+    if (!mouseDown) return;
+    mouseDown = false;
+    onEnd(e.clientX, e.clientY);
+  });
+}
 
 function getTodayISO() {
   const now = new Date();
@@ -191,6 +318,41 @@ function formatDisplayDate(iso) {
   return `${d}/${m}/${y}`;
 }
 
+function createShuffledQueue() {
+  const ids = DAILY_EXERCISES.map(ex => ex.id);
+  for (let i = ids.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [ids[i], ids[j]] = [ids[j], ids[i]];
+  }
+  return ids;
+}
+
+function ensureDailyChallengeAssigned(isoStr) {
+  if (challengeAssignments[isoStr]) {
+    const found = DAILY_EXERCISES.find(ex => ex.id === challengeAssignments[isoStr]);
+    if (found) return found;
+  }
+
+  if (!Array.isArray(challengeQueue) || challengeQueue.length === 0) {
+    challengeQueue = createShuffledQueue();
+  }
+
+  const nextId = challengeQueue.shift();
+  challengeAssignments[isoStr] = nextId;
+  saveSessions();
+  return DAILY_EXERCISES.find(ex => ex.id === nextId) || DAILY_EXERCISES[0];
+}
+
+function getDailyChallengeForDate(isoStr) {
+  const ex = ensureDailyChallengeAssigned(isoStr);
+  const completedCount = Object.keys(challengeAssignments).length;
+  const stepInCycle = ((completedCount - 1) % DAILY_EXERCISES.length) + 1;
+  return {
+    stepInCycle: Math.max(1, stepInCycle),
+    ...ex
+  };
+}
+
 function normalizeSessionItem(item) {
   return {
     date: item.date,
@@ -207,15 +369,15 @@ function loadSessions() {
       const parsed = JSON.parse(raw);
       if (Array.isArray(parsed)) {
         sessions = parsed.filter(i => i && typeof i.date === 'string').map(normalizeSessionItem);
-        coins = 0;
-        streakFreezes = 0;
-        frozenDates = [];
-        rewardedDates = [];
       } else if (parsed && typeof parsed === 'object') {
         sessions = Array.isArray(parsed.sessions)
           ? parsed.sessions.filter(i => i && typeof i.date === 'string').map(normalizeSessionItem)
           : [];
-        coins = Math.max(0, Number(parsed.coins) || 0);
+        const baseCoins = Number(parsed.coins) || 0;
+        const legacyDaily = Number(parsed.dailyCoins) || 0;
+        const legacyEpic = Number(parsed.epicCoins) || 0;
+        coins = Math.max(0, baseCoins > 0 ? baseCoins : (legacyDaily + legacyEpic));
+
         streakFreezes = Math.max(0, Math.min(MAX_FREEZES, Number(parsed.streakFreezes) || 0));
         frozenDates = Array.isArray(parsed.frozenDates)
           ? Array.from(new Set(parsed.frozenDates.filter(d => typeof d === 'string')))
@@ -223,6 +385,20 @@ function loadSessions() {
         rewardedDates = Array.isArray(parsed.rewardedDates)
           ? Array.from(new Set(parsed.rewardedDates.filter(d => typeof d === 'string')))
           : [];
+        claimedChallengeDates = Array.isArray(parsed.claimedChallengeDates)
+          ? Array.from(new Set(parsed.claimedChallengeDates.filter(d => typeof d === 'string')))
+          : [];
+        const perksSource = Array.isArray(parsed.unlockedPerks)
+          ? parsed.unlockedPerks
+          : (Array.isArray(parsed.unlockedEpicPerks) ? parsed.unlockedEpicPerks : []);
+        unlockedPerks = Array.from(new Set(perksSource.filter(p => typeof p === 'string' && p !== 'frame')));
+
+        challengeQueue = Array.isArray(parsed.challengeQueue)
+          ? parsed.challengeQueue.filter(id => DAILY_EXERCISES.some(ex => ex.id === id))
+          : [];
+        challengeAssignments = (parsed.challengeAssignments && typeof parsed.challengeAssignments === 'object')
+          ? parsed.challengeAssignments
+          : {};
       }
     }
   } catch (e) {
@@ -231,21 +407,32 @@ function loadSessions() {
     streakFreezes = 0;
     frozenDates = [];
     rewardedDates = [];
+    claimedChallengeDates = [];
+    unlockedPerks = [];
+    challengeQueue = [];
+    challengeAssignments = {};
   }
+}
+
+function buildStatePayload() {
+  return {
+    sessions,
+    coins,
+    streakFreezes,
+    frozenDates,
+    rewardedDates,
+    claimedChallengeDates,
+    unlockedPerks,
+    challengeQueue,
+    challengeAssignments
+  };
 }
 
 function saveSessions() {
   try {
-    const payload = {
-      sessions,
-      coins,
-      streakFreezes,
-      frozenDates,
-      rewardedDates
-    };
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(payload));
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(buildStatePayload()));
   } catch (e) {
-    showToast('No se pudo guardar en este navegador.');
+    showToast('No se pudo guardar.');
   }
 }
 
@@ -257,7 +444,6 @@ function applyAutomaticStreakFreezes() {
   const sortedTrained = Array.from(trainedDays).sort();
   let consumedCount = 0;
 
-  // Huecos exactos de 1 día entre entrenamientos
   for (let i = 1; i < sortedTrained.length && streakFreezes > 0; i++) {
     const prevDay = isoToDayNumber(sortedTrained[i - 1]);
     const currDay = isoToDayNumber(sortedTrained[i]);
@@ -271,7 +457,6 @@ function applyAutomaticStreakFreezes() {
     }
   }
 
-  // Si ayer quedó sin entrenar y la última sesión fue anteayer
   const todayDay = isoToDayNumber(getTodayISO());
   const lastTrainedDay = isoToDayNumber(sortedTrained[sortedTrained.length - 1]);
   if (todayDay - lastTrainedDay === 2 && streakFreezes > 0) {
@@ -286,21 +471,17 @@ function applyAutomaticStreakFreezes() {
   if (consumedCount > 0) {
     frozenDates = Array.from(frozenSet).sort();
     saveSessions();
-    showToast(
-      consumedCount === 1
-        ? 'Protector usado: salvaste 1 día de racha'
-        : `Protectores usados: salvaste ${consumedCount} días`
-    );
+    showToast(consumedCount === 1 ? 'Protector usado: 1 día salvado' : `Protectores usados: ${consumedCount} días`);
   }
 }
 
 function buyStreakFreeze() {
   if (streakFreezes >= MAX_FREEZES) {
-    showToast(`Ya tenés el máximo (${MAX_FREEZES}/${MAX_FREEZES})`);
+    showToast(`Máximo ${MAX_FREEZES}/${MAX_FREEZES}`);
     return;
   }
   if (coins < FREEZE_COST) {
-    showToast(`Te faltan ${FREEZE_COST - coins} monedas`);
+    showToast(`Faltan ${FREEZE_COST - coins} monedas`);
     return;
   }
 
@@ -308,17 +489,103 @@ function buyStreakFreeze() {
   streakFreezes = Math.min(MAX_FREEZES, streakFreezes + 1);
   saveSessions();
   refreshProgressView();
+  refreshShopView();
   showToast(`Protector comprado (${streakFreezes}/${MAX_FREEZES})`);
 }
 
-// =========================================================================
-// NAVEGACIÓN INFERIOR FIJA
-// =========================================================================
-function switchView(viewName) {
-  const views = ['timer', 'exercises', 'progress'];
-  views.forEach(v => {
+function buyReward(perkId, cost) {
+  if (unlockedPerks.includes(perkId)) {
+    showToast('Ya desbloqueado');
+    return;
+  }
+  if (coins < cost) {
+    showToast(`Faltan ${cost - coins} monedas`);
+    return;
+  }
+
+  coins -= cost;
+  unlockedPerks.push(perkId);
+  saveSessions();
+  refreshShopView();
+  showToast('Extra desbloqueado');
+}
+
+function claimDailyChallengeBonus() {
+  const todayISO = getTodayISO();
+  if (claimedChallengeDates.includes(todayISO)) {
+    showToast('Ya cobraste el bonus de hoy');
+    return;
+  }
+
+  coins += DAILY_CHALLENGE_BONUS;
+  claimedChallengeDates.push(todayISO);
+  saveSessions();
+  refreshProgressView();
+  refreshShopView();
+  showToast(`+${DAILY_CHALLENGE_BONUS} monedas bonus`);
+}
+
+function refreshShopView() {
+  const coinsEl = document.getElementById('shop-coins');
+  const freezeCountEl = document.getElementById('shop-freeze-count');
+  const buyBtn = document.getElementById('btn-buy-freeze');
+  const buyLabel = document.getElementById('buy-freeze-label');
+
+  if (coinsEl) coinsEl.textContent = coins;
+  if (freezeCountEl) freezeCountEl.textContent = `${streakFreezes}/${MAX_FREEZES}`;
+
+  if (buyBtn && buyLabel) {
+    if (streakFreezes >= MAX_FREEZES) {
+      buyBtn.disabled = true;
+      buyLabel.textContent = `Protector · Máximo (${MAX_FREEZES}/${MAX_FREEZES})`;
+    } else if (coins < FREEZE_COST) {
+      buyBtn.disabled = true;
+      buyLabel.textContent = `Protector · ${FREEZE_COST} monedas (faltan ${FREEZE_COST - coins})`;
+    } else {
+      buyBtn.disabled = false;
+      buyLabel.textContent = `Protector de racha · ${FREEZE_COST} monedas`;
+    }
+  }
+
+  const chimeBtn = document.getElementById('btn-buy-epic-chime');
+  if (chimeBtn) {
+    chimeBtn.disabled = unlockedPerks.includes('chime') || coins < 30;
+    chimeBtn.textContent = unlockedPerks.includes('chime') ? 'Activo' : '30 Monedas';
+  }
+
+  const todayISO = getTodayISO();
+  const challenge = getDailyChallengeForDate(todayISO);
+  const numEl = document.getElementById('daily-challenge-number');
+  const targetEl = document.getElementById('daily-challenge-target');
+  const titleEl = document.getElementById('daily-challenge-title');
+  const descEl = document.getElementById('daily-challenge-desc');
+  const claimBtn = document.getElementById('btn-claim-daily-bonus');
+
+  if (numEl) numEl.textContent = `Ejercicio #${challenge.stepInCycle}/${DAILY_EXERCISES.length}`;
+  if (targetEl) targetEl.textContent = challenge.target;
+  if (titleEl) titleEl.textContent = challenge.title;
+  if (descEl) descEl.textContent = challenge.desc;
+
+  if (claimBtn) {
+    const claimed = claimedChallengeDates.includes(todayISO);
+    claimBtn.disabled = claimed;
+    claimBtn.textContent = claimed ? 'Bonus cobrado hoy (+5)' : 'Completar y cobrar +5 monedas';
+  }
+}
+
+function switchView(viewName, direction = null) {
+  if (!direction) {
+    const prevIdx = VIEWS_ORDER.indexOf(currentViewName);
+    const nextIdx = VIEWS_ORDER.indexOf(viewName);
+    direction = nextIdx >= prevIdx ? 'right' : 'left';
+  }
+
+  currentViewName = viewName;
+
+  VIEWS_ORDER.forEach(v => {
     const section = document.getElementById(`view-${v}`);
     const btn = document.getElementById(`nav-${v}`);
+    if (!section || !btn) return;
     if (v === viewName) {
       section.classList.remove('hidden');
       btn.classList.remove('bg-purewhite', 'text-pureblack');
@@ -330,23 +597,24 @@ function switchView(viewName) {
     }
   });
 
-  window.scrollTo({ top: 0, behavior: 'instant' });
-  if (viewName === 'progress') {
-    refreshProgressView();
+  const stage = document.getElementById('main-stage');
+  if (stage) {
+    stage.classList.remove('view-slide-in-right', 'view-slide-in-left');
+    void stage.offsetWidth;
+    stage.classList.add(direction === 'left' ? 'view-slide-in-left' : 'view-slide-in-right');
   }
+
+  window.scrollTo({ top: 0, behavior: 'instant' });
+  if (viewName === 'progress') refreshProgressView();
+  if (viewName === 'shop') refreshShopView();
 }
 
-// =========================================================================
-// SCREEN WAKE LOCK API (MANTENER PANTALLA ACTIVA)
-// =========================================================================
 async function toggleWakeLock() {
   if (wakeLockSentinel) {
-    try {
-      await wakeLockSentinel.release();
-    } catch (e) {}
+    try { await wakeLockSentinel.release(); } catch (e) {}
     wakeLockSentinel = null;
     updateWakeLockButton(false);
-    showToast('Modo pantalla activa desactivado');
+    showToast('Pantalla activa: Off');
   } else {
     await requestWakeLock(false);
   }
@@ -354,59 +622,41 @@ async function toggleWakeLock() {
 
 async function requestWakeLock(silent) {
   if (!('wakeLock' in navigator)) {
-    if (!silent) {
-      showToast('Tu navegador no soporta bloqueo automático de pantalla.');
-    }
+    if (!silent) showToast('No compatible en este navegador');
     return;
   }
   try {
     wakeLockSentinel = await navigator.wakeLock.request('screen');
     updateWakeLockButton(true);
-    if (!silent) {
-      showToast('Pantalla activa: no se apagará mientras entrenas');
-    }
-    wakeLockSentinel.addEventListener('release', () => {
-      updateWakeLockButton(false);
-    });
+    if (!silent) showToast('Pantalla activa: On');
+    wakeLockSentinel.addEventListener('release', () => updateWakeLockButton(false));
   } catch (err) {
     wakeLockSentinel = null;
     updateWakeLockButton(false);
-    if (!silent) {
-      showToast('No se pudo activar pantalla fija en este momento.');
-    }
   }
 }
 
 function updateWakeLockButton(active) {
   const btn = document.getElementById('btn-wakelock');
   const label = document.getElementById('wakelock-label');
+  if (!btn || !label) return;
   btn.setAttribute('aria-pressed', active ? 'true' : 'false');
-  if (active) {
-    btn.classList.remove('bg-purewhite', 'text-pureblack');
-    btn.classList.add('bg-pureblack', 'text-purewhite');
-    label.textContent = 'Pantalla Activa: On';
-  } else {
-    btn.classList.remove('bg-pureblack', 'text-purewhite');
-    btn.classList.add('bg-purewhite', 'text-pureblack');
-    label.textContent = 'Pantalla Activa: Off';
-  }
+  label.textContent = active ? 'Pantalla activa: On' : 'Pantalla activa: Off';
 }
 
-// =========================================================================
-// CRONÓMETRO AMRAP 20 MINUTOS + SONIDO SUAVE WEB AUDIO + VIBRACIÓN
-// =========================================================================
 function playSoftFinishAlert() {
   if ('vibrate' in navigator) {
-    try {
-      navigator.vibrate([250, 120, 250, 120, 400]);
-    } catch (e) {}
+    try { navigator.vibrate([250, 120, 250, 120, 400]); } catch (e) {}
   }
 
   try {
     const AudioCtx = window.AudioContext || window.webkitAudioContext;
     if (!AudioCtx) return;
     const ctx = new AudioCtx();
-    const freqs = [440, 554.37, 659.25];
+    const hasExtraChime = unlockedPerks.includes('chime');
+    const freqs = hasExtraChime ? [440, 554.37, 659.25, 880] : [440, 554.37, 659.25];
+    const duration = hasExtraChime ? 0.85 : 0.55;
+
     freqs.forEach((f, i) => {
       const osc = ctx.createOscillator();
       const gain = ctx.createGain();
@@ -414,11 +664,11 @@ function playSoftFinishAlert() {
       osc.frequency.setValueAtTime(f, ctx.currentTime + i * 0.25);
       gain.gain.setValueAtTime(0.001, ctx.currentTime + i * 0.25);
       gain.gain.linearRampToValueAtTime(0.14, ctx.currentTime + i * 0.25 + 0.05);
-      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + i * 0.25 + 0.55);
+      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + i * 0.25 + duration);
       osc.connect(gain);
       gain.connect(ctx.destination);
       osc.start(ctx.currentTime + i * 0.25);
-      osc.stop(ctx.currentTime + i * 0.25 + 0.56);
+      osc.stop(ctx.currentTime + i * 0.25 + duration + 0.02);
     });
   } catch (e) {}
 }
@@ -426,55 +676,42 @@ function playSoftFinishAlert() {
 function updateTimerUI() {
   const mins = Math.floor(timerSecondsLeft / 60);
   const secs = timerSecondsLeft % 60;
-  document.getElementById('timer-display').textContent =
-    `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
+  const display = document.getElementById('timer-display');
+  if (display) {
+    display.textContent = `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
+  }
 
   const pct = Math.max(0, Math.min(100, (timerSecondsLeft / TOTAL_SECONDS) * 100));
-  document.getElementById('timer-progress-bar').style.width = `${pct}%`;
-
-  const badge = document.getElementById('timer-20m-badge');
-  if (badge) {
-    if (completed20MinToday) {
-      badge.textContent = '20 min: Listo';
-      badge.classList.remove('bg-purewhite', 'text-pureblack');
-      badge.classList.add('bg-pureblack', 'text-purewhite');
-    } else {
-      badge.textContent = '20 min: Pendiente';
-      badge.classList.remove('bg-pureblack', 'text-purewhite');
-      badge.classList.add('bg-purewhite', 'text-pureblack');
-    }
-  }
+  const bar = document.getElementById('timer-progress-bar');
+  if (bar) bar.style.width = `${pct}%`;
 
   const toggleBtn = document.getElementById('btn-toggle-timer');
   const toggleText = document.getElementById('toggle-timer-text');
   const toggleIcon = document.getElementById('toggle-timer-icon');
 
-  if (isTimerRunning) {
-    toggleBtn.classList.remove('bg-pureblack', 'text-purewhite');
-    toggleBtn.classList.add('bg-purewhite', 'text-pureblack');
-    toggleText.textContent = 'Pausar';
-    toggleIcon.innerHTML = '<rect x="6" y="4" width="4" height="16"></rect><rect x="14" y="4" width="4" height="16"></rect>';
-  } else {
-    toggleBtn.classList.remove('bg-purewhite', 'text-pureblack');
-    toggleBtn.classList.add('bg-pureblack', 'text-purewhite');
-    toggleText.textContent = timerSecondsLeft === TOTAL_SECONDS ? 'Iniciar' : 'Reanudar';
-    toggleIcon.innerHTML = '<polygon points="5 3 19 12 5 21 5 3"></polygon>';
+  if (toggleBtn && toggleText && toggleIcon) {
+    if (isTimerRunning) {
+      toggleBtn.classList.remove('bg-pureblack', 'text-purewhite');
+      toggleBtn.classList.add('bg-purewhite', 'text-pureblack');
+      toggleText.textContent = 'Pausar';
+      toggleIcon.innerHTML = '<rect x="6" y="4" width="4" height="16"></rect><rect x="14" y="4" width="4" height="16"></rect>';
+    } else {
+      toggleBtn.classList.remove('bg-purewhite', 'text-pureblack');
+      toggleBtn.classList.add('bg-pureblack', 'text-purewhite');
+      toggleText.textContent = timerSecondsLeft === TOTAL_SECONDS ? 'Iniciar' : 'Reanudar';
+      toggleIcon.innerHTML = '<polygon points="5 3 19 12 5 21 5 3"></polygon>';
+    }
   }
 }
 
 function toggleTimer() {
-  if (isTimerRunning) {
-    pauseTimer();
-  } else {
-    startTimer();
-  }
+  if (isTimerRunning) pauseTimer();
+  else startTimer();
 }
 
 function startTimer() {
   if (isTimerRunning) return;
-  if (timerSecondsLeft <= 0) {
-    timerSecondsLeft = TOTAL_SECONDS;
-  }
+  if (timerSecondsLeft <= 0) timerSecondsLeft = TOTAL_SECONDS;
   isTimerRunning = true;
   updateTimerUI();
 
@@ -490,9 +727,8 @@ function startTimer() {
       pauseTimer();
       completed20MinToday = true;
       updateTimerUI();
-      document.getElementById('timer-subtext').textContent = '¡20 minutos cumplidos! Guarda tu sesión abajo.';
       playSoftFinishAlert();
-      showToast('¡20 minutos completados! Guarda tu sesión hoy.');
+      showToast('20 minutos listos');
     }
   }, 1000);
 }
@@ -508,12 +744,13 @@ function pauseTimer() {
 
 function handleResetTimerTap() {
   if (timerSecondsLeft === TOTAL_SECONDS && !isTimerRunning) {
-    showToast('El reloj ya está en 20:00');
+    showToast('Ya está en 20:00');
     return;
   }
 
   const resetBtn = document.getElementById('btn-reset-timer');
   const resetText = document.getElementById('reset-timer-text');
+  if (!resetBtn || !resetText) return;
 
   if (!resetConfirmPending) {
     resetConfirmPending = true;
@@ -536,16 +773,12 @@ function handleResetTimerTap() {
 
     pauseTimer();
     timerSecondsLeft = TOTAL_SECONDS;
-    document.getElementById('timer-subtext').textContent = 'Técnica limpia antes que velocidad';
     updateTimerUI();
-    showToast('Reloj reiniciado a 20:00');
+    showToast('Reiniciado a 20:00');
   }
 }
 
-// =========================================================================
-// CONTADOR DE VUELTAS Y CHECKLIST DE ESTACIONES
-// =========================================================================
-function changeRounds(delta) {
+function changeRounds(delta, fromFullCircuit = false) {
   currentRounds = Math.max(0, currentRounds + delta);
   updateRoundsUI();
   if (delta > 0) {
@@ -553,32 +786,26 @@ function changeRounds(delta) {
       try { navigator.vibrate(45); } catch (e) {}
     }
     resetChecklist();
-    showToast(`Vuelta ${currentRounds} sumada`);
+    showToast(fromFullCircuit ? `Vuelta completa (${currentRounds})` : `+1 vuelta (${currentRounds})`);
   }
 }
 
 function updateRoundsUI() {
-  document.getElementById('rounds-display').textContent = currentRounds;
+  const disp = document.getElementById('rounds-display');
+  if (disp) disp.textContent = currentRounds;
   const doneCount = EXERCISES.filter(ex => checklistState[ex.id]).length;
   const hint = document.getElementById('round-status-hint');
-  hint.textContent = `${doneCount}/6 est.`;
+  if (hint) hint.textContent = `${doneCount}/6`;
 }
 
 function renderQuickChecklist() {
   const container = document.getElementById('quick-circuit-list');
-  const allDone = EXERCISES.every(ex => checklistState[ex.id]);
-
-  const addRoundBtn = document.getElementById('btn-add-round');
-  if (allDone) {
-    addRoundBtn.classList.add('ring-4', 'ring-black/25');
-  } else {
-    addRoundBtn.classList.remove('ring-4', 'ring-black/25');
-  }
+  if (!container) return;
 
   container.innerHTML = EXERCISES.map(ex => {
     const checked = !!checklistState[ex.id];
     return `
-      <button type="button" onclick="toggleChecklistItem('${ex.id}')" class="w-full min-h-[60px] text-left border-2 border-pureblack px-3.5 py-2.5 flex items-center justify-between gap-3 btn-press ${checked ? 'bg-pureblack text-purewhite' : 'bg-purewhite text-pureblack'}">
+      <button type="button" onclick="toggleChecklistItem('${ex.id}')" class="w-full min-h-[58px] text-left border-2 border-pureblack px-3.5 py-2.5 flex items-center justify-between gap-3 btn-press ${checked ? 'bg-pureblack text-purewhite' : 'bg-purewhite text-pureblack'}">
         <div class="flex items-center gap-3 min-w-0">
           <span class="text-xs font-bold tabular-nums px-2 py-1 border ${checked ? 'border-purewhite text-purewhite' : 'border-pureblack text-pureblack'} shrink-0">
             ${ex.number}
@@ -607,7 +834,11 @@ function toggleChecklistItem(id) {
   renderQuickChecklist();
 
   if (EXERCISES.every(ex => checklistState[ex.id])) {
-    showToast('¡6 ejercicios listos! Toca "1 Vuelta Completa"');
+    setTimeout(() => {
+      if (EXERCISES.every(ex => checklistState[ex.id])) {
+        changeRounds(1, true);
+      }
+    }, 180);
   }
 }
 
@@ -619,58 +850,64 @@ function resetChecklist() {
 function selectEffort(effort) {
   selectedEffort = effort;
   document.querySelectorAll('.effort-btn').forEach(btn => {
-    if (btn.dataset.effort === effort) {
-      btn.classList.remove('bg-purewhite', 'text-pureblack');
-      btn.classList.add('bg-pureblack', 'text-purewhite');
-    } else {
-      btn.classList.remove('bg-pureblack', 'text-purewhite');
-      btn.classList.add('bg-purewhite', 'text-pureblack');
-    }
+    const active = btn.dataset.effort === effort;
+    btn.classList.toggle('bg-pureblack', active);
+    btn.classList.toggle('text-purewhite', active);
+    btn.classList.toggle('bg-purewhite', !active);
+    btn.classList.toggle('text-pureblack', !active);
   });
 }
 
-function tryAwardTodayCoins(dateISO, rounds) {
+function applySessionRewards(dateISO, rounds, previousBestRounds) {
   const todayISO = getTodayISO();
-  if (dateISO !== todayISO) return '';
-  if (!completed20MinToday || rounds <= 0) return '';
-  if (rewardedDates.includes(todayISO)) return '';
+  let earned = 0;
 
-  coins += COINS_PER_SESSION;
-  rewardedDates.push(todayISO);
-  return ` (+${COINS_PER_SESSION} monedas)`;
+  if (dateISO === todayISO && completed20MinToday && rounds > 0 && !rewardedDates.includes(todayISO)) {
+    earned += DAILY_COINS_REWARD;
+    rewardedDates.push(todayISO);
+  }
+
+  if (rounds > previousBestRounds && rounds > 0) {
+    earned += 20;
+  }
+
+  if ((selectedEffort === 'Fuerte' || selectedEffort === 'A tope') && rounds > 0) {
+    earned += 5;
+  }
+
+  if (earned > 0) {
+    coins += earned;
+    return ` (+${earned} monedas)`;
+  }
+  return '';
 }
 
 function saveTodaySession() {
   const today = getTodayISO();
+  const previousBestRounds = sessions.reduce((max, s) => Math.max(max, Number(s.rounds) || 0), 0);
   const idx = sessions.findIndex(s => s.date === today);
   const record = {
     date: today,
     rounds: currentRounds,
     effort: selectedEffort,
-    notes: idx >= 0 ? sessions[idx].notes : 'Circuito 20 min'
+    notes: idx >= 0 ? sessions[idx].notes : ''
   };
 
   const applySave = () => {
-    if (idx >= 0) {
-      sessions[idx] = record;
-    } else {
-      sessions.push(record);
-    }
-    const earnedMsg = tryAwardTodayCoins(today, currentRounds);
+    if (idx >= 0) sessions[idx] = record;
+    else sessions.push(record);
+
+    const rewardMsg = applySessionRewards(today, currentRounds, previousBestRounds);
     saveSessions();
     refreshProgressView();
-
-    if (currentRounds > 0 && !completed20MinToday && !rewardedDates.includes(today)) {
-      showToast(`Guardado: ${currentRounds} vueltas (Completa los 20 min para monedas)`);
-    } else {
-      showToast(`Guardado: ${currentRounds} vueltas (${selectedEffort})${earnedMsg}`);
-    }
+    refreshShopView();
+    showToast(`Guardado: ${currentRounds} vueltas${rewardMsg}`);
   };
 
   if (idx >= 0) {
     openConfirmModal(
-      'Actualizar Registro de Hoy',
-      `Hoy (${formatDisplayDate(today)}) ya tienes ${sessions[idx].rounds} vueltas guardadas. ¿Quieres actualizarlo a ${currentRounds} vueltas (${selectedEffort})?`,
+      'Actualizar hoy',
+      `Ya tenés ${sessions[idx].rounds} vueltas en ${formatDisplayDate(today)}. ¿Cambiar a ${currentRounds} vueltas?`,
       applySave
     );
   } else {
@@ -678,21 +915,15 @@ function saveTodaySession() {
   }
 }
 
-// =========================================================================
-// VISTA 2: GUÍA VISUAL DE EJERCICIOS CON ACORDEÓN COLAPSABLE
-// =========================================================================
 function renderExerciseTabs() {
   const container = document.getElementById('exercise-filter-tabs');
-  const items = [
-    { id: 'all', label: 'Todos' },
-    ...EXERCISES.map(ex => ({ id: ex.id, label: ex.number }))
-  ];
+  if (!container) return;
 
-  container.innerHTML = items.map(item => {
-    const active = selectedExerciseFilter === item.id;
+  container.innerHTML = EXERCISES.map(ex => {
+    const active = selectedExerciseFilter === ex.id;
     return `
-      <button onclick="filterExercises('${item.id}')" class="min-h-[44px] px-2 text-xs font-bold uppercase border-2 border-pureblack btn-press ${active ? 'bg-pureblack text-purewhite' : 'bg-purewhite text-pureblack'}">
-        ${item.label}
+      <button type="button" onclick="filterExercises('${ex.id}')" class="min-h-[44px] px-1.5 text-xs font-bold uppercase border-2 border-pureblack btn-press ${active ? 'bg-pureblack text-purewhite' : 'bg-purewhite text-pureblack'}">
+        ${ex.number}
       </button>
     `;
   }).join('');
@@ -706,9 +937,8 @@ function filterExercises(id) {
 
 function renderExercisesGrid() {
   const grid = document.getElementById('exercises-grid');
-  const filtered = selectedExerciseFilter === 'all'
-    ? EXERCISES
-    : EXERCISES.filter(ex => ex.id === selectedExerciseFilter);
+  if (!grid) return;
+  const filtered = EXERCISES.filter(ex => ex.id === selectedExerciseFilter);
 
   grid.innerHTML = filtered.map(ex => `
     <article class="brutal-border bg-purewhite overflow-hidden">
@@ -723,7 +953,7 @@ function renderExercisesGrid() {
       </div>
 
       <div class="p-3 bg-purewhite border-b border-lightborder">
-        <svg id="skel-svg-${ex.id}" viewBox="0 0 340 185" class="w-full h-auto bg-purewhite block" role="img" aria-label="Guía visual de ${ex.name}"></svg>
+        <svg id="skel-svg-${ex.id}" viewBox="0 0 340 185" class="w-full h-auto bg-purewhite block" role="img" aria-label="${ex.name}"></svg>
       </div>
 
       <div class="p-4 space-y-3">
@@ -738,13 +968,13 @@ function renderExercisesGrid() {
 
         <details class="border-2 border-pureblack mt-3">
           <summary class="min-h-[46px] px-3.5 py-2.5 bg-neutral-50 font-bold text-xs uppercase tracking-wider flex items-center justify-between cursor-pointer select-none">
-            <span>Ver error común y adaptación</span>
+            <span>Error y adaptación</span>
             <svg class="w-4 h-4 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
               <polyline points="6 9 12 15 18 9"></polyline>
             </svg>
           </summary>
           <div class="p-3.5 border-t border-pureblack bg-purewhite space-y-2.5 text-sm leading-relaxed">
-            <p><strong class="uppercase text-xs">Error común:</strong> ${ex.avoid}</p>
+            <p><strong class="uppercase text-xs">Error:</strong> ${ex.avoid}</p>
             <p><strong class="uppercase text-xs">Adaptación:</strong> ${ex.modification}</p>
           </div>
         </details>
@@ -755,9 +985,6 @@ function renderExercisesGrid() {
   drawStaticExerciseSVGs();
 }
 
-// =========================================================================
-// MOTOR DE CINEMÁTICA DIRECTA (FORWARD KINEMATICS) - 11 PARTES ARTICULADAS
-// =========================================================================
 let fkAnimationFrameId = null;
 
 function degToRad(deg) {
@@ -1244,6 +1471,17 @@ function buildZigzagFrame(tSec) {
   }, soccerBall, backgroundField);
 }
 
+function getMotionBuilders() {
+  return {
+    squat: buildSquatFrame,
+    pushup: buildPushupFrame,
+    russian_twist: buildRussianTwistFrame,
+    shoulder_press: buildShoulderPressFrame,
+    bird_dog: buildBirdDogFrame,
+    soccer_zigzag: buildZigzagFrame
+  };
+}
+
 function drawStaticExerciseSVGs() {
   const staticBuilders = {
     russian_twist: buildRussianTwistFrame
@@ -1265,15 +1503,7 @@ function drawStaticExerciseSVGs() {
 
 function updateAllSkeletonCanvases(timestampMs) {
   const tSec = timestampMs / 1000;
-
-  const builders = {
-    squat: buildSquatFrame,
-    pushup: buildPushupFrame,
-    russian_twist: buildRussianTwistFrame,
-    shoulder_press: buildShoulderPressFrame,
-    bird_dog: buildBirdDogFrame,
-    soccer_zigzag: buildZigzagFrame
-  };
+  const builders = getMotionBuilders();
 
   EXERCISES.forEach(ex => {
     const svgEl = document.getElementById(`skel-svg-${ex.id}`);
@@ -1306,9 +1536,6 @@ function startSkeletonAnimationLoop() {
   fkAnimationFrameId = requestAnimationFrame(updateAllSkeletonCanvases);
 }
 
-// =========================================================================
-// VISTA 3: PROGRESO MENSUAL, TIENDA Y COMPARTIR IMAGEN DE RACHA
-// =========================================================================
 function changeMonthOffset(delta) {
   if (monthOffset + delta > 0) return;
   monthOffset += delta;
@@ -1400,51 +1627,35 @@ function refreshProgressView() {
     'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'
   ];
 
-  document.getElementById('month-selector-title').textContent = `${monthNames[monthIndex]} ${year}`;
+  const monthTitle = document.getElementById('month-selector-title');
+  if (monthTitle) monthTitle.textContent = `${monthNames[monthIndex]} ${year}`;
 
   const nextBtn = document.getElementById('btn-next-month');
-  nextBtn.disabled = monthOffset >= 0;
+  if (nextBtn) nextBtn.disabled = monthOffset >= 0;
 
   const bestRounds = sessions.reduce((max, s) => Math.max(max, Number(s.rounds) || 0), 0);
   const { currentStreak } = calculateStreaks();
 
-  document.getElementById('stat-current-streak').textContent =
-    `${currentStreak} ${currentStreak === 1 ? 'día' : 'días'}`;
-  document.getElementById('stat-best-rounds').textContent = bestRounds;
-
+  const streakEl = document.getElementById('stat-current-streak');
+  const bestEl = document.getElementById('stat-best-rounds');
   const coinsEl = document.getElementById('stat-coins');
-  const freezesEl = document.getElementById('stat-freezes');
+  if (streakEl) streakEl.textContent = `${currentStreak} ${currentStreak === 1 ? 'día' : 'días'}`;
+  if (bestEl) bestEl.textContent = bestRounds;
   if (coinsEl) coinsEl.textContent = coins;
-  if (freezesEl) freezesEl.textContent = streakFreezes;
 
-  const buyBtn = document.getElementById('btn-buy-freeze');
-  const buyLabel = document.getElementById('buy-freeze-label');
-  if (buyBtn && buyLabel) {
-    if (streakFreezes >= MAX_FREEZES) {
-      buyBtn.disabled = true;
-      buyLabel.textContent = `Máximo Alcanzado (${MAX_FREEZES}/${MAX_FREEZES})`;
-    } else if (coins < FREEZE_COST) {
-      buyBtn.disabled = true;
-      buyLabel.textContent = `Protector (${FREEZE_COST} Monedas · Faltan ${FREEZE_COST - coins})`;
-    } else {
-      buyBtn.disabled = false;
-      buyLabel.textContent = `Comprar Protector (${FREEZE_COST} Monedas)`;
-    }
-  }
+  const rowsContainer = document.getElementById('monthly-calendar-rows');
+  if (!rowsContainer) return;
 
   const weeks = buildMonthWeeks(year, monthIndex);
   let trainedDaysCount = 0;
 
-  const rowsContainer = document.getElementById('monthly-calendar-rows');
   rowsContainer.innerHTML = weeks.map(week => {
     const segments = [];
     let segStart = null;
     for (let c = 0; c < 7; c++) {
       const cell = week[c];
       const activeInStreak = cell && (cell.trained || cell.protectedDay);
-      if (cell && cell.trained) {
-        trainedDaysCount++;
-      }
+      if (cell && cell.trained) trainedDaysCount++;
       if (activeInStreak) {
         if (segStart === null) segStart = c;
       } else {
@@ -1454,35 +1665,29 @@ function refreshProgressView() {
         }
       }
     }
-    if (segStart !== null) {
-      segments.push({ start: segStart, end: 6 });
-    }
+    if (segStart !== null) segments.push({ start: segStart, end: 6 });
 
     const streakBarsHTML = segments.map(seg => {
       const leftPct = (seg.start / 7) * 100;
       const widthPct = ((seg.end - seg.start + 1) / 7) * 100;
       return `
-        <div class="absolute top-1 bottom-1 bg-pureblack pointer-events-none"
-             style="left: calc(${leftPct}% + 2px); width: calc(${widthPct}% - 4px);">
+        <div class="absolute top-0.5 bottom-0.5 bg-pureblack pointer-events-none"
+             style="left: calc(${leftPct}% + 1px); width: calc(${widthPct}% - 2px);">
         </div>
       `;
     }).join('');
 
     const cellsHTML = week.map(cell => {
-      if (!cell) {
-        return `<div class="h-11 sm:h-12"></div>`;
-      }
-
+      if (!cell) return `<div class="h-10 sm:h-12"></div>`;
       const isToday = cell.iso === todayISO;
       const isFuture = cell.iso > todayISO;
 
       if (cell.trained) {
         return `
           <button type="button" onclick="openSessionModal('${cell.iso}')"
-            title="${formatDisplayDate(cell.iso)}: ${cell.entry.rounds} vueltas"
-            class="relative z-10 h-11 sm:h-12 w-full flex flex-col items-center justify-center text-purewhite btn-press ${isToday ? 'ring-2 ring-pureblack ring-offset-1' : ''}">
-            <span class="text-sm font-bold tabular-nums leading-none">${cell.dayNum}</span>
-            <span class="text-[9px] font-bold tabular-nums text-neutral-300 mt-0.5">${cell.entry.rounds}v</span>
+            class="relative z-10 h-10 sm:h-12 w-full px-0.5 flex flex-col items-center justify-center text-purewhite btn-press ${isToday ? 'ring-2 ring-pureblack ring-inset' : ''}">
+            <span class="text-xs sm:text-sm font-bold tabular-nums leading-none">${cell.dayNum}</span>
+            <span class="text-[8px] sm:text-[9px] font-bold tabular-nums text-neutral-300 leading-none mt-1">${cell.entry.rounds}v</span>
           </button>
         `;
       }
@@ -1490,10 +1695,9 @@ function refreshProgressView() {
       if (cell.protectedDay) {
         return `
           <button type="button" onclick="openSessionModal('${cell.iso}')"
-            title="${formatDisplayDate(cell.iso)}: Protegido"
-            class="relative z-10 h-11 sm:h-12 w-full flex flex-col items-center justify-center text-purewhite btn-press">
-            <span class="text-sm font-bold tabular-nums leading-none">${cell.dayNum}</span>
-            <span class="text-[8px] font-bold uppercase tracking-tighter text-neutral-300 mt-0.5">Prot.</span>
+            class="relative z-10 h-10 sm:h-12 w-full px-0.5 flex flex-col items-center justify-center text-purewhite btn-press">
+            <span class="text-xs sm:text-sm font-bold tabular-nums leading-none">${cell.dayNum}</span>
+            <span class="text-[7px] sm:text-[8px] font-bold uppercase tracking-tighter text-neutral-300 leading-none mt-1">Prot</span>
           </button>
         `;
       }
@@ -1501,18 +1705,16 @@ function refreshProgressView() {
       if (isFuture) {
         return `
           <div aria-disabled="true"
-            title="${formatDisplayDate(cell.iso)}: Día futuro"
-            class="relative z-10 h-11 sm:h-12 w-full flex items-center justify-center text-neutral-300 cursor-not-allowed select-none">
-            <span class="text-sm font-bold tabular-nums leading-none">${cell.dayNum}</span>
+            class="relative z-10 h-10 sm:h-12 w-full px-0.5 flex items-center justify-center text-neutral-300 cursor-not-allowed select-none">
+            <span class="text-xs sm:text-sm font-bold tabular-nums leading-none">${cell.dayNum}</span>
           </div>
         `;
       }
 
       return `
         <button type="button" onclick="openSessionModal('${cell.iso}')"
-          title="${formatDisplayDate(cell.iso)}: Sin registro"
-          class="relative z-10 h-11 sm:h-12 w-full flex items-center justify-center btn-press ${isToday ? 'border-2 border-pureblack bg-purewhite text-pureblack font-bold' : 'text-neutral-600 hover:border hover:border-pureblack'}">
-          <span class="text-sm font-bold tabular-nums leading-none">${cell.dayNum}</span>
+          class="relative z-10 h-10 sm:h-12 w-full px-0.5 flex items-center justify-center btn-press ${isToday ? 'border-2 border-pureblack bg-purewhite text-pureblack font-bold' : 'text-neutral-700'}">
+          <span class="text-xs sm:text-sm font-bold tabular-nums leading-none">${cell.dayNum}</span>
         </button>
       `;
     }).join('');
@@ -1525,63 +1727,26 @@ function refreshProgressView() {
     `;
   }).join('');
 
-  document.getElementById('month-summary-subtitle').textContent =
-    `${trainedDaysCount} ${trainedDaysCount === 1 ? 'día entrenado' : 'días entrenados'}`;
-}
-
-let selectedStreakStyleIndex = 0;
-
-function isSpecialStreakMilestone(streakDays) {
-  return (
-    streakDays >= 365 ||
-    streakDays >= 270 ||
-    streakDays >= 180 ||
-    streakDays >= 90 ||
-    streakDays >= 30 ||
-    streakDays >= 21 ||
-    streakDays >= 7 ||
-    streakDays >= 3
-  );
-}
-
-function getStreakPalette(streakDays, styleIndex) {
-  const isSpecial = isSpecialStreakMilestone(streakDays);
-
-  // Colores invertidos respecto a la versión anterior:
-  // Normal: fondo negro (#000000), texto/ícono blanco (#FFFFFF)
-  // Especial: fondo blanco (#FFFFFF), texto/ícono negro (#000000)
-  const baseBg = isSpecial ? '#FFFFFF' : '#000000';
-  const baseFg = isSpecial ? '#000000' : '#FFFFFF';
-  const baseMuted = isSpecial ? '#666666' : '#A3A3A3';
-
-  if (styleIndex === 1) {
-    // Estilo 2: invertido respecto al base
-    return {
-      bg: baseFg,
-      fg: baseBg,
-      muted: isSpecial ? '#A3A3A3' : '#666666',
-      framed: true,
-      fillCalendar: false
-    };
+  const summaryEl = document.getElementById('month-summary-subtitle');
+  if (summaryEl) {
+    summaryEl.textContent = `${trainedDaysCount} ${trainedDaysCount === 1 ? 'día' : 'días'}`;
   }
+}
 
-  if (styleIndex === 2) {
-    // Estilo 3: calendario relleno sólido con número contrastado
+function getStreakPalette(styleIndex) {
+  if (styleIndex === 1) {
     return {
-      bg: baseBg,
-      fg: baseFg,
-      muted: baseMuted,
+      bg: '#000000',
+      fg: '#FFFFFF',
       framed: true,
       fillCalendar: true
     };
   }
 
-  // Estilo 1: limpio clásico
   return {
-    bg: baseBg,
-    fg: baseFg,
-    muted: baseMuted,
-    framed: isSpecial,
+    bg: '#FFFFFF',
+    fg: '#000000',
+    framed: true,
     fillCalendar: false
   };
 }
@@ -1595,7 +1760,6 @@ function drawCalendarWithStreakNumber(ctx, cx, cy, size, streakNumber, palette) 
   ctx.lineCap = 'round';
   ctx.lineJoin = 'round';
 
-  // Cuerpo del calendario
   if (palette.fillCalendar) {
     ctx.fillStyle = palette.fg;
     ctx.fillRect(x, y, size, size);
@@ -1607,22 +1771,19 @@ function drawCalendarWithStreakNumber(ctx, cx, cy, size, streakNumber, palette) 
     ctx.strokeRect(x, y, size, size);
   }
 
-  // Franja superior del calendario
   const stripColor = palette.fillCalendar ? palette.bg : palette.fg;
   ctx.fillStyle = stripColor;
   ctx.fillRect(x, y, size, headerH);
 
-  // Dos argollas superiores
   ctx.strokeStyle = palette.fg;
-  ctx.lineWidth = 9;
+  ctx.lineWidth = 10;
   ctx.beginPath();
-  ctx.moveTo(x + size * 0.27, y - 18);
-  ctx.lineTo(x + size * 0.27, y + 6);
-  ctx.moveTo(x + size * 0.73, y - 18);
-  ctx.lineTo(x + size * 0.73, y + 6);
+  ctx.moveTo(x + size * 0.28, y - 22);
+  ctx.lineTo(x + size * 0.28, y + 6);
+  ctx.moveTo(x + size * 0.72, y - 22);
+  ctx.lineTo(x + size * 0.72, y + 6);
   ctx.stroke();
 
-  // Número de racha adentro del cuerpo del calendario
   const bodyTop = y + headerH;
   const bodyCenterY = bodyTop + (size - headerH) * 0.54;
   const digits = String(streakNumber);
@@ -1645,7 +1806,7 @@ function renderStreakCanvas(canvas, styleIndex = selectedStreakStyleIndex) {
   if (!canvas) return;
   const { currentStreak } = calculateStreaks();
   const todayISO = getTodayISO();
-  const palette = getStreakPalette(currentStreak, styleIndex);
+  const palette = getStreakPalette(styleIndex);
   const ctx = canvas.getContext('2d');
 
   ctx.fillStyle = palette.bg;
@@ -1653,46 +1814,43 @@ function renderStreakCanvas(canvas, styleIndex = selectedStreakStyleIndex) {
 
   if (palette.framed) {
     ctx.strokeStyle = palette.fg;
-    ctx.lineWidth = 8;
-    ctx.strokeRect(36, 36, canvas.width - 72, canvas.height - 72);
+    ctx.lineWidth = 10;
+    ctx.strokeRect(48, 48, canvas.width - 96, canvas.height - 96);
   }
 
-  // Arriba un poco chico: "AMRAP" y abajo el link de la web
   ctx.textAlign = 'left';
   ctx.textBaseline = 'alphabetic';
   ctx.fillStyle = palette.fg;
-  ctx.font = 'bold 32px Arimo, sans-serif';
-  ctx.fillText('AMRAP', 84, 108);
+  ctx.font = 'bold 34px Arimo, sans-serif';
+  ctx.fillText('AMRAP', 88, 114);
 
-  ctx.fillStyle = palette.muted;
-  ctx.font = '600 22px Arimo, sans-serif';
-  ctx.fillText('araujo-phi.github.io/AMRAP', 84, 142);
+  ctx.fillStyle = palette.fg;
+  ctx.font = 'bold 24px Arimo, sans-serif';
+  ctx.fillText('araujo-phi.github.io/AMRAP', 88, 152);
 
-  // Centro: número adentro del ícono de calendario y debajo "días de racha"
   const calSize = 310;
-  const calCenterY = 485;
+  const calCenterY = 495;
   drawCalendarWithStreakNumber(ctx, canvas.width / 2, calCenterY, calSize, currentStreak, palette);
+
+  const streakPhrase = currentStreak === 1
+    ? '1 dia de racha entrenando'
+    : `${currentStreak} dias de racha entrenando`;
 
   ctx.fillStyle = palette.fg;
   ctx.font = 'bold 42px Arimo, sans-serif';
   ctx.textAlign = 'center';
-  ctx.fillText(
-    currentStreak === 1 ? 'día de racha' : 'días de racha',
-    canvas.width / 2,
-    calCenterY + calSize / 2 + 72
-  );
+  ctx.fillText(streakPhrase, canvas.width / 2, calCenterY + calSize / 2 + 78);
 
-  // Abajo en la esquina, más clarito: la fecha
-  ctx.fillStyle = palette.muted;
-  ctx.font = '600 26px Arimo, sans-serif';
+  ctx.fillStyle = palette.fg;
+  ctx.font = 'bold 26px Arimo, sans-serif';
   ctx.textAlign = 'left';
-  ctx.fillText(formatDisplayDate(todayISO), 84, canvas.height - 72);
+  ctx.fillText(formatDisplayDate(todayISO), 88, canvas.height - 82);
 }
 
 function selectStreakStyle(styleIndex) {
-  selectedStreakStyleIndex = styleIndex;
+  selectedStreakStyleIndex = styleIndex === 1 ? 1 : 0;
   document.querySelectorAll('.streak-style-btn').forEach(btn => {
-    const active = Number(btn.dataset.style) === styleIndex;
+    const active = Number(btn.dataset.style) === selectedStreakStyleIndex;
     btn.classList.toggle('bg-pureblack', active);
     btn.classList.toggle('text-purewhite', active);
     btn.classList.toggle('bg-purewhite', !active);
@@ -1700,21 +1858,6 @@ function selectStreakStyle(styleIndex) {
   });
   const previewCanvas = document.getElementById('streak-preview-canvas');
   renderStreakCanvas(previewCanvas, selectedStreakStyleIndex);
-}
-
-function shareStreakImage() {
-  const modal = document.getElementById('share-streak-modal');
-  if (!modal) return;
-  selectStreakStyle(selectedStreakStyleIndex);
-  modal.classList.remove('hidden');
-  modal.classList.add('flex');
-}
-
-function closeShareStreakModal() {
-  const modal = document.getElementById('share-streak-modal');
-  if (!modal) return;
-  modal.classList.add('hidden');
-  modal.classList.remove('flex');
 }
 
 async function getStreakImageBlob() {
@@ -1730,7 +1873,7 @@ async function downloadStreakPreviewImage() {
   const todayISO = getTodayISO();
   const blob = await getStreakImageBlob();
   if (!blob) {
-    showToast('No se pudo generar la imagen');
+    showToast('Error al generar imagen');
     return;
   }
 
@@ -1739,11 +1882,12 @@ async function downloadStreakPreviewImage() {
   const a = document.createElement('a');
   a.href = url;
   a.download = fileName;
+  a.rel = 'noopener';
   document.body.appendChild(a);
   a.click();
   document.body.removeChild(a);
-  URL.revokeObjectURL(url);
-  showToast('Imagen PNG descargada');
+  setTimeout(() => URL.revokeObjectURL(url), 1500);
+  showToast('Imagen descargada');
 }
 
 async function confirmShareStreakImage() {
@@ -1759,7 +1903,8 @@ async function confirmShareStreakImage() {
   const daysWord = currentStreak === 1 ? 'día' : 'días';
   const shareText =
     `¡Sumate a entrenar con *AMRAP*!\n` +
-    `Ya van *${currentStreak} ${daysWord}* de racha con bloques de *20 minutos*, contador de vueltas, guía de ejercicios y seguimiento diario.\n` +
+    `Ya van *${currentStreak} ${daysWord}* de racha con bloques de *20 minutos*,\n` +
+    `contador de vueltas, guía de ejercicios y seguimiento diario.\n` +
     `Probá la app acá:\n` +
     `https://araujo-phi.github.io/AMRAP`;
 
@@ -1793,97 +1938,30 @@ async function confirmShareStreakImage() {
   await downloadStreakPreviewImage();
 }
 
-  ctx.textAlign = 'left';
-  ctx.fillStyle = fgColor;
-  ctx.font = 'bold 34px Arimo, sans-serif';
-  ctx.fillText('AMRAP', 96, 118);
-
-  ctx.fillStyle = mutedColor;
-  ctx.font = '600 24px Arimo, sans-serif';
-  ctx.fillText('araujo-phi.github.io/AMRAP', 96, 156);
-
-  const digitsLen = String(currentStreak).length;
-  const numFontSize = digitsLen >= 3 ? 175 : digitsLen === 2 ? 210 : 230;
-  const iconSize = 112;
-  const gapIconNum = 34;
-
-  ctx.font = `bold ${numFontSize}px Arimo, sans-serif`;
-  const numWidth = ctx.measureText(`${currentStreak}`).width;
-  const groupWidth = iconSize + gapIconNum + numWidth;
-  const groupStartX = (canvas.width - groupWidth) / 2;
-  const centerY = 520;
-
-  drawSimpleStreakIcon(
-    ctx,
-    groupStartX,
-    centerY - iconSize * 0.62,
-    iconSize,
-    fgColor
-  );
-
-  ctx.fillStyle = fgColor;
-  ctx.textAlign = 'left';
-  ctx.textBaseline = 'middle';
-  ctx.fillText(`${currentStreak}`, groupStartX + iconSize + gapIconNum, centerY);
-  ctx.textBaseline = 'alphabetic';
-
-  ctx.fillStyle = fgColor;
-  ctx.font = 'bold 42px Arimo, sans-serif';
-  ctx.textAlign = 'center';
-  ctx.fillText(
-    currentStreak === 1 ? 'día de racha' : 'días de racha',
-    canvas.width / 2,
-    centerY + 135
-  );
-
-  ctx.fillStyle = mutedColor;
-  ctx.font = '600 28px Arimo, sans-serif';
-  ctx.textAlign = 'center';
-  ctx.fillText(formatDisplayDate(todayISO), canvas.width / 2, 950);
-
-  const blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/png'));
-  if (!blob) {
-    showToast('No se pudo generar la imagen');
+function shareStreakImage() {
+  const modal = document.getElementById('share-streak-modal');
+  if (!modal) {
+    confirmShareStreakImage();
     return;
   }
-
-  const fileName = `racha-amrap-${currentStreak}d-${todayISO}.png`;
-  const file = new File([blob], fileName, { type: 'image/png' });
-
-  if (navigator.share && navigator.canShare && navigator.canShare({ files: [file] })) {
-    try {
-      await navigator.share({
-        title: 'Mi racha en AMRAP',
-        text: `${currentStreak} ${currentStreak === 1 ? 'día' : 'días'} de racha en AMRAP.`,
-        files: [file]
-      });
-      showToast('Racha compartida');
-      return;
-    } catch (err) {
-      if (err && err.name === 'AbortError') return;
-    }
-  }
-
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url;
-  a.download = fileName;
-  document.body.appendChild(a);
-  a.click();
-  document.body.removeChild(a);
-  URL.revokeObjectURL(url);
-  showToast('Imagen PNG descargada');
+  selectStreakStyle(selectedStreakStyleIndex);
+  modal.classList.remove('hidden');
+  modal.classList.add('flex');
 }
 
-// =========================================================================
-// MODAL DE EDICIÓN / REGISTRO MANUAL Y EXPORTACIÓN JSON
-// =========================================================================
+function closeShareStreakModal() {
+  const modal = document.getElementById('share-streak-modal');
+  if (!modal) return;
+  modal.classList.add('hidden');
+  modal.classList.remove('flex');
+}
+
 function openSessionModal(prefillDate) {
   const todayISO = getTodayISO();
   let targetDate = prefillDate || todayISO;
 
   if (targetDate > todayISO) {
-    showToast('No puedes anotar días futuros');
+    showToast('Día futuro');
     return;
   }
 
@@ -1894,28 +1972,31 @@ function openSessionModal(prefillDate) {
   const notesInput = document.getElementById('modal-notes');
   const deleteWrap = document.getElementById('modal-delete-wrapper');
   const deleteBtn = document.getElementById('modal-delete-btn');
+  const titleEl = document.getElementById('session-modal-title');
+  if (!modal || !dateInput || !roundsInput) return;
 
   const existing = sessions.find(s => s.date === targetDate);
 
-  dateInput.max = todayISO;
   dateInput.value = targetDate;
 
   if (existing) {
-    document.getElementById('session-modal-title').textContent = `Editar Día (${formatDisplayDate(targetDate)})`;
+    if (titleEl) titleEl.textContent = formatDisplayDate(targetDate);
     roundsInput.value = existing.rounds;
-    effortInput.value = existing.effort || 'Normal';
-    notesInput.value = existing.notes || '';
-    deleteWrap.classList.remove('hidden');
-    deleteBtn.onclick = () => {
-      closeSessionModal();
-      confirmDeleteSession(targetDate);
-    };
+    if (effortInput) effortInput.value = existing.effort || 'Normal';
+    if (notesInput) notesInput.value = existing.notes || '';
+    if (deleteWrap) deleteWrap.classList.remove('hidden');
+    if (deleteBtn) {
+      deleteBtn.onclick = () => {
+        closeSessionModal();
+        confirmDeleteSession(targetDate);
+      };
+    }
   } else {
-    document.getElementById('session-modal-title').textContent = `Anotar Día (${formatDisplayDate(targetDate)})`;
-    roundsInput.value = currentRounds > 0 ? currentRounds : 3;
-    effortInput.value = 'Normal';
-    notesInput.value = '';
-    deleteWrap.classList.add('hidden');
+    if (titleEl) titleEl.textContent = formatDisplayDate(targetDate);
+    roundsInput.value = currentRounds > 0 ? currentRounds : 1;
+    if (effortInput) effortInput.value = 'Normal';
+    if (notesInput) notesInput.value = '';
+    if (deleteWrap) deleteWrap.classList.add('hidden');
   }
 
   modal.classList.remove('hidden');
@@ -1924,70 +2005,64 @@ function openSessionModal(prefillDate) {
 
 function closeSessionModal() {
   const modal = document.getElementById('session-modal');
+  if (!modal) return;
   modal.classList.add('hidden');
   modal.classList.remove('flex');
 }
 
 function adjustModalRounds(delta) {
   const input = document.getElementById('modal-rounds');
-  const val = Math.max(0, (parseInt(input.value, 10) || 0) + delta);
-  input.value = val;
+  if (!input) return;
+  input.value = Math.max(0, (parseInt(input.value, 10) || 0) + delta);
 }
 
-document.getElementById('manual-session-form').addEventListener('submit', (e) => {
+function handleManualSessionSubmit(e) {
   e.preventDefault();
   const todayISO = getTodayISO();
-  const date = document.getElementById('modal-date').value;
-  const rounds = Math.max(0, parseInt(document.getElementById('modal-rounds').value, 10) || 0);
-  const effort = document.getElementById('modal-effort').value;
-  const notes = document.getElementById('modal-notes').value.trim();
+  const previousBestRounds = sessions.reduce((max, s) => Math.max(max, Number(s.rounds) || 0), 0);
+  const dateEl = document.getElementById('modal-date');
+  const roundsEl = document.getElementById('modal-rounds');
+  const effortEl = document.getElementById('modal-effort');
+  const notesEl = document.getElementById('modal-notes');
+  if (!dateEl || !roundsEl) return;
 
-  if (!date) return;
+  const date = dateEl.value || todayISO;
+  const rounds = Math.max(0, parseInt(roundsEl.value, 10) || 0);
+  const effort = effortEl ? effortEl.value : 'Normal';
+  const notes = notesEl ? notesEl.value.trim() : '';
 
-  if (date > todayISO) {
-    showToast('No puedes anotar días futuros');
-    return;
-  }
+  if (date > todayISO) return;
 
   const idx = sessions.findIndex(s => s.date === date);
   const record = { date, rounds, effort, notes };
 
-  if (idx >= 0) {
-    sessions[idx] = record;
-  } else {
-    sessions.push(record);
-  }
+  if (idx >= 0) sessions[idx] = record;
+  else sessions.push(record);
 
-  const earnedMsg = tryAwardTodayCoins(date, rounds);
-
+  const rewardMsg = applySessionRewards(date, rounds, previousBestRounds);
   saveSessions();
   closeSessionModal();
   refreshProgressView();
-  showToast(`Guardado: ${formatDisplayDate(date)}${earnedMsg}`);
-});
+  refreshShopView();
+  showToast(`Guardado${rewardMsg}`);
+}
 
 function confirmDeleteSession(date) {
   openConfirmModal(
-    'Eliminar Día',
-    `¿Borrar el registro del ${formatDisplayDate(date)}?`,
+    'Borrar día',
+    `¿Borrar ${formatDisplayDate(date)}?`,
     () => {
       sessions = sessions.filter(s => s.date !== date);
       saveSessions();
       refreshProgressView();
-      showToast('Registro eliminado');
+      refreshShopView();
+      showToast('Borrado');
     }
   );
 }
 
 function exportProgressJSON() {
-  const backupData = {
-    sessions,
-    coins,
-    streakFreezes,
-    frozenDates,
-    rewardedDates
-  };
-  const blob = new Blob([JSON.stringify(backupData, null, 2)], { type: 'application/json' });
+  const blob = new Blob([JSON.stringify(buildStatePayload(), null, 2)], { type: 'application/json' });
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
   a.href = url;
@@ -1996,7 +2071,7 @@ function exportProgressJSON() {
   a.click();
   document.body.removeChild(a);
   URL.revokeObjectURL(url);
-  showToast('Respaldo JSON descargado');
+  showToast('JSON exportado');
 }
 
 function importProgressJSON(event) {
@@ -2007,14 +2082,14 @@ function importProgressJSON(event) {
     try {
       const imported = JSON.parse(e.target.result);
       if (Array.isArray(imported)) {
-        sessions = imported
-          .filter(item => item && typeof item.date === 'string')
-          .map(normalizeSessionItem);
+        sessions = imported.filter(item => item && typeof item.date === 'string').map(normalizeSessionItem);
       } else if (imported && typeof imported === 'object' && Array.isArray(imported.sessions)) {
-        sessions = imported.sessions
-          .filter(item => item && typeof item.date === 'string')
-          .map(normalizeSessionItem);
-        coins = Math.max(0, Number(imported.coins) || 0);
+        sessions = imported.sessions.filter(item => item && typeof item.date === 'string').map(normalizeSessionItem);
+        const baseCoins = Number(imported.coins) || 0;
+        const legacyDaily = Number(imported.dailyCoins) || 0;
+        const legacyEpic = Number(imported.epicCoins) || 0;
+        coins = Math.max(0, baseCoins > 0 ? baseCoins : (legacyDaily + legacyEpic));
+
         streakFreezes = Math.max(0, Math.min(MAX_FREEZES, Number(imported.streakFreezes) || 0));
         frozenDates = Array.isArray(imported.frozenDates)
           ? Array.from(new Set(imported.frozenDates.filter(d => typeof d === 'string')))
@@ -2022,43 +2097,63 @@ function importProgressJSON(event) {
         rewardedDates = Array.isArray(imported.rewardedDates)
           ? Array.from(new Set(imported.rewardedDates.filter(d => typeof d === 'string')))
           : [];
+        claimedChallengeDates = Array.isArray(imported.claimedChallengeDates)
+          ? Array.from(new Set(imported.claimedChallengeDates.filter(d => typeof d === 'string')))
+          : [];
+        const perksSource = Array.isArray(imported.unlockedPerks)
+          ? imported.unlockedPerks
+          : (Array.isArray(imported.unlockedEpicPerks) ? imported.unlockedEpicPerks : []);
+        unlockedPerks = Array.from(new Set(perksSource.filter(p => typeof p === 'string' && p !== 'frame')));
+
+        challengeQueue = Array.isArray(imported.challengeQueue)
+          ? imported.challengeQueue.filter(id => DAILY_EXERCISES.some(ex => ex.id === id))
+          : [];
+        challengeAssignments = (imported.challengeAssignments && typeof imported.challengeAssignments === 'object')
+          ? imported.challengeAssignments
+          : {};
       } else {
         throw new Error('Inválido');
       }
+      ensureDailyChallengeAssigned(getTodayISO());
       applyAutomaticStreakFreezes();
       saveSessions();
       refreshProgressView();
-      showToast(`Importadas ${sessions.length} sesiones`);
+      refreshShopView();
+      showToast('JSON importado');
     } catch (err) {
-      showToast('Archivo JSON inválido');
+      showToast('JSON inválido');
     }
     event.target.value = '';
   };
   reader.readAsText(file);
 }
 
-// =========================================================================
-// UTILIDADES DE NOTIFICACIÓN Y MODAL DE CONFIRMACIÓN
-// =========================================================================
 let toastTimeout = null;
 function showToast(msg) {
   const banner = document.getElementById('toast-banner');
-  document.getElementById('toast-message').textContent = msg;
+  const msgEl = document.getElementById('toast-message');
+  if (!banner || !msgEl) return;
+  msgEl.textContent = msg;
   banner.classList.remove('hidden');
   if (toastTimeout) clearTimeout(toastTimeout);
-  toastTimeout = setTimeout(hideToast, 3200);
+  toastTimeout = setTimeout(hideToast, 2800);
 }
 
 function hideToast() {
-  document.getElementById('toast-banner').classList.add('hidden');
+  const banner = document.getElementById('toast-banner');
+  if (banner) banner.classList.add('hidden');
 }
 
 function openConfirmModal(title, text, onConfirm) {
   const modal = document.getElementById('confirm-modal');
-  document.getElementById('confirm-title').textContent = title;
-  document.getElementById('confirm-text').textContent = text;
-
+  const titleEl = document.getElementById('confirm-title');
+  const textEl = document.getElementById('confirm-text');
   const acceptBtn = document.getElementById('confirm-accept-btn');
+  if (!modal || !acceptBtn) return;
+
+  if (titleEl) titleEl.textContent = title;
+  if (textEl) textEl.textContent = text;
+
   const newBtn = acceptBtn.cloneNode(true);
   acceptBtn.parentNode.replaceChild(newBtn, acceptBtn);
 
@@ -2073,6 +2168,7 @@ function openConfirmModal(title, text, onConfirm) {
 
 function closeConfirmModal() {
   const modal = document.getElementById('confirm-modal');
+  if (!modal) return;
   modal.classList.add('hidden');
   modal.classList.remove('flex');
 }
