@@ -169,15 +169,14 @@ const DAILY_COINS_REWARD = 10;
 const DAILY_CHALLENGE_BONUS = 5;
 const FREEZE_COST = 100;
 const MAX_FREEZES = 2;
-const STREAK_BOOST_COST = 60;
-const SESSION_BONUS_COST = 25;
-const SESSION_BONUS_REWARD = 15;
+const DOUBLE_COINS_COST = 80;
+const RECORD_CONTRACT_COST = 50;
+const RECORD_CONTRACT_PAYOUT = 80;
 
 let currentViewName = 'timer';
 let timerSecondsLeft = TOTAL_SECONDS;
 let timerInterval = null;
 let isTimerRunning = false;
-let completed20MinToday = false;
 let resetConfirmPending = false;
 let resetConfirmTimeout = null;
 
@@ -192,8 +191,8 @@ let selectedStreakStyleIndex = 0;
 let sessions = [];
 let coins = 0;
 let streakFreezes = 0;
-let streakBoostDays = 0;
-let sessionBonusArmed = false;
+let doubleCoinsArmed = false;
+let recordContractArmed = false;
 let frozenDates = [];
 let rewardedDates = [];
 let claimedChallengeDates = [];
@@ -383,8 +382,8 @@ function loadSessions() {
         coins = Math.max(0, baseCoins > 0 ? baseCoins : (legacyDaily + legacyEpic));
 
         streakFreezes = Math.max(0, Math.min(MAX_FREEZES, Number(parsed.streakFreezes) || 0));
-        streakBoostDays = Math.max(0, Number(parsed.streakBoostDays) || 0);
-        sessionBonusArmed = Boolean(parsed.sessionBonusArmed);
+        doubleCoinsArmed = Boolean(parsed.doubleCoinsArmed);
+        recordContractArmed = Boolean(parsed.recordContractArmed);
         frozenDates = Array.isArray(parsed.frozenDates)
           ? Array.from(new Set(parsed.frozenDates.filter(d => typeof d === 'string')))
           : [];
@@ -407,8 +406,8 @@ function loadSessions() {
     sessions = [];
     coins = 0;
     streakFreezes = 0;
-    streakBoostDays = 0;
-    sessionBonusArmed = false;
+    doubleCoinsArmed = false;
+    recordContractArmed = false;
     frozenDates = [];
     rewardedDates = [];
     claimedChallengeDates = [];
@@ -422,8 +421,8 @@ function buildStatePayload() {
     sessions,
     coins,
     streakFreezes,
-    streakBoostDays,
-    sessionBonusArmed,
+    doubleCoinsArmed,
+    recordContractArmed,
     frozenDates,
     rewardedDates,
     claimedChallengeDates,
@@ -497,35 +496,38 @@ function buyStreakFreeze() {
   showToast(`Protector comprado (${streakFreezes}/${MAX_FREEZES})`);
 }
 
-function buyStreakBoost() {
-  if (coins < STREAK_BOOST_COST) {
-    showToast(`Faltan ${STREAK_BOOST_COST - coins} monedas`);
+function buyDoubleCoins() {
+  if (doubleCoinsArmed) {
+    showToast('Ya tenés doble moneda activa');
+    return;
+  }
+  if (coins < DOUBLE_COINS_COST) {
+    showToast(`Faltan ${DOUBLE_COINS_COST - coins} monedas`);
     return;
   }
 
-  coins -= STREAK_BOOST_COST;
-  streakBoostDays += 1;
+  coins -= DOUBLE_COINS_COST;
+  doubleCoinsArmed = true;
   saveSessions();
-  refreshProgressView();
   refreshShopView();
-  showToast('+1 día sumado a tu racha');
+  showToast('Doble moneda lista para tu próximo entreno');
 }
 
-function buySessionBonus() {
-  if (sessionBonusArmed) {
-    showToast('Ya tenés el bonus activo');
+function buyRecordContract() {
+  if (recordContractArmed) {
+    showToast('Ya tenés el contrato activo');
     return;
   }
-  if (coins < SESSION_BONUS_COST) {
-    showToast(`Faltan ${SESSION_BONUS_COST - coins} monedas`);
+  if (coins < RECORD_CONTRACT_COST) {
+    showToast(`Faltan ${RECORD_CONTRACT_COST - coins} monedas`);
     return;
   }
 
-  coins -= SESSION_BONUS_COST;
-  sessionBonusArmed = true;
+  coins -= RECORD_CONTRACT_COST;
+  recordContractArmed = true;
   saveSessions();
   refreshShopView();
-  showToast(`Bonus +${SESSION_BONUS_REWARD} listo para tu próxima sesión`);
+  showToast('Contrato activo: superá tu récord de vueltas');
 }
 
 function claimDailyChallengeBonus() {
@@ -565,34 +567,37 @@ function refreshShopView() {
     }
   }
 
-  const boostBtn = document.getElementById('btn-buy-streak-boost');
-  const boostLabel = document.getElementById('buy-streak-boost-label');
-  const boostCount = document.getElementById('shop-streak-boost-count');
-  if (boostCount) boostCount.textContent = `+${streakBoostDays}d`;
-  if (boostBtn && boostLabel) {
-    if (coins < STREAK_BOOST_COST) {
-      boostBtn.disabled = true;
-      boostLabel.textContent = `Impulso de racha (+1 día) · ${STREAK_BOOST_COST} monedas (faltan ${STREAK_BOOST_COST - coins})`;
+  const doubleBtn = document.getElementById('btn-buy-double-coins');
+  const doubleLabel = document.getElementById('buy-double-coins-label');
+  const doubleStatus = document.getElementById('shop-double-coins-status');
+  if (doubleStatus) doubleStatus.textContent = doubleCoinsArmed ? 'ON' : 'OFF';
+  if (doubleBtn && doubleLabel) {
+    if (doubleCoinsArmed) {
+      doubleBtn.disabled = true;
+      doubleLabel.textContent = 'Doble moneda (próximo entreno) · Activo';
+    } else if (coins < DOUBLE_COINS_COST) {
+      doubleBtn.disabled = true;
+      doubleLabel.textContent = `Doble moneda (próximo entreno) · ${DOUBLE_COINS_COST} monedas (faltan ${DOUBLE_COINS_COST - coins})`;
     } else {
-      boostBtn.disabled = false;
-      boostLabel.textContent = `Impulso de racha (+1 día) · ${STREAK_BOOST_COST} monedas`;
+      doubleBtn.disabled = false;
+      doubleLabel.textContent = `Doble moneda (próximo entreno) · ${DOUBLE_COINS_COST} monedas`;
     }
   }
 
-  const bonusBtn = document.getElementById('btn-buy-session-bonus');
-  const bonusLabel = document.getElementById('buy-session-bonus-label');
-  const bonusStatus = document.getElementById('shop-session-bonus-status');
-  if (bonusStatus) bonusStatus.textContent = sessionBonusArmed ? 'ON' : 'OFF';
-  if (bonusBtn && bonusLabel) {
-    if (sessionBonusArmed) {
-      bonusBtn.disabled = true;
-      bonusLabel.textContent = `Bonus próxima sesión (+${SESSION_BONUS_REWARD}) · Activo`;
-    } else if (coins < SESSION_BONUS_COST) {
-      bonusBtn.disabled = true;
-      bonusLabel.textContent = `Bonus próxima sesión (+${SESSION_BONUS_REWARD}) · ${SESSION_BONUS_COST} monedas (faltan ${SESSION_BONUS_COST - coins})`;
+  const contractBtn = document.getElementById('btn-buy-record-contract');
+  const contractLabel = document.getElementById('buy-record-contract-label');
+  const contractStatus = document.getElementById('shop-record-contract-status');
+  if (contractStatus) contractStatus.textContent = recordContractArmed ? 'ON' : 'OFF';
+  if (contractBtn && contractLabel) {
+    if (recordContractArmed) {
+      contractBtn.disabled = true;
+      contractLabel.textContent = `Contrato de récord (+${RECORD_CONTRACT_PAYOUT}) · Activo`;
+    } else if (coins < RECORD_CONTRACT_COST) {
+      contractBtn.disabled = true;
+      contractLabel.textContent = `Contrato de récord (+${RECORD_CONTRACT_PAYOUT}) · ${RECORD_CONTRACT_COST} monedas (faltan ${RECORD_CONTRACT_COST - coins})`;
     } else {
-      bonusBtn.disabled = false;
-      bonusLabel.textContent = `Bonus próxima sesión (+${SESSION_BONUS_REWARD}) · ${SESSION_BONUS_COST} monedas`;
+      contractBtn.disabled = false;
+      contractLabel.textContent = `Contrato de récord (+${RECORD_CONTRACT_PAYOUT}) · ${RECORD_CONTRACT_COST} monedas`;
     }
   }
 
@@ -772,7 +777,6 @@ function startTimer() {
       updateTimerUI();
     } else {
       pauseTimer();
-      completed20MinToday = true;
       updateTimerUI();
       playSoftFinishAlert();
       showToast('20 minutos listos');
@@ -909,22 +913,18 @@ function applySessionRewards(dateISO, rounds, previousBestRounds) {
   const todayISO = getTodayISO();
   let earned = 0;
 
-  if (dateISO === todayISO && completed20MinToday && rounds > 0 && !rewardedDates.includes(todayISO)) {
-    earned += DAILY_COINS_REWARD;
+  if (dateISO === todayISO && rounds > 0 && !rewardedDates.includes(todayISO)) {
+    const baseReward = doubleCoinsArmed ? DAILY_COINS_REWARD * 2 : DAILY_COINS_REWARD;
+    earned += baseReward;
+    doubleCoinsArmed = false;
     rewardedDates.push(todayISO);
   }
 
-  if (rounds > previousBestRounds && rounds > 0) {
-    earned += 20;
-  }
-
-  if ((selectedEffort === 'Fuerte' || selectedEffort === 'A tope') && rounds > 0) {
-    earned += 5;
-  }
-
-  if (sessionBonusArmed && rounds > 0) {
-    earned += SESSION_BONUS_REWARD;
-    sessionBonusArmed = false;
+  if (recordContractArmed && rounds > 0) {
+    if (rounds > previousBestRounds) {
+      earned += RECORD_CONTRACT_PAYOUT;
+    }
+    recordContractArmed = false;
   }
 
   if (earned > 0) {
@@ -1600,11 +1600,7 @@ function calculateStreaks() {
   const activeSet = new Set([...trainedSet, ...frozenSet]);
 
   if (activeSet.size === 0) {
-    return {
-      currentStreak: streakBoostDays,
-      bestStreak: streakBoostDays,
-      totalTrainedDays: trainedSet.size
-    };
+    return { currentStreak: 0, bestStreak: 0, totalTrainedDays: trainedSet.size };
   }
 
   const sortedDays = Array.from(activeSet).map(isoToDayNumber).sort((a, b) => a - b);
@@ -1636,11 +1632,7 @@ function calculateStreaks() {
     }
   }
 
-  return {
-    currentStreak: currentStreak + streakBoostDays,
-    bestStreak: bestStreak + streakBoostDays,
-    totalTrainedDays: trainedSet.size
-  };
+  return { currentStreak, bestStreak, totalTrainedDays: trainedSet.size };
 }
 
 function buildMonthWeeks(year, monthIndex) {
@@ -2166,8 +2158,8 @@ function importProgressJSON(event) {
         coins = Math.max(0, baseCoins > 0 ? baseCoins : (legacyDaily + legacyEpic));
 
         streakFreezes = Math.max(0, Math.min(MAX_FREEZES, Number(imported.streakFreezes) || 0));
-        streakBoostDays = Math.max(0, Number(imported.streakBoostDays) || 0);
-        sessionBonusArmed = Boolean(imported.sessionBonusArmed);
+        doubleCoinsArmed = Boolean(imported.doubleCoinsArmed);
+        recordContractArmed = Boolean(imported.recordContractArmed);
         frozenDates = Array.isArray(imported.frozenDates)
           ? Array.from(new Set(imported.frozenDates.filter(d => typeof d === 'string')))
           : [];
