@@ -1,10 +1,8 @@
 # KORA
 
-![AMRAP Banner](https://github.com/user-attachments/assets/ffb1cdc7-d8aa-4733-b138-17a22b00921e)
+![KORA Banner](https://github.com/user-attachments/assets/ffb1cdc7-d8aa-4733-b138-17a22b00921e)
 
-**AMRAP** (*As Many Rounds As Possible* / *As Many Reps As Possible*) significa **"tantas rondas como sea posible"** o **"tantas repeticiones como sea posible"**.
-
-Es una aplicación web enfocada en el uso móvil para entrenamientos AMRAP de **20 minutos**, con cronómetro regresivo, contador de vueltas, checklist por ronda, guía visual de 6 ejercicios y seguimiento mensual de racha.
+Es una aplicación web enfocada en el uso móvil para entrenamientos de **20 minutos**, con cronómetro regresivo, contador de vueltas, checklist por ronda, guía visual de 6 ejercicios y seguimiento mensual de racha.
 
 ---
 
