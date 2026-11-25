@@ -215,9 +215,9 @@ document.addEventListener('DOMContentLoaded', () => {
     manualForm.addEventListener('submit', handleManualSessionSubmit);
   }
 
-  document.addEventListener('visibilitychange', async () => {
+  document.addEventListener('visibilitychange', () => {
     if (document.visibilityState === 'visible' && wakeLockSentinel !== null) {
-      await requestWakeLock(true);
+      requestWakeLock(true);
     }
   });
 });
@@ -609,31 +609,36 @@ function switchView(viewName, direction = null) {
   if (viewName === 'shop') refreshShopView();
 }
 
-async function toggleWakeLock() {
+function toggleWakeLock() {
   if (wakeLockSentinel) {
-    try { await wakeLockSentinel.release(); } catch (e) {}
+    wakeLockSentinel.release().catch(() => {});
     wakeLockSentinel = null;
     updateWakeLockButton(false);
     showToast('Pantalla activa: Off');
   } else {
-    await requestWakeLock(false);
+    requestWakeLock(false);
   }
 }
 
-async function requestWakeLock(silent) {
+function requestWakeLock(silent) {
   if (!('wakeLock' in navigator)) {
     if (!silent) showToast('No compatible en este navegador');
     return;
   }
-  try {
-    wakeLockSentinel = await navigator.wakeLock.request('screen');
-    updateWakeLockButton(true);
-    if (!silent) showToast('Pantalla activa: On');
-    wakeLockSentinel.addEventListener('release', () => updateWakeLockButton(false));
-  } catch (err) {
-    wakeLockSentinel = null;
-    updateWakeLockButton(false);
-  }
+  navigator.wakeLock.request('screen')
+    .then(sentinel => {
+      wakeLockSentinel = sentinel;
+      updateWakeLockButton(true);
+      if (!silent) showToast('Pantalla activa: On');
+      sentinel.addEventListener('release', () => {
+        wakeLockSentinel = null;
+        updateWakeLockButton(false);
+      });
+    })
+    .catch(() => {
+      wakeLockSentinel = null;
+      updateWakeLockButton(false);
+    });
 }
 
 function updateWakeLockButton(active) {
@@ -1860,7 +1865,7 @@ function selectStreakStyle(styleIndex) {
   renderStreakCanvas(previewCanvas, selectedStreakStyleIndex);
 }
 
-async function getStreakImageBlob() {
+function getStreakImageBlob() {
   const canvas = document.createElement('canvas');
   canvas.width = 1080;
   canvas.height = 1080;
@@ -1868,74 +1873,76 @@ async function getStreakImageBlob() {
   return new Promise(resolve => canvas.toBlob(resolve, 'image/png'));
 }
 
-async function downloadStreakPreviewImage() {
+function downloadStreakPreviewImage() {
   const { currentStreak } = calculateStreaks();
   const todayISO = getTodayISO();
-  const blob = await getStreakImageBlob();
-  if (!blob) {
-    showToast('Error al generar imagen');
-    return;
-  }
+  getStreakImageBlob().then(blob => {
+    if (!blob) {
+      showToast('Error al generar imagen');
+      return;
+    }
 
-  const fileName = `racha-amrap-${currentStreak}d-e${selectedStreakStyleIndex + 1}-${todayISO}.png`;
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url;
-  a.download = fileName;
-  a.rel = 'noopener';
-  document.body.appendChild(a);
-  a.click();
-  document.body.removeChild(a);
-  setTimeout(() => URL.revokeObjectURL(url), 1500);
-  showToast('Imagen descargada');
+    const fileName = `racha-amrap-${currentStreak}d-e${selectedStreakStyleIndex + 1}-${todayISO}.png`;
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = fileName;
+    a.rel = 'noopener';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    setTimeout(() => URL.revokeObjectURL(url), 1500);
+    showToast('Imagen descargada');
+  });
 }
 
-async function confirmShareStreakImage() {
+function confirmShareStreakImage() {
   const { currentStreak } = calculateStreaks();
   const todayISO = getTodayISO();
-  const blob = await getStreakImageBlob();
-  if (!blob) {
-    showToast('Error al generar imagen');
-    return;
-  }
-
-  const fileName = `racha-amrap-${currentStreak}d-e${selectedStreakStyleIndex + 1}-${todayISO}.png`;
-  const daysWord = currentStreak === 1 ? 'día' : 'días';
-  const shareText =
-    `¡Sumate a entrenar con *AMRAP*!\n` +
-    `Ya van *${currentStreak} ${daysWord}* de racha con bloques de *20 minutos*,\n` +
-    `contador de vueltas, guía de ejercicios y seguimiento diario.\n` +
-    `Probá la app acá:\n` +
-    `https://araujo-phi.github.io/AMRAP`;
-
-  let canShareFile = false;
-  let file = null;
-
-  try {
-    if (typeof File === 'function') {
-      file = new File([blob], fileName, { type: 'image/png' });
-      if (navigator.share && typeof navigator.canShare === 'function') {
-        canShareFile = navigator.canShare({ files: [file] });
-      }
+  getStreakImageBlob().then(blob => {
+    if (!blob) {
+      showToast('Error al generar imagen');
+      return;
     }
-  } catch (e) {
-    canShareFile = false;
-  }
 
-  if (canShareFile && file) {
+    const fileName = `racha-amrap-${currentStreak}d-e${selectedStreakStyleIndex + 1}-${todayISO}.png`;
+    const daysWord = currentStreak === 1 ? 'día' : 'días';
+    const shareText =
+      `¡Sumate a entrenar con *AMRAP*!\n` +
+      `Ya van *${currentStreak} ${daysWord}* de racha con bloques de *20 minutos*,\n` +
+      `contador de vueltas, guía de ejercicios y seguimiento diario.\n` +
+      `Probá la app acá:\n` +
+      `https://araujo-phi.github.io/AMRAP`;
+
+    let canShareFile = false;
+    let file = null;
+
     try {
-      await navigator.share({
+      if (typeof File === 'function') {
+        file = new File([blob], fileName, { type: 'image/png' });
+        if (navigator.share && typeof navigator.canShare === 'function') {
+          canShareFile = navigator.canShare({ files: [file] });
+        }
+      }
+    } catch (e) {
+      canShareFile = false;
+    }
+
+    if (canShareFile && file) {
+      navigator.share({
         title: 'AMRAP',
         text: shareText,
         files: [file]
+      }).catch(err => {
+        if (err && err.name !== 'AbortError') {
+          downloadStreakPreviewImage();
+        }
       });
       return;
-    } catch (err) {
-      if (err && err.name === 'AbortError') return;
     }
-  }
 
-  await downloadStreakPreviewImage();
+    downloadStreakPreviewImage();
+  });
 }
 
 function shareStreakImage() {
